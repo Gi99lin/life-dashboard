@@ -1,0 +1,53 @@
+name: Publish Docker images
+
+on:
+  push:
+    branches: [ "main", "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  # Приводим имя пользователя к нижнему регистру для совместимости с Docker
+  IMAGE_PREFIX: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  build-and-push-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Важно: дает права на загрузку в GitHub Container Registry
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase image prefix
+        run: |
+          echo "IMAGE_PREFIX=${IMAGE_PREFIX,,}" >> ${GITHUB_ENV}
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./dashboard
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}/life-dashboard-frontend:latest
+
+      - name: Build and push API
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}/life-dashboard-api:latest
+
+      - name: Build and push Collector
+        uses: docker/build-push-action@v5
+        with:
+          context: ./collector
+          push: true
+          tags: ${{ env.IMAGE_PREFIX }}/life-dashboard-collector:latest
