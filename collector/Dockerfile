@@ -13,8 +13,8 @@ RUN apk add --no-cache git && \
 # Copy collector scripts
 COPY . .
 
-# Cron schedule: run every 2 hours
-RUN echo "0 */2 * * * cd /app && python3 /app/run_collect.py >> /var/log/collector.log 2>&1" > /etc/crontabs/root
+# Entrypoint: dump runtime env → cron can source it, then start crond
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Keep cron in foreground
-CMD ["crond", "-f", "-d", "8"]
+ENTRYPOINT ["/entrypoint.sh"]
