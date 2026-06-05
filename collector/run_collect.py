@@ -13,6 +13,8 @@ from datetime import datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from metrics_calc import build_correlations, compute_readiness
+
 METRICS_PATH = os.environ.get('METRICS_PATH', '/data/metrics.json')
 VAULT_PATH = os.environ.get('VAULT_PATH', '/vault')
 
@@ -171,6 +173,22 @@ def collect_schedules(metrics, dates):
         print(f"  Schedule error: {e}")
 
 
+def attach_derived_metrics(metrics):
+    """Attach cached readiness scores and trailing correlations."""
+    days = metrics.setdefault('days', {})
+    meta = metrics.setdefault('meta', {})
+
+    hrv_vals = [d.get('garmin', {}).get('hrv') for d in days.values()]
+    hrv_vals = sorted(v for v in hrv_vals if v is not None)
+    hrv_baseline = hrv_vals[len(hrv_vals) // 2] if hrv_vals else None
+
+    for day in days.values():
+        day['readiness'] = compute_readiness(day, hrv_baseline)
+
+    ordered = [days[k] for k in sorted(days)]
+    meta['correlations'] = build_correlations(ordered[-30:])
+
+
 def main():
     now = datetime.now()
     today = now.strftime('%Y-%m-%d')
@@ -188,6 +206,7 @@ def main():
     collect_git(metrics, dates)
     collect_schedules(metrics, dates)
 
+    attach_derived_metrics(metrics)
     save_metrics(metrics)
     print(f"\n✅ Saved to {METRICS_PATH}")
 

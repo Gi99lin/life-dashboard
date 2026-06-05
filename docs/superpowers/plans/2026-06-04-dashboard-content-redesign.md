@@ -269,9 +269,9 @@ git commit -m "feat(collector): readiness + correlation calculations"
 **Files:**
 - Modify: `collector/run_collect.py`
 
-- [ ] **Step 1: Read `run_collect.py`** and find where the `metrics` dict (`{"days": {...}, "meta": {...}}`) is assembled and written to disk.
+- [x] **Step 1: Read `run_collect.py`** and find where the `metrics` dict (`{"days": {...}, "meta": {...}}`) is assembled and written to disk.
 
-- [ ] **Step 2: After all day objects are built, attach readiness and meta.** Add near the end, before writing the file:
+- [x] **Step 2: After all day objects are built, attach readiness and meta.** Add near the end, before writing the file:
 ```python
 from collector.metrics_calc import compute_readiness, build_correlations
 
@@ -288,12 +288,12 @@ metrics.setdefault("meta", {})["correlations"] = build_correlations(ordered[-30:
 ```
 (Match the actual variable name used in the file for the metrics dict.)
 
-- [ ] **Step 3: Run the collector** (or its dry-run) and confirm `metrics.json` now contains `days.<date>.readiness` and `meta.correlations`.
+- [x] **Step 3: Run the collector** (or its dry-run) and confirm `metrics.json` now contains `days.<date>.readiness` and `meta.correlations`.
 
 Run: `cd collector && python run_collect.py` (or the project's documented collect command)
 Expected: no errors; inspect the output JSON for the new keys.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add collector/run_collect.py
