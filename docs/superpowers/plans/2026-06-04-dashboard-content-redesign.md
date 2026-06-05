@@ -307,7 +307,7 @@ git commit -m "feat(collector): attach readiness per day and correlations to met
 
 > The mock server (`dashboard/vite.mock.config.js`, launched via `.claude/launch.json` name `dashboard-mock` on port 5174) feeds fake data to the auth/sync/forecast/schedule endpoints for design preview. Extend it so Phase-1 components have data.
 
-- [ ] **Step 1:** In `buildMetrics()`, after each `day` is created, compute and attach a mock `readiness` and ensure `garmin` includes `stress_avg`, `hrv`. Then attach `meta.correlations`, `meta.ai_brief`, `meta.now`:
+- [x] **Step 1:** In `buildMetrics()`, after each `day` is created, compute and attach a mock `readiness` and ensure `garmin` includes `stress_avg`, `hrv`. Then attach `meta.correlations`, `meta.ai_brief`, `meta.now`:
 ```js
 // inside buildMetrics, when composing each day's garmin: add
 hrv: Math.round(r(45, 70)),
@@ -329,9 +329,9 @@ return { days, meta: {
 }};
 ```
 
-- [ ] **Step 2:** Start the mock server and confirm `curl -s localhost:5174/api/sync | python -m json.tool | grep readiness` shows the field.
+- [x] **Step 2:** Start the mock server and confirm `curl -s localhost:5174/api/sync | python -m json.tool | grep readiness` shows the field.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add dashboard/vite.mock.config.js

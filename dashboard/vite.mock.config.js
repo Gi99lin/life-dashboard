@@ -17,6 +17,7 @@ const WD = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 function buildMetrics() {
   const days = {};
   const today = new Date();
+  const clamp = (value) => Math.max(0, Math.min(100, value));
   for (let i = 119; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(today.getDate() - i);
@@ -53,6 +54,7 @@ function buildMetrics() {
           body_battery_min: Math.round(14 + wave * 8 + r(-4, 6)),
           steps: Math.round(r(3500, 13500) + (weekend ? 2500 : 0)),
           stress_avg: Math.round(34 - wave * 10 + r(-6, 8)),
+          hrv: Math.round(r(45, 70)),
           rest_hr: rest,
           resting_hr: rest,
           max_hr: Math.round(r(128, 168)),
@@ -78,7 +80,49 @@ function buildMetrics() {
       },
     };
   }
-  return { days, meta: { generated: new Date().toISOString() } };
+  const ds = Object.values(days).sort((a, b) => a.date.localeCompare(b.date));
+  for (const d of ds) {
+    const g = d.garmin;
+    const calm = clamp(100 - g.stress_avg);
+    const hrv = clamp(Math.round((g.hrv - 57) / 57 * 100 + 50));
+    const score = Math.round(0.35 * g.sleep_score + 0.30 * g.body_battery_max + 0.20 * calm + 0.15 * hrv);
+    d.readiness = {
+      score: clamp(score),
+      sleep: g.sleep_score,
+      energy: g.body_battery_max,
+      calm,
+      hrv,
+    };
+  }
+  return {
+    days,
+    meta: {
+      generated: new Date().toISOString(),
+      correlations: {
+        labels: ['Сон', 'Наст', 'Стр', 'Код', 'Шаг', 'BB'],
+        matrix: [
+          [1, .62, -.38, -.12, .15, .55],
+          [.62, 1, -.44, .28, .20, .40],
+          [-.38, -.44, 1, .41, -.10, -.50],
+          [-.12, .28, .41, 1, -.22, -.18],
+          [.15, .20, -.10, -.22, 1, .12],
+          [.55, .40, -.50, -.18, .12, 1],
+        ],
+        strongest: [
+          { a: 'Сон', b: 'Наст', r: .62 },
+          { a: 'Стр', b: 'BB', r: -.50 },
+          { a: 'Код', b: 'Стр', r: .41 },
+          { a: 'Сон', b: 'Стр', r: -.38 },
+        ],
+      },
+      ai_brief: {
+        text: 'Сон 7.4ч поднял восстановление, стресс ниже нормы. Глубокой работы 6.2ч — выше обычного.',
+        sources: ['Garmin', 'GitHub', 'WakaTime', 'Obsidian'],
+        generated_at: new Date().toISOString(),
+      },
+      now: { activity: 'coding', project: 'omniroute', focus_min: 41, source: 'WakaTime' },
+    },
+  };
 }
 
 function buildForecast() {
