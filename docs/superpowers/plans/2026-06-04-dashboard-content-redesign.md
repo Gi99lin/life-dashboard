@@ -847,15 +847,15 @@ git commit -m "feat(collector): wakatime source"
 - Create: `collector/tests/test_github_source.py`
 - Modify: `.env.example` (`GITHUB_TOKEN=`, `GITHUB_USER=`)
 
-- [ ] **Step 1: Write failing test** using `responses` to mock the GitHub search API for merged PRs and reviews for a date, asserting the returned shape `{prs_merged, reviews, streak, langs, additions, deletions}`. (Streak may be derived across days in `run_collect`; here assert `prs_merged`/`reviews` parse correctly.)
-- [ ] **Step 2: Run → FAIL.**
-- [ ] **Step 3: Implement** `fetch_day(date, token, user)` calling:
+- [x] **Step 1: Write failing test** using `responses` to mock the GitHub search API for merged PRs and reviews for a date, asserting the returned shape `{prs_merged, reviews, streak, langs, additions, deletions}`. (Streak may be derived across days in `run_collect`; here assert `prs_merged`/`reviews` parse correctly.)
+- [x] **Step 2: Run → FAIL.**
+- [x] **Step 3: Implement** `fetch_day(date, token, user)` calling:
   - `GET https://api.github.com/search/issues?q=type:pr+author:{user}+merged:{date}` → `prs_merged = total_count`.
   - `GET https://api.github.com/search/issues?q=type:pr+reviewed-by:{user}+updated:{date}` → `reviews`.
   - languages/additions/deletions are optional (leave `langs={}`, `additions/deletions=None`) unless a repo list is configured.
   Headers: `Authorization: Bearer {token}`, `Accept: application/vnd.github+json`. Handle 403 rate-limit by returning zeros.
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** `feat(collector): github-deep source`.
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** `feat(collector): github-deep source`.
 
 ### Task 2.3: CI source
 
