@@ -115,7 +115,7 @@ git commit -m "test: add vitest to dashboard"
 - Create: `collector/tests/test_metrics_calc.py`
 - Modify: `collector/requirements.txt`
 
-- [ ] **Step 1: Add pytest deps**
+- [x] **Step 1: Add pytest deps**
 
 Append to `collector/requirements.txt`:
 ```
@@ -124,7 +124,7 @@ responses
 ```
 Run: `cd collector && pip install -r requirements.txt`
 
-- [ ] **Step 2: Write failing tests**
+- [x] **Step 2: Write failing tests**
 
 `collector/tests/test_metrics_calc.py`:
 ```python
@@ -160,12 +160,12 @@ def test_build_correlations_shape():
     assert len(out["labels"]) == len(out["matrix"])
 ```
 
-- [ ] **Step 3: Run to verify failure**
+- [x] **Step 3: Run to verify failure**
 
 Run: `cd collector && python -m pytest tests/test_metrics_calc.py -v`
 Expected: FAIL (module not found).
 
-- [ ] **Step 4: Implement**
+- [x] **Step 4: Implement**
 
 `collector/metrics_calc.py`:
 ```python
@@ -252,12 +252,12 @@ def build_correlations(days):
 
 Also create `collector/tests/__init__.py` (empty) if `collector/__init__.py` exists so imports resolve. Run pytest from the repo root if needed: `python -m pytest collector/tests -v`.
 
-- [ ] **Step 5: Run to verify pass**
+- [x] **Step 5: Run to verify pass**
 
 Run: `cd collector && python -m pytest tests/test_metrics_calc.py -v`
 Expected: 4 passed.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add collector/metrics_calc.py collector/tests/test_metrics_calc.py collector/requirements.txt
