@@ -779,7 +779,7 @@ git commit -m "refactor(dashboard): new overview layout + apps dropdown"
 - Create: `collector/tests/test_wakatime_source.py`
 - Modify: `.env.example` (add `WAKATIME_API_KEY=`)
 
-- [ ] **Step 1: Write failing test** (mock HTTP with `responses`):
+- [x] **Step 1: Write failing test** (mock HTTP with `responses`):
 
 `collector/tests/test_wakatime_source.py`:
 ```python
@@ -803,9 +803,9 @@ def test_fetch_day_parses_languages_and_focus():
     assert "focus_h" in out
 ```
 
-- [ ] **Step 2: Run → FAIL.** `cd collector && python -m pytest tests/test_wakatime_source.py -v`
+- [x] **Step 2: Run → FAIL.** `cd collector && python -m pytest tests/test_wakatime_source.py -v`
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `collector/sources/wakatime_source.py`:
 ```python
@@ -831,9 +831,9 @@ def fetch_day(date, api_key, timeout=15):
             "focus_h": _h(total)}  # refine with heartbeat gaps later if desired
 ```
 
-- [ ] **Step 4: Run → PASS.**
+- [x] **Step 4: Run → PASS.**
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add collector/sources/wakatime_source.py collector/tests/test_wakatime_source.py .env.example
