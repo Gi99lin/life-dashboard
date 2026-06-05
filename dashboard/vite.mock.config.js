@@ -33,6 +33,10 @@ function buildMetrics() {
     const awake = +(sleepH * r(0.02, 0.07)).toFixed(1);
     const light = +(sleepH - deep - rem - awake).toFixed(1);
     const commits = weekend ? Math.round(r(0, 5)) : Math.round(r(2, 16) + (wave > 0.4 ? 6 : 0));
+    const codeHours = +(commits > 0 ? Math.min(8.5, commits * r(0.22, 0.42) + r(0.2, 1.1)) : r(0, 0.4)).toFixed(1);
+    const tsHours = +(codeHours * r(0.34, 0.50)).toFixed(1);
+    const pyHours = +(codeHours * r(0.22, 0.36)).toFixed(1);
+    const jsHours = Math.max(0, +(codeHours - tsHours - pyHours).toFixed(1));
 
     days[key] = {
       date: key,
@@ -69,6 +73,28 @@ function buildMetrics() {
         commits,
         repos: commits > 0 ? ['life-dashboard', 'omniroute', 'collector'].slice(0, 1 + (commits % 3)) : [],
       },
+      wakatime: {
+        total_h: codeHours,
+        by_language: codeHours > 0 ? {
+          TypeScript: tsHours,
+          Python: pyHours,
+          JavaScript: jsHours,
+        } : {},
+        by_project: codeHours > 0 ? {
+          'life-dashboard': +(codeHours * 0.55).toFixed(1),
+          omniroute: +(codeHours * 0.30).toFixed(1),
+          collector: +(codeHours * 0.15).toFixed(1),
+        } : {},
+        focus_h: +(codeHours * r(0.72, 0.92)).toFixed(1),
+      },
+      github: {
+        prs_merged: commits > 0 ? Math.round(r(0, 3)) : 0,
+        reviews: commits > 0 ? Math.round(r(0, 6)) : 0,
+        streak: 0,
+        langs: {},
+        additions: null,
+        deletions: null,
+      },
       schedule: {
         wake_time: `0${6 + (wd % 2)}:${pad(Math.round(r(0, 55)))}`,
         hours_sleep: sleepH,
@@ -81,7 +107,10 @@ function buildMetrics() {
     };
   }
   const ds = Object.values(days).sort((a, b) => a.date.localeCompare(b.date));
+  let streak = 0;
   for (const d of ds) {
+    streak = d.git.commits > 0 ? streak + 1 : 0;
+    d.github.streak = streak;
     const g = d.garmin;
     const calm = clamp(100 - g.stress_avg);
     const hrv = clamp(Math.round((g.hrv - 57) / 57 * 100 + 50));
@@ -120,7 +149,7 @@ function buildMetrics() {
         sources: ['Garmin', 'GitHub', 'WakaTime', 'Obsidian'],
         generated_at: new Date().toISOString(),
       },
-      now: { activity: 'coding', project: 'omniroute', focus_min: 41, source: 'WakaTime' },
+      now: { activity: 'Код', project: 'omniroute', focus_min: 41, source: 'WakaTime' },
     },
   };
 }

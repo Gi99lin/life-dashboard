@@ -87,6 +87,12 @@ function renderWork(day, wakatime, github) {
   )).join('');
   const primaryValue = wakatime?.total_h ?? day.git?.commits ?? '—';
   const primaryUnit = wakatime ? 'ч кода' : 'коммитов';
+  const commitsValue = day.git?.commits != null && github?.streak != null
+    ? `${day.git.commits} · ${github.streak}д`
+    : day.git?.commits;
+  const prReviewValue = github
+    ? `${github.prs_merged ?? 0}/${github.reviews ?? 0}`
+    : null;
 
   return `
     <div class="dom" data-drill="work">
@@ -95,8 +101,8 @@ function renderWork(day, wakatime, github) {
         <div class="prim"><span class="pv" style="color:var(--green)">${primaryValue}</span><span class="pu">${primaryUnit}</span></div>
         ${segments.length ? `<div class="donutrow">${donut(segments, `${wakatime.total_h || ''}ч`)}<div class="langs">${languageLegend}</div></div>` : ''}
         <div class="subs">
-          ${subRow('Коммиты', day.git?.commits, { min: 0, max: 20 }, '#59be6c')}
-          ${subRow('PR смержено', github?.prs_merged, { min: 0, max: 8 }, '#69aed5')}
+          ${subRow('Коммиты', commitsValue, { min: 0, max: 20 }, '#59be6c', day.git?.commits)}
+          ${subRow('PR / review', prReviewValue, { min: 0, max: 8 }, '#69aed5', github?.prs_merged)}
           ${subRow('Deep-work', day.schedule?.hours_work != null ? `${day.schedule.hours_work}ч` : null, { min: 0, max: 8 }, '#59be6c', day.schedule?.hours_work)}
         </div>
       </div>

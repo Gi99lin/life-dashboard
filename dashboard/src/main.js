@@ -152,6 +152,13 @@ async function init() {
   const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
   const appsMenu = document.getElementById('appsMenu');
 
+  function loadAppIframe(tab) {
+    const iframe = tab?.querySelector('iframe[data-src]');
+    if (iframe && !iframe.getAttribute('src')) {
+      iframe.setAttribute('src', iframe.dataset.src);
+    }
+  }
+
   function activateTab(tabName, activeControl) {
     document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -163,6 +170,7 @@ async function init() {
     // Lock body scroll when iframe tab is active
     const isAppTab = target?.classList.contains('app-iframe-tab');
     document.body.classList.toggle('app-mode', isAppTab);
+    if (isAppTab) loadAppIframe(target);
 
     // Lazy-render health charts on first visit (canvas must be visible so
     // Chart.js measures the container correctly).

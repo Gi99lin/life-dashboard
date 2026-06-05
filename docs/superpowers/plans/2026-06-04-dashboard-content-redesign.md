@@ -881,8 +881,8 @@ git commit -m "feat(collector): wakatime source"
 
 **Files:** Modify `dashboard/src/components/Domains.js`, `LiveStrip.js` — already read `wakatime`/`github`/`meta.now` (Phase 1 wrote defensive accessors). Verify with the mock (already provides these) and, if available, against real `/api/sync`.
 
-- [ ] **Step 1: Verify** Work domain shows the language donut and PR/streak; live "Сейчас" shows the real project. Screenshot.
-- [ ] **Step 2: Commit** (only if changes were needed) `fix(dashboard): wire real wakatime/github fields`.
+- [x] **Step 1: Verify** Work domain shows the language donut and PR/streak; live "Сейчас" shows the real project. Screenshot.
+- [x] **Step 2: Commit** (only if changes were needed) `fix(dashboard): wire real wakatime/github fields`.
 
 **Phase 2 acceptance:** With keys set, Work domain + live strip reflect real coding activity; collector tests green.
 
