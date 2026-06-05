@@ -344,7 +344,7 @@ git commit -m "test(dashboard): mock readiness/correlations/ai_brief/now"
 - Create: `dashboard/src/components/microcharts.js`
 - Create: `dashboard/test/microcharts.test.js`
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `dashboard/test/microcharts.test.js`:
 ```js
@@ -377,12 +377,12 @@ describe('microcharts', () => {
 });
 ```
 
-- [ ] **Step 2: Run to verify failure**
+- [x] **Step 2: Run to verify failure**
 
 Run: `cd dashboard && npm test -- microcharts`
 Expected: FAIL (module not found).
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `dashboard/src/components/microcharts.js`:
 ```js
@@ -467,14 +467,14 @@ export function heatmapMatrix({ labels, matrix }) {
 }
 ```
 
-- [ ] **Step 4: Run to verify pass**
+- [x] **Step 4: Run to verify pass**
 
 Run: `cd dashboard && npm test -- microcharts`
 Expected: all pass.
 
-- [ ] **Step 5: Add microchart CSS** — append the rules for `.mring`, `.ctr`, `.track/.band/.fill/.pin`, `.stage`, `.donut`, `.fspark`, `.hm/.hc/.hlbl` to `dashboard/src/styles/main.css` (copy the matching selectors from `dashboard/public/mock-overview.html`'s `<style>` block; they are already authored there and palette-aligned).
+- [x] **Step 5: Add microchart CSS** — append the rules for `.mring`, `.ctr`, `.track/.band/.fill/.pin`, `.stage`, `.donut`, `.fspark`, `.hm/.hc/.hlbl` to `dashboard/src/styles/main.css` (copy the matching selectors from `dashboard/public/mock-overview.html`'s `<style>` block; they are already authored there and palette-aligned).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add dashboard/src/components/microcharts.js dashboard/test/microcharts.test.js dashboard/src/styles/main.css

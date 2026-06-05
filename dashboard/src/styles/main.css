@@ -3223,3 +3223,170 @@ body.app-mode .app-iframe-tab {
 .hourly-item {
   align-items: center;
 }
+
+/* ---- Overview microcharts ---- */
+.mring {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.mring .ctr {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  line-height: 1;
+}
+
+.mring .ctr b {
+  font-family: var(--mono);
+  font-size: 1.85rem;
+  font-weight: 700;
+  text-shadow: 0 0 22px color-mix(in oklch, var(--green) 45%, transparent);
+}
+
+.mring .ctr span {
+  display: block;
+  margin-top: 3px;
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+}
+
+.track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in oklch, oklch(100% 0 0) 6%, transparent);
+}
+
+.band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+  background: color-mix(in oklch, oklch(100% 0 0) 7%, transparent);
+}
+
+.fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 3px;
+}
+
+.pin {
+  position: absolute;
+  top: -2px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--bg-dim);
+  border-radius: 50%;
+}
+
+.stage {
+  display: flex;
+  gap: 1px;
+  height: 14px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.stage i {
+  display: block;
+}
+
+.donut {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.donut::after {
+  content: '';
+  position: absolute;
+  inset: 11px;
+  border-radius: 50%;
+  background: var(--bg-dim);
+}
+
+.donut .c {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.fspark {
+  display: block;
+  width: 100%;
+  height: 17px;
+}
+
+.commit-dots-grid {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.commit-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: color-mix(in oklch, var(--green) 18%, transparent);
+}
+
+.commit-dot-1 { background: color-mix(in oklch, var(--green) 35%, transparent); }
+.commit-dot-2 { background: color-mix(in oklch, var(--green) 55%, transparent); }
+.commit-dot-3 { background: color-mix(in oklch, var(--green) 75%, transparent); }
+.commit-dot-4 { background: var(--green); }
+
+.hm {
+  display: grid;
+  grid-template-columns: 28px repeat(6, 38px);
+  gap: 4px;
+  justify-content: start;
+  flex-shrink: 0;
+}
+
+.hm .hc {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 5px;
+  color: color-mix(in oklch, oklch(100% 0 0) 70%, transparent);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  transition: transform 0.15s var(--ease-out);
+}
+
+.hm .hc:hover {
+  transform: scale(1.1);
+}
+
+.hm .hlbl {
+  display: grid;
+  place-items: center;
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.56rem;
+}
+
+.hm .hlbl.row {
+  justify-content: end;
+  padding-right: 6px;
+}
