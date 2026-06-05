@@ -961,9 +961,9 @@ def _prompt(day, correlations):
 
 **Files:** Modify `collector/run_collect.py`
 
-- [ ] **Step 1:** After correlations are built, if LLM env vars are set, call `generate_brief(ordered, meta["correlations"], …)` and store `meta["ai_brief"]`. Wrap in try/except → on failure keep a templated fallback brief (no crash).
-- [ ] **Step 2: Verify** `metrics.json` `meta.ai_brief.text` is populated; the hero brief shows it.
-- [ ] **Step 3: Commit** `feat(collector): attach ai brief to meta`.
+- [x] **Step 1:** After correlations are built, if LLM env vars are set, call `generate_brief(ordered, meta["correlations"], …)` and store `meta["ai_brief"]`. Wrap in try/except → on failure keep a templated fallback brief (no crash).
+- [x] **Step 2: Verify** `metrics.json` `meta.ai_brief.text` is populated; the hero brief shows it.
+- [x] **Step 3: Commit** `feat(collector): attach ai brief to meta`.
 
 **Phase 3 acceptance:** Hero AI brief shows LLM-generated text with correct source chips; collector never crashes if the LLM is unreachable.
 

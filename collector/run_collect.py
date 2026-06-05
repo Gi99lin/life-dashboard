@@ -9,7 +9,7 @@ Merges into /data/metrics.json.
 import json
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -275,6 +275,54 @@ def collect_ci_meta(metrics):
         print(f"  CI error: {e}")
 
 
+def _brief_sources(day):
+    labels = {
+        'garmin': 'Garmin',
+        'github': 'GitHub',
+        'wakatime': 'WakaTime',
+        'manual': 'Obsidian',
+    }
+    return [label for key, label in labels.items() if day.get(key)]
+
+
+def _fallback_ai_brief(day):
+    return {
+        'text': 'AI-разбор временно недоступен. Показываю только собранные числовые метрики.',
+        'sources': _brief_sources(day),
+        'generated_at': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    }
+
+
+def attach_ai_brief(metrics):
+    """Attach an LLM-generated daily brief when optional LLM env is configured."""
+    base_url = os.environ.get('LLM_BASE_URL')
+    api_key = os.environ.get('LLM_API_KEY')
+    model = os.environ.get('LLM_MODEL')
+    if not base_url or not api_key or not model:
+        print("  AI brief: no LLM config, skipping")
+        return
+
+    days = metrics.setdefault('days', {})
+    meta = metrics.setdefault('meta', {})
+    ordered = [days[k] for k in sorted(days)]
+    today = ordered[-1] if ordered else {}
+
+    try:
+        from ai_insights import generate_brief
+
+        meta['ai_brief'] = generate_brief(
+            ordered,
+            meta.get('correlations') or {},
+            base_url,
+            api_key,
+            model,
+        )
+        print("  AI brief: generated")
+    except Exception as e:
+        meta['ai_brief'] = _fallback_ai_brief(today)
+        print(f"  AI brief error: {e}")
+
+
 def attach_derived_metrics(metrics):
     """Attach cached readiness scores and trailing correlations."""
     days = metrics.setdefault('days', {})
@@ -312,6 +360,7 @@ def main():
     attach_github_streaks(metrics)
 
     attach_derived_metrics(metrics)
+    attach_ai_brief(metrics)
     attach_now_meta(metrics, today)
     collect_ci_meta(metrics)
     save_metrics(metrics)
