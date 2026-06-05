@@ -488,9 +488,9 @@ git commit -m "feat(dashboard): microcharts module + styles"
 - Modify: `dashboard/index.html` (add `<section id="hero" class="hero2"></section>` as the first child of `#tab-dashboard`, replacing the old `stats-heatmap-row` — keep the old markup commented until Task 1.11)
 - Modify: `dashboard/src/main.js` (import + call `renderHero`)
 
-- [ ] **Step 1:** Read `dashboard/public/mock-overview.html` hero section (`.hero2`) — it is the exact visual+DOM target. `Hero.js` must produce equivalent markup from real data.
+- [x] **Step 1:** Read `dashboard/public/mock-overview.html` hero section (`.hero2`) — it is the exact visual+DOM target. `Hero.js` must produce equivalent markup from real data.
 
-- [ ] **Step 2: Implement `renderHero(container, data)`**
+- [x] **Step 2: Implement `renderHero(container, data)`**
 
 `dashboard/src/components/Hero.js`:
 ```js
@@ -560,11 +560,11 @@ function statusLabel(score) {
 }
 ```
 
-- [ ] **Step 3: Wire in `main.js`** — import `{ renderHero }` and after `data` loads call `renderHero(document.getElementById('hero'), data)`.
+- [x] **Step 3: Wire in `main.js`** — import `{ renderHero }` and after `data` loads call `renderHero(document.getElementById('hero'), data)`.
 
-- [ ] **Step 4: Verify in preview** — start the `dashboard-mock` server, open `/` (the real app), confirm the hero renders rings + factors + 14d strip + brief and visually matches `mock-overview.html`'s hero. Capture a screenshot.
+- [x] **Step 4: Verify in preview** — start the `dashboard-mock` server, open `/` (the real app), confirm the hero renders rings + factors + 14d strip + brief and visually matches `mock-overview.html`'s hero. Capture a screenshot.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add dashboard/src/components/Hero.js dashboard/src/main.js dashboard/index.html dashboard/src/styles/main.css

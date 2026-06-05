@@ -19,6 +19,7 @@ import { renderLiveSchedule } from './components/LiveSchedule.js';
 import { renderDevOpsHUD } from './components/DevOpsHUD.js';
 import { renderHealthCharts } from './components/HealthCharts.js';
 import { renderServerMetrics } from './components/ServerMetrics.js';
+import { renderHero } from './components/Hero.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -96,6 +97,8 @@ async function init() {
 
   const data = await loadMetrics();
   setSyncDot(data.days ? 'ok' : 'error');
+
+  renderHero(document.getElementById('hero'), data);
 
   // Stat cards
   const statContainer = document.getElementById('statCards');
