@@ -21,6 +21,7 @@ import { renderHealthCharts } from './components/HealthCharts.js';
 import { renderServerMetrics } from './components/ServerMetrics.js';
 import { renderHero } from './components/Hero.js';
 import { renderLiveStrip } from './components/LiveStrip.js';
+import { renderDomains } from './components/Domains.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -104,6 +105,7 @@ async function init() {
 
   renderHero(document.getElementById('hero'), data);
   renderLiveStrip(document.getElementById('liveStrip'), data, scheduleData);
+  renderDomains(document.getElementById('domains'), data);
 
   // Stat cards
   const statContainer = document.getElementById('statCards');

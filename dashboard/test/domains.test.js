@@ -1,0 +1,50 @@
+import { describe, expect, it } from 'vitest';
+import { renderDomains } from '../src/components/Domains.js';
+
+describe('renderDomains', () => {
+  it('renders Body, Mind, and Work cards from existing metrics', () => {
+    const container = { className: '', innerHTML: '' };
+    const data = {
+      days: {
+        '2026-06-04': {
+          date: '2026-06-04',
+          manual: { mood: 3 },
+          garmin: {
+            sleep_hours: 7.1,
+            sleep_phases: { deep_h: 1, light_h: 4, rem_h: 1.5, awake_h: 0.2 },
+            resting_hr: 55,
+            spo2_avg: 97,
+            body_battery_max: 65,
+            stress_avg: 35,
+          },
+          git: { commits: 8 },
+          schedule: { hours_work: 5 },
+        },
+        '2026-06-05': {
+          date: '2026-06-05',
+          manual: { mood: 4 },
+          garmin: {
+            sleep_hours: 7.4,
+            sleep_phases: { deep_h: 1.1, light_h: 4.1, rem_h: 1.6, awake_h: 0.3 },
+            resting_hr: 54,
+            spo2_avg: 96,
+            body_battery_max: 71,
+            stress_avg: 34,
+          },
+          git: { commits: 16 },
+          schedule: { hours_work: 6.2 },
+        },
+      },
+      meta: { correlations: { strongest: [{ a: 'Сон', b: 'Наст', r: 0.62 }] } },
+    };
+
+    renderDomains(container, data);
+
+    expect(container.className).toBe('domains');
+    expect((container.innerHTML.match(/class="dom"/g) || []).length).toBe(3);
+    expect(container.innerHTML).toContain('Тело');
+    expect(container.innerHTML).toContain('Разум');
+    expect(container.innerHTML).toContain('Работа');
+    expect(container.innerHTML).toContain('16</span><span class="pu">коммитов');
+  });
+});

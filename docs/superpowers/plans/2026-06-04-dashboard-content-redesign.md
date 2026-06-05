@@ -612,7 +612,7 @@ git commit -m "feat(dashboard): live strip"
 - Modify: `dashboard/index.html` (add `<section id="domains" class="domains"></section>`)
 - Modify: `dashboard/src/main.js`
 
-- [ ] **Step 1: Implement a data-driven `renderDomains(container, data)`** — one config-driven renderer producing the 3 `.dom` cards exactly like `mock-overview.html`. Each domain declares: name, source tag, primary `{value,unit,delta}`, a "primary viz" builder (stageBar / sparkline / donut), and `subs` (each a `rangeBar` or text). Pull values from the latest day; ranges from the metric's 30-day min/max; bands are personal norms (sleep 7–9h etc.).
+- [x] **Step 1: Implement a data-driven `renderDomains(container, data)`** — one config-driven renderer producing the 3 `.dom` cards exactly like `mock-overview.html`. Each domain declares: name, source tag, primary `{value,unit,delta}`, a "primary viz" builder (stageBar / sparkline / donut), and `subs` (each a `rangeBar` or text). Pull values from the latest day; ranges from the metric's 30-day min/max; bands are personal norms (sleep 7–9h etc.).
 
 ```js
 import { getDays } from '../utils/dataLoader.js';
@@ -685,11 +685,11 @@ function subRow(label, displayVal, range, color, rawVal) {
 }
 ```
 
-- [ ] **Step 2: Wire in `main.js`**, add CSS for `.spark-wrap .spark-svg{width:100%;height:34px}` (or reuse `.spark`).
+- [x] **Step 2: Wire in `main.js`**, add CSS for `.spark-wrap .spark-svg{width:100%;height:34px}` (or reuse `.spark`).
 
-- [ ] **Step 3: Verify in preview** — three domains match the mockup; sub-rows show range bars. Screenshot.
+- [x] **Step 3: Verify in preview** — three domains match the mockup; sub-rows show range bars. Screenshot.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add dashboard/src/components/Domains.js dashboard/src/main.js dashboard/index.html dashboard/src/styles/main.css
