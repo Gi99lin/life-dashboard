@@ -899,7 +899,7 @@ git commit -m "feat(collector): wakatime source"
 - Create: `collector/tests/test_ai_insights.py`
 - Modify: `.env.example` (`LLM_BASE_URL=`, `LLM_API_KEY=`, `LLM_MODEL=`)
 
-- [ ] **Step 1: Write failing test** that mocks the OpenAI-compatible `POST {LLM_BASE_URL}/chat/completions` (via `responses`) and asserts `generate_brief(days, correlations)` returns `{text, sources, generated_at}` with `text` taken from the mocked completion and `sources` listing the data sources present.
+- [x] **Step 1: Write failing test** that mocks the OpenAI-compatible `POST {LLM_BASE_URL}/chat/completions` (via `responses`) and asserts `generate_brief(days, correlations)` returns `{text, sources, generated_at}` with `text` taken from the mocked completion and `sources` listing the data sources present.
 ```python
 import responses
 from collector.ai_insights import generate_brief
@@ -915,9 +915,9 @@ def test_generate_brief_uses_llm():
     assert "Garmin" in out["sources"] and "WakaTime" in out["sources"]
 ```
 
-- [ ] **Step 2: Run → FAIL.**
+- [x] **Step 2: Run → FAIL.**
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `collector/ai_insights.py`:
 ```python
@@ -954,8 +954,8 @@ def _prompt(day, correlations):
     return "Числа дня: " + ", ".join(str(f) for f in facts) + ". Корреляции: " + top + "."
 ```
 
-- [ ] **Step 4: Run → PASS.**
-- [ ] **Step 5: Commit** `feat(collector): ai daily brief generator`.
+- [x] **Step 4: Run → PASS.**
+- [x] **Step 5: Commit** `feat(collector): ai daily brief generator`.
 
 ### Task 3.2: Wire brief into `run_collect.py`
 
