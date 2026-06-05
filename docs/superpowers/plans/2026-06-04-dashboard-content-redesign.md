@@ -703,7 +703,7 @@ git commit -m "feat(dashboard): domain cards (body/mind/work)"
 - Modify: `dashboard/index.html` (add bottom `<section class="bottom"><div class="panel" id="corrPanel"></div><div class="panel" id="trendsPanel"></div></section>`)
 - Modify: `dashboard/src/main.js`
 
-- [ ] **Step 1: Implement `renderCorrelationPanel(container, data)`** using `heatmapMatrix` + a strongest-links list from `data.meta.correlations`. Markup mirrors `mock-overview.html`'s "Корреляции" panel (`.hmwrap` → `.hm` + `.corr-list`). Add `data-i/data-j` cell click handler that calls `window.__openAnalytics?.('corr', {i,j})` (wired in Phase 4).
+- [x] **Step 1: Implement `renderCorrelationPanel(container, data)`** using `heatmapMatrix` + a strongest-links list from `data.meta.correlations`. Markup mirrors `mock-overview.html`'s "Корреляции" panel (`.hmwrap` → `.hm` + `.corr-list`). Add `data-i/data-j` cell click handler that calls `window.__openAnalytics?.('corr', {i,j})` (wired in Phase 4).
 
 ```js
 import { heatmapMatrix } from './microcharts.js';
@@ -721,11 +721,11 @@ export function renderCorrelationPanel(container, data) {
 }
 ```
 
-- [ ] **Step 2: Wire + CSS** (`.hmwrap/.corr-list/.corr-item/.ci-r` from the mockup).
+- [x] **Step 2: Wire + CSS** (`.hmwrap/.corr-list/.corr-item/.ci-r` from the mockup).
 
-- [ ] **Step 3: Verify + screenshot.**
+- [x] **Step 3: Verify + screenshot.**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add dashboard/src/components/CorrelationPanel.js dashboard/src/main.js dashboard/index.html dashboard/src/styles/main.css
