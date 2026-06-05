@@ -3900,3 +3900,9 @@ body.app-mode .app-iframe-tab {
   font-size: 0.62rem;
   line-height: 1.4;
 }
+
+.overview-trends-shell {
+  position: relative;
+  height: 160px;
+  min-height: 160px;
+}

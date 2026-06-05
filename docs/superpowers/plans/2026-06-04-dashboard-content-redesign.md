@@ -738,11 +738,11 @@ git commit -m "feat(dashboard): correlation panel"
 - Create: `dashboard/src/components/OverviewTrends.js`
 - Modify: `dashboard/src/main.js`
 
-- [ ] **Step 1: Implement `renderOverviewTrends(canvasOrContainer, data)`** — a Chart.js line chart with 3 gradient-filled series (Настроение / Сон / Энергия) over the last 30 days, mono ticks, a "today" annotation. Reuse the styling approach in `dashboard/src/components/TrendChart.js` and the palette from `utils/palette.js` (`PAL`, `TOOLTIP`, `initChartTheme`). Insert a `<canvas id="overviewTrends">` into `#trendsPanel` with a `<h3>` header.
+- [x] **Step 1: Implement `renderOverviewTrends(canvasOrContainer, data)`** — a Chart.js line chart with 3 gradient-filled series (Настроение / Сон / Энергия) over the last 30 days, mono ticks, a "today" annotation. Reuse the styling approach in `dashboard/src/components/TrendChart.js` and the palette from `utils/palette.js` (`PAL`, `TOOLTIP`, `initChartTheme`). Insert a `<canvas id="overviewTrends">` into `#trendsPanel` with a `<h3>` header.
 
-- [ ] **Step 2: Verify** the chart fills the right-hand panel and is not empty; toggling tabs and back still renders (rely on the Phase-1 visible tab; deep tabs handled in Phase 4).
+- [x] **Step 2: Verify** the chart fills the right-hand panel and is not empty; toggling tabs and back still renders (rely on the Phase-1 visible tab; deep tabs handled in Phase 4).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add dashboard/src/components/OverviewTrends.js dashboard/src/main.js dashboard/index.html

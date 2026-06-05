@@ -23,6 +23,7 @@ import { renderHero } from './components/Hero.js';
 import { renderLiveStrip } from './components/LiveStrip.js';
 import { renderDomains } from './components/Domains.js';
 import { renderCorrelationPanel } from './components/CorrelationPanel.js';
+import { renderOverviewTrends } from './components/OverviewTrends.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -108,6 +109,7 @@ async function init() {
   renderLiveStrip(document.getElementById('liveStrip'), data, scheduleData);
   renderDomains(document.getElementById('domains'), data);
   renderCorrelationPanel(document.getElementById('corrPanel'), data);
+  renderOverviewTrends(document.getElementById('trendsPanel'), data);
 
   // Stat cards
   const statContainer = document.getElementById('statCards');
