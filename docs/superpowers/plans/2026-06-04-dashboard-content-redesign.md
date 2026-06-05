@@ -872,10 +872,10 @@ git commit -m "feat(collector): wakatime source"
 **Files:**
 - Modify: `collector/run_collect.py`
 
-- [ ] **Step 1:** For each collected day, call `wakatime_source.fetch_day` and `github_source.fetch_day` (guarded by env keys; skip gracefully if absent) and attach `day["wakatime"]`, `day["github"]`. Derive `github.streak` = consecutive trailing days with `commits>0`.
-- [ ] **Step 2:** Set `meta["now"]` from today's WakaTime top project + `meta["ci"]` from `ci_source.fetch_all`.
-- [ ] **Step 3:** Run collector with real keys; verify `metrics.json` has `wakatime`/`github` and `meta.now/ci`. Recompute correlations (the `Код` metric now uses `wakatime.total_h`).
-- [ ] **Step 4: Commit** `feat(collector): integrate wakatime/github/ci into collection`.
+- [x] **Step 1:** For each collected day, call `wakatime_source.fetch_day` and `github_source.fetch_day` (guarded by env keys; skip gracefully if absent) and attach `day["wakatime"]`, `day["github"]`. Derive `github.streak` = consecutive trailing days with `commits>0`.
+- [x] **Step 2:** Set `meta["now"]` from today's WakaTime top project + `meta["ci"]` from `ci_source.fetch_all`.
+- [x] **Step 3:** Run collector with real keys; verify `metrics.json` has `wakatime`/`github` and `meta.now/ci`. Recompute correlations (the `Код` metric now uses `wakatime.total_h`).
+- [x] **Step 4: Commit** `feat(collector): integrate wakatime/github/ci into collection`.
 
 ### Task 2.5: Frontend consumes real Work/now data
 

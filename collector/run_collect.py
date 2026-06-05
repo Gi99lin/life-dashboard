@@ -173,6 +173,108 @@ def collect_schedules(metrics, dates):
         print(f"  Schedule error: {e}")
 
 
+def _env_list(name):
+    return [item.strip() for item in os.environ.get(name, '').split(',') if item.strip()]
+
+
+def collect_wakatime(metrics, dates):
+    """Fetch optional WakaTime coding summaries for given dates."""
+    api_key = os.environ.get('WAKATIME_API_KEY')
+    if not api_key:
+        print("  WakaTime: no API key, skipping")
+        return
+
+    try:
+        from sources.wakatime_source import fetch_day
+
+        for date_str in dates:
+            try:
+                data = fetch_day(date_str, api_key)
+                day = ensure_day(metrics, date_str)
+                day['wakatime'] = data
+                print(f"  WakaTime {date_str}: {data.get('total_h', 0)}h")
+            except Exception as e:
+                print(f"  WakaTime {date_str} error: {e}")
+    except Exception as e:
+        print(f"  WakaTime error: {e}")
+
+
+def collect_github_deep(metrics, dates):
+    """Fetch optional GitHub PR/review activity for given dates."""
+    token = os.environ.get('GITHUB_TOKEN')
+    user = os.environ.get('GITHUB_USER')
+    if not token or not user:
+        print("  GitHub: no token/user, skipping")
+        return
+
+    try:
+        from sources.github_source import fetch_day
+
+        for date_str in dates:
+            try:
+                data = fetch_day(date_str, token, user)
+                day = ensure_day(metrics, date_str)
+                day['github'] = data
+                print(
+                    f"  GitHub {date_str}: "
+                    f"prs={data.get('prs_merged', 0)}, reviews={data.get('reviews', 0)}"
+                )
+            except Exception as e:
+                print(f"  GitHub {date_str} error: {e}")
+    except Exception as e:
+        print(f"  GitHub error: {e}")
+
+
+def attach_github_streaks(metrics):
+    """Attach consecutive code-day streaks to days with GitHub data."""
+    streak = 0
+    for date_str in sorted(metrics.get('days', {})):
+        day = metrics['days'][date_str]
+        commits = (day.get('git') or {}).get('commits') or 0
+        streak = streak + 1 if commits > 0 else 0
+        if day.get('github') is not None:
+            day['github']['streak'] = streak
+
+
+def attach_now_meta(metrics, today):
+    """Expose today's WakaTime top project for the dashboard live strip."""
+    day = metrics.get('days', {}).get(today) or {}
+    wakatime = day.get('wakatime') or {}
+    if not wakatime:
+        return
+
+    projects = wakatime.get('by_project') or {}
+    languages = wakatime.get('by_language') or {}
+    project = next(iter(projects), None) or next(iter(languages), None)
+    focus_h = wakatime.get('focus_h')
+    if focus_h is None:
+        focus_h = wakatime.get('total_h') or 0
+
+    metrics.setdefault('meta', {})['now'] = {
+        'activity': 'Код',
+        'project': project,
+        'focus_min': round(focus_h * 60),
+        'source': 'WakaTime',
+    }
+
+
+def collect_ci_meta(metrics):
+    """Fetch optional CI statuses into meta.ci."""
+    repos = _env_list('CI_REPOS') or _env_list('GITHUB_CI_REPOS')
+    if not repos:
+        print("  CI: no repos configured, skipping")
+        return
+
+    try:
+        from sources.ci_source import fetch_all
+
+        token = os.environ.get('GITHUB_TOKEN')
+        metrics.setdefault('meta', {})['ci'] = fetch_all(repos, token)
+        print(f"  CI: {len(repos)} repos")
+    except Exception as e:
+        print(f"  CI error: {e}")
+
+
 def attach_derived_metrics(metrics):
     """Attach cached readiness scores and trailing correlations."""
     days = metrics.setdefault('days', {})
@@ -205,8 +307,13 @@ def main():
     collect_weather(metrics, dates)
     collect_git(metrics, dates)
     collect_schedules(metrics, dates)
+    collect_wakatime(metrics, dates)
+    collect_github_deep(metrics, dates)
+    attach_github_streaks(metrics)
 
     attach_derived_metrics(metrics)
+    attach_now_meta(metrics, today)
+    collect_ci_meta(metrics)
     save_metrics(metrics)
     print(f"\n✅ Saved to {METRICS_PATH}")
 

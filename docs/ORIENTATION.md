@@ -136,6 +136,7 @@ everything is open (dev mode). The frontend shows a login modal when `/api/auth-
 | `NETDATA_URL` | api | Netdata base URL for server metrics |
 | **`WAKATIME_API_KEY`** | collector | **(redesign)** coding stats |
 | **`GITHUB_TOKEN`, `GITHUB_USER`** | collector | **(redesign)** PRs/reviews/streak |
+| **`CI_REPOS`** | collector | **(redesign, optional)** comma-separated GitHub Actions repos (`owner/repo`) |
 | **`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`** | collector | **(redesign)** AI daily brief (OpenAI-compatible self-hosted LLM) |
 
 See `.env.example` for the canonical list.
