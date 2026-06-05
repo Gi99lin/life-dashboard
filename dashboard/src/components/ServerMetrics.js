@@ -107,7 +107,7 @@ function renderGauges(sys) {
 }
 
 function gauge(label, pct, sub) {
-  const color = pct < 50 ? 'var(--green)' : pct < 80 ? '#dbbc7f' : 'var(--red)';
+  const color = pct < 50 ? 'var(--green)' : pct < 80 ? '#e2c162' : 'var(--red)';
   return `
     <div class="srv-gauge">
       <div class="srv-gauge-ring" style="--pct: ${Math.min(pct, 100)}; --color: ${color}">
@@ -168,9 +168,9 @@ function renderSystemCharts(sys) {
         data: {
           labels,
           datasets: [
-            { label: 'User', data: userVals, borderColor: '#a7c080', backgroundColor: '#a7c08020', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
-            { label: 'System', data: sysVals, borderColor: '#e69875', backgroundColor: '#e6987520', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
-            { label: 'IO Wait', data: ioVals, borderColor: '#e67e80', backgroundColor: '#e67e8015', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1 },
+            { label: 'User', data: userVals, borderColor: '#59be6c', backgroundColor: '#59be6c20', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
+            { label: 'System', data: sysVals, borderColor: '#e99355', backgroundColor: '#e9935520', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
+            { label: 'IO Wait', data: ioVals, borderColor: '#e3645e', backgroundColor: '#e3645e15', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1 },
           ],
         },
         options: chartOpts('% CPU'),
@@ -195,8 +195,8 @@ function renderSystemCharts(sys) {
         data: {
           labels,
           datasets: [
-            { label: 'Входящий', data: inVals, borderColor: '#7fbbb3', backgroundColor: '#7fbbb320', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
-            { label: 'Исходящий', data: outVals, borderColor: '#d699b6', backgroundColor: '#d699b620', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
+            { label: 'Входящий', data: inVals, borderColor: '#69aed5', backgroundColor: '#69aed520', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
+            { label: 'Исходящий', data: outVals, borderColor: '#c88ec3', backgroundColor: '#c88ec320', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
           ],
         },
         options: chartOpts('KB/s'),
@@ -211,16 +211,16 @@ function chartOpts(yLabel) {
     maintainAspectRatio: false,
     interaction: { mode: 'index', intersect: false },
     plugins: {
-      legend: { labels: { color: '#9da9a0', boxWidth: 8, font: { size: 10 } } },
+      legend: { labels: { color: '#a3acb3', boxWidth: 8, font: { size: 10 } } },
       tooltip: {
-        backgroundColor: 'rgba(35, 42, 46, 0.95)',
-        titleColor: '#d3c6aa', bodyColor: '#9da9a0',
+        backgroundColor: 'rgba(11,18,25,0.96)',
+        titleColor: '#eaeff3', bodyColor: '#a3acb3',
         padding: 10, cornerRadius: 8,
       },
     },
     scales: {
-      x: { ticks: { color: '#6b7b72', font: { size: 9 }, maxTicksLimit: 10 }, grid: { display: false } },
-      y: { title: { display: true, text: yLabel, color: '#6b7b72', font: { size: 9 } }, ticks: { color: '#6b7b72', font: { size: 9 } }, grid: { color: 'rgba(125,135,125,0.06)' } },
+      x: { ticks: { color: '#727c84', font: { size: 9 }, maxTicksLimit: 10 }, grid: { display: false } },
+      y: { title: { display: true, text: yLabel, color: '#727c84', font: { size: 9 } }, ticks: { color: '#727c84', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
     },
     animation: { duration: 500 },
   };
@@ -266,7 +266,7 @@ function renderApps(apps) {
           </div>
           <div class="srv-app-metric">
             <span class="srv-app-metric-label">MEM</span>
-            <div class="srv-app-bar-bg"><div class="srv-app-bar-fill" style="width: ${memBarPct.toFixed(0)}%; background: ${memBarPct > 80 ? 'var(--red)' : '#7fbbb3'}"></div></div>
+            <div class="srv-app-bar-bg"><div class="srv-app-bar-fill" style="width: ${memBarPct.toFixed(0)}%; background: ${memBarPct > 80 ? 'var(--red)' : '#69aed5'}"></div></div>
             <span class="srv-app-metric-val">${fmtMem(app.totalMem)}</span>
           </div>
         </div>

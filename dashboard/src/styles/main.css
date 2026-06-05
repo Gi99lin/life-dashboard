@@ -2,32 +2,43 @@
    Life Dashboard — Premium Everforest
    ======================================== */
 
-/* ---- Tokens ---- */
+/* ---- Tokens ----
+   Palette aligned with portfolio (ivanyakimkin.ru): cool near-black slate base
+   (portfolio --bg-dark oklch 18% .018 240), green accent converged with
+   portfolio --accent oklch(58% .16 145), lifted for dark surfaces. */
 :root {
-  --bg-dim: #1a2024;
-  --bg0: #232a2e;
-  --bg1: #2d353b;
-  --bg2: #343f44;
-  --bg3: #475258;
-  --fg: #d3c6aa;
-  --fg-dim: #9da9a0;
-  --fg-muted: #6b7b72;
-  --red: #e67e80;
-  --orange: #e69875;
-  --yellow: #dbbc7f;
-  --green: #a7c080;
-  --aqua: #83c092;
-  --blue: #7fbbb3;
-  --purple: #d699b6;
+  /* cool slate base */
+  --bg-dim: oklch(13% 0.015 245);
+  --bg0: oklch(18% 0.018 245);
+  --bg1: oklch(21% 0.018 245);
+  --bg2: oklch(25% 0.016 245);
+  --bg3: oklch(32% 0.014 245);
 
-  --card-bg: rgba(35, 42, 46, 0.55);
-  --card-border: rgba(125, 135, 125, 0.10);
-  --card-glow: rgba(167, 192, 128, 0.04);
+  --fg: oklch(95% 0.008 240);
+  --fg-dim: oklch(74% 0.014 242);
+  --fg-muted: oklch(58% 0.018 244);
+
+  /* accent ramp */
+  --red: oklch(66% 0.16 25);
+  --orange: oklch(74% 0.13 55);
+  --yellow: oklch(82% 0.12 90);
+  --green: oklch(72% 0.15 148);
+  --aqua: oklch(74% 0.10 175);
+  --blue: oklch(72% 0.09 235);
+  --purple: oklch(72% 0.10 330);
+
+  --mono: 'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+
+  /* structural cards (portfolio dark-section: thin border over near-black) */
+  --card-bg: color-mix(in oklch, oklch(100% 0 0) 4%, transparent);
+  --card-border: color-mix(in oklch, oklch(100% 0 0) 9%, transparent);
+  --card-glow: color-mix(in oklch, var(--green) 6%, transparent);
+  --hair: color-mix(in oklch, oklch(100% 0 0) 8%, transparent);
 
   --max-width: 1440px;
   --gap: 18px;
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 12px;
+  --radius-sm: 9px;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -100,15 +111,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Wallpaper layer */
+/* Blueprint background: technical grid + corner accent glow (portfolio hero) */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(26, 32, 36, 0.6) 0%, rgba(26, 32, 36, 0.92) 100%),
-    url('/wallpaper.jpg') center/cover no-repeat;
   z-index: 0;
+  background:
+    radial-gradient(110% 70% at 88% -8%, color-mix(in oklch, var(--green) 12%, transparent), transparent 55%),
+    linear-gradient(to right, color-mix(in oklch, oklch(100% 0 0) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, oklch(100% 0 0) 4%, transparent) 1px, transparent 1px),
+    var(--bg-dim);
+  background-size: auto, 56px 56px, 56px 56px;
 }
 
 /* Noise texture overlay */
@@ -2906,4 +2920,306 @@ body.app-mode .app-iframe-tab {
 
 .global-tooltip.visible {
   opacity: 1;
+}
+
+/* ============================================================
+   PORTFOLIO THEME LAYER
+   Aligns the dashboard with ivanyakimkin.ru as its night/app
+   sibling: mono uppercase labels, hero numbers, structural
+   hairline cards, terminal accents.
+   ============================================================ */
+
+/* ---- Mono uppercase labels (portfolio signature) ---- */
+.stat-label,
+.qe-card-header,
+.chart-header h2,
+.fc-label,
+.heatmap-month-label,
+.heatmap-legend,
+.ts-label,
+.srv-gauge-label,
+.srv-section-title,
+.logo,
+.tab,
+.period-btn,
+.sub-tab,
+.sbm-tag,
+.date-big-display,
+.hc-time,
+.stat-sub,
+.weather-desc,
+.wm-item,
+.modal-title,
+.srv-app-status {
+  font-family: var(--mono);
+}
+
+.stat-label,
+.chart-header h2,
+.qe-card-header,
+.srv-section-title {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+
+.chart-header h2 {
+  font-size: 0.7rem;
+  color: var(--fg-dim);
+}
+
+.logo {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--fg-dim);
+}
+
+.logo .logo-accent {
+  color: var(--green);
+}
+
+/* ---- Greeting + hero numbers (mono, aura via per-metric glow) ---- */
+.greeting {
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 1.2rem;
+  letter-spacing: -0.01em;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 2.05rem;
+  letter-spacing: -0.02em;
+}
+
+.stat-unit {
+  font-family: var(--mono);
+  font-weight: 500;
+  opacity: 0.45;
+  font-size: 0.9rem;
+}
+
+.weather-temp {
+  font-family: var(--mono);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 20px color-mix(in oklch, var(--green) 30%, transparent);
+}
+
+/* ---- Stat cards: inset tray (подложка) + floating rounded cards ---- */
+.stats-column {
+  gap: 8px;
+  padding: 8px;
+  background: color-mix(in oklch, oklch(0% 0 0) 24%, transparent);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 14px -6px rgba(0, 0, 0, 0.6);
+}
+
+.stats-column .stat-card {
+  padding: 13px 15px 11px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow:
+    0 1px 0 0 color-mix(in oklch, oklch(100% 0 0) 5%, transparent) inset,
+    0 10px 22px -16px rgba(0, 0, 0, 0.75);
+}
+
+/* commits card spans the empty trailing slot — gives repo names room */
+.stats-column .stat-card:nth-child(5) {
+  grid-column: span 2;
+}
+
+.stats-column .stat-card::before {
+  display: none;
+}
+
+.stats-column .stat-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklch, var(--green) 32%, var(--card-border));
+  background: color-mix(in oklch, oklch(100% 0 0) 6%, transparent);
+}
+
+/* ---- Stat card internals: cohesive anatomy ---- */
+.stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 15px;
+  margin-bottom: 7px;
+}
+
+.stat-head .stat-label {
+  margin-bottom: 0;
+}
+
+.stat-delta {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  padding: 3px 7px 2px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.stat-delta.up {
+  color: var(--green);
+  background: color-mix(in oklch, var(--green) 14%, transparent);
+}
+
+.stat-delta.down {
+  color: var(--red);
+  background: color-mix(in oklch, var(--red) 14%, transparent);
+}
+
+.stat-chip {
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  padding: 3px 7px 2px;
+  border-radius: 100px;
+  color: var(--fg-muted);
+  background: color-mix(in oklch, oklch(100% 0 0) 6%, transparent);
+  white-space: nowrap;
+}
+
+.stat-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg-muted);
+}
+
+/* ---- Tabs / period / sub-tabs: technical ghost buttons ---- */
+.tabs {
+  background: color-mix(in oklch, oklch(100% 0 0) 3%, transparent);
+}
+
+.tab {
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tab.active {
+  background: color-mix(in oklch, var(--green) 14%, transparent);
+  color: var(--green);
+  box-shadow: none;
+}
+
+.period-btn {
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.period-btn.active {
+  background: color-mix(in oklch, var(--green) 16%, transparent);
+  color: var(--green);
+  box-shadow: none;
+}
+
+.sub-tab.active {
+  background: color-mix(in oklch, var(--green) 14%, transparent);
+}
+
+/* ---- Status pills (portfolio "● Открыт к проектам") ---- */
+.sbm-tag {
+  border-radius: 100px;
+  font-size: 0.52rem;
+  letter-spacing: 0.1em;
+  padding: 3px 9px;
+}
+
+.sync-dot {
+  box-shadow: 0 0 8px var(--green);
+}
+
+/* ---- Weather quip as terminal line ---- */
+.weather-metrics,
+.weather-sun-col,
+.weather-temp-col {
+  flex-shrink: 0;
+}
+
+.weather-quote {
+  flex: 0 1 200px;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--fg-dim);
+  background: color-mix(in oklch, oklch(0% 0 0) 22%, transparent);
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.weather-quote::before {
+  content: '$ ';
+  color: var(--green);
+}
+
+.weather-hourly-wrap {
+  background: color-mix(in oklch, oklch(0% 0 0) 18%, transparent);
+}
+
+/* ---- Heatmap: monochrome green ramp (premium, not warm rainbow) ---- */
+.heatmap-cell {
+  background: color-mix(in oklch, oklch(100% 0 0) 5%, transparent);
+  border-radius: 3px;
+}
+
+.heatmap-cell[data-mood="1"] { background: oklch(34% 0.03 245); }
+.heatmap-cell[data-mood="2"] { background: oklch(45% 0.07 175); }
+.heatmap-cell[data-mood="3"] { background: oklch(56% 0.11 158); }
+.heatmap-cell[data-mood="4"] { background: oklch(66% 0.14 150); }
+.heatmap-cell[data-mood="5"] { background: oklch(76% 0.16 146); }
+
+/* ---- Primary action: solid green like portfolio button ---- */
+.qe-save {
+  background: var(--green);
+  color: oklch(20% 0.02 245);
+}
+
+/* ---- Inline SVG icons (replace emoji) ---- */
+.icon { display: block; }
+
+.weather-icon {
+  color: var(--green);
+  display: inline-flex;
+  align-items: center;
+}
+
+.wm-icon,
+.ws-icon {
+  color: var(--green);
+  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hc-icon {
+  color: var(--fg-dim);
+  display: inline-flex;
+  align-items: center;
+}
+
+.wm-item,
+.ws-item,
+.hourly-item {
+  align-items: center;
 }

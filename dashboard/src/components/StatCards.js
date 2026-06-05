@@ -14,11 +14,11 @@ import { getDays } from '../utils/dataLoader.js';
 Chart.register(...registerables);
 
 const CARDS = [
-  { id: 'mood', label: 'Настроение', color: '#dbbc7f', unit: '/5', decimals: 0, get: d => d.manual?.mood },
-  { id: 'sleep', label: 'Сон', color: '#83c092', unit: 'ч', decimals: 1, get: d => d.garmin?.sleep_hours ?? d.schedule?.hours_sleep },
-  { id: 'bb', label: 'Body Battery', color: '#a7c080', unit: '%', decimals: 0, get: d => d.garmin?.body_battery_max },
-  { id: 'steps', label: 'Шаги', color: '#7fbbb3', unit: '', decimals: 0, get: d => d.garmin?.steps },
-  { id: 'commits', label: 'Коммиты', color: '#e69875', unit: '', decimals: 0, get: d => d.git?.commits },
+  { id: 'mood', label: 'Настроение', color: '#e2c162', unit: '/5', decimals: 0, get: d => d.manual?.mood },
+  { id: 'sleep', label: 'Сон', color: '#5dc0a7', unit: 'ч', decimals: 1, get: d => d.garmin?.sleep_hours ?? d.schedule?.hours_sleep },
+  { id: 'bb', label: 'Body Battery', color: '#59be6c', unit: '%', decimals: 0, get: d => d.garmin?.body_battery_max },
+  { id: 'steps', label: 'Шаги', color: '#69aed5', unit: '', decimals: 0, get: d => d.garmin?.steps },
+  { id: 'commits', label: 'Коммиты', color: '#e99355', unit: '', decimals: 0, get: d => d.git?.commits },
 ];
 
 let expandedCard = null;
@@ -58,7 +58,7 @@ function renderSleepCard(el, days30, days7, latest, avg) {
   const last7 = days7.slice(-7).map(d => d.garmin?.sleep_hours ?? d.schedule?.hours_sleep ?? null);
 
   el.innerHTML = `
-    <div class="stat-label">Сон</div>
+    <div class="stat-head"><div class="stat-label">Сон</div></div>
     <div class="stat-value" id="value-sleep">${latest != null ? '0' : '—'}<span class="stat-unit">${latest != null ? 'ч' : ''}</span></div>
     <div class="stat-sub">ср. ${avg?.toFixed(1) ?? '—'}ч${wakeTime ? ` · ↑ ${wakeTime}` : ''}</div>
     <div class="sleep-bars" id="sleepBars"></div>
@@ -113,7 +113,7 @@ function renderCommitsCard(el, days30, days7, allDays) {
   const last28 = allDays.slice(-28);
 
   el.innerHTML = `
-    <div class="stat-label">Коммиты</div>
+    <div class="stat-head"><div class="stat-label">Коммиты</div><span class="stat-chip">за нед.</span></div>
     <div class="stat-value" id="value-commits">${weekTotal > 0 ? '0' : '—'}</div>
     <div class="stat-sub">сегодня ${todayCommits}${repoList.length ? ' · ' + repoList.join(', ') : ''}</div>
     <div class="commit-dots" id="commitDots"></div>
@@ -182,14 +182,17 @@ export function renderStatCards(container, data) {
         delta = values[values.length - 1] - values[values.length - 2];
       }
       const sub = latest != null ? `ср. ${avg?.toFixed(1)}${card.unit}` : 'Нет данных';
-      const deltaHtml = delta != null
-        ? ` <span class="${delta >= 0 ? 'stat-delta-up' : 'stat-delta-down'}">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}</span>`
+      const deltaPill = delta != null
+        ? `<span class="stat-delta ${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(1)}</span>`
         : '';
 
       el.innerHTML = `
-        <div class="stat-label">${card.label}</div>
+        <div class="stat-head">
+          <div class="stat-label">${card.label}</div>
+          ${deltaPill}
+        </div>
         <div class="stat-value" id="value-${card.id}">${latest != null ? '0' : '—'}<span class="stat-unit">${latest != null ? card.unit : ''}</span></div>
-        <div class="stat-sub">${sub}${deltaHtml}</div>
+        <div class="stat-sub">${sub}</div>
         <div class="stat-sparkline"><canvas id="spark-${card.id}"></canvas></div>
       `;
 
@@ -326,11 +329,11 @@ function renderSleepDetail(ctx, labels, allDays) {
     data: {
       labels,
       datasets: [
-        { label: 'Оценка (Score)', data: scoreData, type: 'line', borderColor: '#dbbc7f', tension: 0.3, yAxisID: 'yScore', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#dbbc7f' },
+        { label: 'Оценка (Score)', data: scoreData, type: 'line', borderColor: '#e2c162', tension: 0.3, yAxisID: 'yScore', borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#e2c162' },
         { label: 'Глубокий', data: deepData, backgroundColor: '#475258', borderRadius: 0 },
-        { label: 'Легкий', data: lightData, backgroundColor: '#83c092', borderRadius: 0 },
-        { label: 'REM', data: remData, backgroundColor: '#7fbbb3', borderRadius: 0 },
-        { label: 'Бодрств.', data: awakeData, backgroundColor: '#e67e80', borderRadius: 0 }
+        { label: 'Легкий', data: lightData, backgroundColor: '#5dc0a7', borderRadius: 0 },
+        { label: 'REM', data: remData, backgroundColor: '#69aed5', borderRadius: 0 },
+        { label: 'Бодрств.', data: awakeData, backgroundColor: '#e3645e', borderRadius: 0 }
       ]
     },
     options: {
@@ -364,7 +367,7 @@ function renderSleepDetail(ctx, labels, allDays) {
         yScore: {
           position: 'right',
           min: 0, max: 100,
-          ticks: { color: '#dbbc7f', font: { size: 9 }, stepSize: 20 },
+          ticks: { color: '#e2c162', font: { size: 9 }, stepSize: 20 },
           grid: { display: false },
           border: { display: false }
         }

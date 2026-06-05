@@ -4,11 +4,11 @@
  */
 
 const AGENT_META = {
-  schedule_agent: { emoji: '📅', name: 'Schedule Agent', color: '#a7c080' },
-  writer_agent:   { emoji: '✍️', name: 'Writer Agent', color: '#7fbbb3' },
-  research_agent: { emoji: '🔬', name: 'Research Agent', color: '#d699b6' },
-  code_agent:     { emoji: '💻', name: 'Code Agent', color: '#dbbc7f' },
-  memory_agent:   { emoji: '🧠', name: 'Memory Agent', color: '#e69875' },
+  schedule_agent: { emoji: '📅', name: 'Schedule Agent', color: '#59be6c' },
+  writer_agent:   { emoji: '✍️', name: 'Writer Agent', color: '#69aed5' },
+  research_agent: { emoji: '🔬', name: 'Research Agent', color: '#c88ec3' },
+  code_agent:     { emoji: '💻', name: 'Code Agent', color: '#e2c162' },
+  memory_agent:   { emoji: '🧠', name: 'Memory Agent', color: '#e99355' },
 };
 
 let lastActiveTime = null;

@@ -8,7 +8,10 @@ let caloriesChartInst = null;
 
 export function renderHealthCharts(data) {
   const allDays = getDays(data, 30); // Use 30 days window max
-  const labels = allDays.map(d => d.date);
+  const labels = allDays.map(d => {
+    const dt = new Date(d.date);
+    return `${String(dt.getDate()).padStart(2, '0')}.${String(dt.getMonth() + 1).padStart(2, '0')}`;
+  });
 
   renderStressChart(labels, allDays);
   renderHRChart(labels, allDays);
@@ -30,24 +33,24 @@ function renderStressChart(labels, allDays) {
     data: {
       labels,
       datasets: [
-        { label: 'Body Battery Макс.', data: bbMax, borderColor: '#a7c080', backgroundColor: '#a7c08020', fill: '+1', tension: 0.3, pointRadius: 1 },
-        { label: 'Body Battery Мин.', data: bbMin, borderColor: '#e69875', backgroundColor: 'transparent', fill: false, tension: 0.3, pointRadius: 1 },
-        { label: 'Стресс', data: stressAvg, borderColor: '#e67e80', borderDash: [5, 5], tension: 0.3, pointRadius: 2, yAxisID: 'y1' }
+        { label: 'Body Battery Макс.', data: bbMax, borderColor: '#59be6c', backgroundColor: '#59be6c20', fill: '+1', tension: 0.3, pointRadius: 1 },
+        { label: 'Body Battery Мин.', data: bbMin, borderColor: '#e99355', backgroundColor: 'transparent', fill: false, tension: 0.3, pointRadius: 1 },
+        { label: 'Стресс', data: stressAvg, borderColor: '#e3645e', borderDash: [5, 5], tension: 0.3, pointRadius: 2, yAxisID: 'y1' }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: '#9da9a0', boxWidth: 10 } },
+        legend: { labels: { color: '#a3acb3', boxWidth: 10 } },
         tooltip: {
-          backgroundColor: 'rgba(35, 42, 46, 0.95)', titleColor: '#d3c6aa', bodyColor: '#9da9a0', padding: 10, cornerRadius: 8
+          backgroundColor: 'rgba(11,18,25,0.96)', titleColor: '#eaeff3', bodyColor: '#a3acb3', padding: 10, cornerRadius: 8
         }
       },
       scales: {
-        x: { ticks: { color: '#6b7b72', maxTicksLimit: 10 }, grid: { display: false } },
-        y: { title: { display: true, text: 'Body Battery', color: '#6b7b72' }, ticks: { color: '#6b7b72' }, grid: { color: 'rgba(125,135,125,0.06)' }, min: 0, max: 100 },
-        y1: { position: 'right', title: { display: true, text: 'Уровень стресса', color: '#e67e80' }, ticks: { color: '#e67e80' }, grid: { display: false }, min: 0, max: 100 }
+        x: { ticks: { color: '#727c84', maxTicksLimit: 10 }, grid: { display: false } },
+        y: { title: { display: true, text: 'Body Battery', color: '#727c84' }, ticks: { color: '#727c84' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 0, max: 100 },
+        y1: { position: 'right', title: { display: true, text: 'Уровень стресса', color: '#e3645e' }, ticks: { color: '#e3645e' }, grid: { display: false }, min: 0, max: 100 }
       }
     }
   });
@@ -67,23 +70,23 @@ function renderHRChart(labels, allDays) {
     data: {
       labels,
       datasets: [
-        { label: 'Max HR', data: maxHR, borderColor: '#e67e80', backgroundColor: '#e67e8015', fill: 2, tension: 0.3, pointRadius: 0, borderWidth: 1 },
-        { label: 'Resting HR', data: restingHR, borderColor: '#d3c6aa', backgroundColor: '#d3c6aa', tension: 0.3, pointRadius: 2, borderWidth: 2 },
-        { label: 'Min HR', data: minHR, borderColor: '#7fbbb3', backgroundColor: 'transparent', fill: false, tension: 0.3, pointRadius: 0, borderWidth: 1 }
+        { label: 'Max HR', data: maxHR, borderColor: '#e3645e', backgroundColor: '#e3645e15', fill: 2, tension: 0.3, pointRadius: 0, borderWidth: 1 },
+        { label: 'Resting HR', data: restingHR, borderColor: '#eaeff3', backgroundColor: '#eaeff3', tension: 0.3, pointRadius: 2, borderWidth: 2 },
+        { label: 'Min HR', data: minHR, borderColor: '#69aed5', backgroundColor: 'transparent', fill: false, tension: 0.3, pointRadius: 0, borderWidth: 1 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: '#9da9a0', boxWidth: 10 } },
+        legend: { labels: { color: '#a3acb3', boxWidth: 10 } },
         tooltip: {
-          backgroundColor: 'rgba(35, 42, 46, 0.95)', titleColor: '#d3c6aa', bodyColor: '#9da9a0', padding: 10, cornerRadius: 8
+          backgroundColor: 'rgba(11,18,25,0.96)', titleColor: '#eaeff3', bodyColor: '#a3acb3', padding: 10, cornerRadius: 8
         }
       },
       scales: {
-        x: { ticks: { color: '#6b7b72', maxTicksLimit: 10 }, grid: { display: false } },
-        y: { ticks: { color: '#6b7b72' }, grid: { color: 'rgba(125,135,125,0.06)' }, min: 30 }
+        x: { ticks: { color: '#727c84', maxTicksLimit: 10 }, grid: { display: false } },
+        y: { ticks: { color: '#727c84' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 30 }
       }
     }
   });
@@ -102,19 +105,19 @@ function renderSpO2Chart(labels, allDays) {
     data: {
       labels,
       datasets: [
-        { label: 'SpO2 Ср.', data: spo2Avg, borderColor: '#7fbbb3', backgroundColor: '#7fbbb320', fill: true, tension: 0.4, pointRadius: 2 },
-        { label: 'SpO2 Мин.', data: spo2Low, borderColor: '#e69875', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 2 }
+        { label: 'SpO2 Ср.', data: spo2Avg, borderColor: '#69aed5', backgroundColor: '#69aed520', fill: true, tension: 0.4, pointRadius: 2 },
+        { label: 'SpO2 Мин.', data: spo2Low, borderColor: '#e99355', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 2 }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: '#9da9a0', boxWidth: 10 } }
+        legend: { labels: { color: '#a3acb3', boxWidth: 10 } }
       },
       scales: {
-        x: { ticks: { color: '#6b7b72', maxTicksLimit: 10 }, grid: { display: false } },
-        y: { ticks: { color: '#6b7b72' }, grid: { color: 'rgba(125,135,125,0.06)' }, min: 80, max: 100 }
+        x: { ticks: { color: '#727c84', maxTicksLimit: 10 }, grid: { display: false } },
+        y: { ticks: { color: '#727c84' }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 80, max: 100 }
       }
     }
   });
@@ -136,7 +139,7 @@ function renderCaloriesChart(labels, allDays) {
     data: {
       labels,
       datasets: [
-        { label: 'Активные ккал', data: caloriesActive, backgroundColor: '#e69875', borderRadius: 4 },
+        { label: 'Активные ккал', data: caloriesActive, backgroundColor: '#e99355', borderRadius: 4 },
         { label: 'Базовые (BMR)', data: caloriesBase, backgroundColor: '#475258', borderRadius: 0 }
       ]
     },
@@ -144,11 +147,11 @@ function renderCaloriesChart(labels, allDays) {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { labels: { color: '#9da9a0', boxWidth: 10 } }
+        legend: { labels: { color: '#a3acb3', boxWidth: 10 } }
       },
       scales: {
-        x: { stacked: true, ticks: { color: '#6b7b72', maxTicksLimit: 10 }, grid: { display: false } },
-        y: { stacked: true, ticks: { color: '#6b7b72' }, grid: { color: 'rgba(125,135,125,0.06)' } }
+        x: { stacked: true, ticks: { color: '#727c84', maxTicksLimit: 10 }, grid: { display: false } },
+        y: { stacked: true, ticks: { color: '#727c84' }, grid: { color: 'rgba(255,255,255,0.05)' } }
       }
     }
   });

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Архитектура — варианты</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1219; --fg:#eaeff3; --dim:#a3acb3; --mut:#727c84;
+    --green:#59be6c; --aqua:#5dc0a7; --blue:#69aed5; --yellow:#e2c162;
+    --orange:#e99355; --purple:#c88ec3; --red:#e3645e;
+    --card:rgba(255,255,255,0.04); --bord:rgba(255,255,255,0.09); --hair:rgba(255,255,255,0.07);
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',sans-serif;color:var(--fg);background:var(--bg);
+    background-image:
+      radial-gradient(100% 60% at 90% -10%, rgba(89,190,108,0.10), transparent 55%),
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:auto,56px 56px,56px 56px;
+    padding:34px 40px 80px;-webkit-font-smoothing:antialiased;
+  }
+  .lead{max-width:1180px;margin:0 auto 26px}
+  .eyebrow{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--green)}
+  h1{font-size:1.5rem;font-weight:700;letter-spacing:-.02em;margin:6px 0 4px}
+  .lead p{color:var(--dim);font-size:.9rem;max-width:760px;line-height:1.55}
+  .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+
+  .approach{border:1px solid var(--bord);border-radius:16px;background:rgba(255,255,255,0.015);overflow:hidden}
+  .ahead{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--hair)}
+  .badge{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;
+    background:rgba(89,190,108,0.14);color:var(--green);border:1px solid rgba(89,190,108,0.3)}
+  .ahead h2{font-size:1.05rem;font-weight:700;letter-spacing:-.01em}
+  .ahead .tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);
+    margin-left:auto;border:1px solid var(--hair);padding:4px 10px;border-radius:100px}
+  .abody{padding:20px;display:grid;grid-template-columns:1.55fr 1fr;gap:22px;align-items:start}
+  .note{font-size:.82rem;line-height:1.6;color:var(--dim)}
+  .note b{color:var(--fg);font-weight:600}
+  .note .m{font-family:var(--mono);color:var(--aqua);font-size:.78rem}
+  ul{list-style:none;margin-top:10px;display:flex;flex-direction:column;gap:6px}
+  li{position:relative;padding-left:16px;font-size:.8rem;color:var(--dim)}
+  li::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--green)}
+  li.con::before{background:var(--orange)}
+
+  /* wireframe primitives */
+  .wf{display:flex;flex-direction:column;gap:8px}
+  .row{display:grid;gap:8px}
+  .box{border:1px solid var(--bord);border-radius:9px;background:var(--card);padding:10px;min-height:56px;
+    display:flex;flex-direction:column;gap:5px;justify-content:center}
+  .box .l{font-family:var(--mono);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+  .box .v{font-family:var(--mono);font-weight:700;font-size:1rem;color:var(--fg)}
+  .box .s{font-size:.6rem;color:var(--mut)}
+  .accent{border-color:rgba(89,190,108,0.35);background:rgba(89,190,108,0.06)}
+  .accent .v{color:var(--green)}
+  .ai{border-color:rgba(200,142,195,0.35);background:rgba(200,142,195,0.06)}
+  .ai .l{color:var(--purple)}
+  .live{border-color:rgba(105,174,213,0.35);background:rgba(105,174,213,0.06)}
+  .live .l{color:var(--blue)}
+  .ring{width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--green) 76%, rgba(255,255,255,0.08) 0);
+    display:grid;place-items:center;flex-shrink:0}
+  .ring::after{content:'76';font-family:var(--mono);font-weight:700;font-size:.7rem;color:var(--fg);
+    width:34px;height:34px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+  .ringrow{display:flex;align-items:center;gap:12px}
+  .miniring{width:26px;height:26px;border-radius:50%;flex-shrink:0}
+  .spark{height:20px;border-radius:4px;background:
+    linear-gradient(to top, rgba(89,190,108,0.18), transparent),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0 1px, transparent 1px 7px)}
+  .donut{width:42px;height:42px;border-radius:50%;flex-shrink:0;
+    background:conic-gradient(var(--blue) 0 38%,var(--green) 38% 64%,var(--orange) 64% 84%,var(--purple) 84% 100%);
+    -webkit-mask:radial-gradient(circle 12px at center, transparent 98%, #000 100%);mask:radial-gradient(circle 12px at center, transparent 98%, #000 100%)}
+  .tall{min-height:150px}
+  .wide{grid-column:1/-1}
+  .hero-cell{min-height:120px}
+</style>
+</head>
+<body>
+  <div class="lead">
+    <div class="eyebrow">Life Dashboard · Redesign</div>
+    <h1>Три направления архитектуры наполнения</h1>
+    <p>Цель — инженерный флекс на базе пользы. Новые опоры: <b style="color:#eaeff3">глубокая dev-активность</b> (WakaTime / GitHub-deep / CI) и <b style="color:#eaeff3">ИИ-инсайты</b> на твоих LLM. Ниже — схемы раскладки и назначения карточек. Выбери направление (можно гибрид) — потом соберу живой макет.</p>
+  </div>
+
+  <div class="wrap">
+
+    <!-- A -->
+    <div class="approach">
+      <div class="ahead"><div class="badge">A</div><h2>Readiness Hero + Домены</h2><span class="tag">Whoop / Oura модель · рекомендую</span></div>
+      <div class="abody">
+        <div class="wf">
+          <div class="box accent hero-cell" style="min-height:96px">
+            <div class="ringrow">
+              <div class="ring"></div>
+              <div>
+                <div class="l">Состояние дня · composite</div>
+                <div class="v" style="font-size:1.4rem">76<span style="color:var(--mut);font-size:.8rem"> / 100</span></div>
+                <div class="s">сон 82 · восстановление 71 · стресс 34 · HRV 58</div>
+              </div>
+              <div style="margin-left:auto;display:flex;gap:8px">
+                <div class="miniring" style="background:conic-gradient(var(--aqua) 82%,rgba(255,255,255,.08) 0)"></div>
+                <div class="miniring" style="background:conic-gradient(var(--green) 71%,rgba(255,255,255,.08) 0)"></div>
+                <div class="miniring" style="background:conic-gradient(var(--orange) 34%,rgba(255,255,255,.08) 0)"></div>
+                <div class="miniring" style="background:conic-gradient(var(--blue) 58%,rgba(255,255,255,.08) 0)"></div>
+              </div>
+            </div>
+          </div>
+          <div class="box ai"><div class="l">◇ AI Briefing</div><div class="s" style="font-size:.7rem;color:var(--dim)">«Хороший день: 6.2ч глубокой работы, настроение выросло после крепкого сна (7.4ч).»</div></div>
+          <div class="row" style="grid-template-columns:1fr 1fr 1fr">
+            <div class="box tall"><div class="l">Тело</div><div class="v">Сон · HR · SpO₂</div><div class="spark"></div><div class="s">стадии сна, пульс, восстановление</div></div>
+            <div class="box tall"><div class="l">Разум</div><div class="v">Настроение</div><div class="spark"></div><div class="s">mood × стресс × фокус</div></div>
+            <div class="box tall"><div class="l">Работа</div><div class="v">Код · Коммиты</div><div class="spark"></div><div class="s">часы по языкам, PR, deep-work</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="note"><b>Идея.</b> Один <b>составной балл «Состояние дня»</b> как герой (считается алгоритмом/LLM из сна+BB+стресса+HRV), под ним <span class="m">AI-бриф</span>, затем три домена-колонки <b>Тело / Разум / Работа</b>, каждый с богатой главной визуализацией и под-метриками.</div>
+          <ul>
+            <li>Сильный фокус и иерархия — сразу «премиальный продукт»</li>
+            <li>Балл + AI-бриф = живой флекс инженера-ИИ</li>
+            <li class="con">Нужен осмысленный алгоритм счёта (не «магия»)</li>
+            <li class="con">Меньше «плотности данных» на первом экране</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="approach">
+      <div class="ahead"><div class="badge">B</div><h2>Bento-сетка</h2><span class="tag">Editorial · современно</span></div>
+      <div class="abody">
+        <div class="wf">
+          <div class="row" style="grid-template-columns:1.4fr 1fr 1fr">
+            <div class="box accent" style="grid-row:span 2;min-height:150px"><div class="l">Сегодня · live</div><div class="ringrow" style="margin-top:4px"><div class="ring"></div><div class="s">readiness + текущая активность</div></div><div class="spark" style="margin-top:auto"></div></div>
+            <div class="box"><div class="l">Сон</div><div class="v">7.4ч</div><div class="spark"></div></div>
+            <div class="box"><div class="l">Код сегодня</div><div class="ringrow"><div class="donut"></div><div class="v" style="font-size:.85rem">4.8ч</div></div></div>
+            <div class="box"><div class="l">Настроение</div><div class="v">4/5</div><div class="spark"></div></div>
+            <div class="box"><div class="l">Стрик</div><div class="v">23 дн</div></div>
+          </div>
+          <div class="box wide ai"><div class="l">◇ AI Insight</div><div class="s" style="font-size:.7rem;color:var(--dim)">Корреляция недели: в дни кода &gt;6ч сон падает на ~1.1ч.</div></div>
+        </div>
+        <div>
+          <div class="note"><b>Идея.</b> Асимметричная <b>bento-сетка</b> из ячеек разного размера: одна крупная «<b>Сегодня/live</b>», вокруг — средние (сон, код-донат, mood, стрик) и узкие стат-чипы, снизу — широкая полоса трендов и <span class="m">AI-инсайт</span>. Каждая ячейка спроектирована под свою задачу.</div>
+          <ul>
+            <li>Самый «дизайнерский», модный вид 2025</li>
+            <li>Гибкость: легко добавлять/убирать ячейки-интеграции</li>
+            <li>Высокая плотность + визуальный ритм</li>
+            <li class="con">Риск «зоопарка» виджетов без жёсткой иерархии</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="approach">
+      <div class="ahead"><div class="badge">C</div><h2>Live Command Center</h2><span class="tag">Infra / monitoring флекс</span></div>
+      <div class="abody">
+        <div class="wf">
+          <div class="row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+            <div class="box live"><div class="l">▸ NOW</div><div class="v" style="font-size:.8rem">coding · omniroute</div><div class="s">фокус 41 мин</div></div>
+            <div class="box live"><div class="l">Pulse</div><div class="v" style="font-size:.8rem">all systems ok</div><div class="s">12 контейнеров</div></div>
+            <div class="box accent"><div class="l">Readiness</div><div class="ringrow"><div class="ring" style="width:34px;height:34px"></div></div></div>
+            <div class="box ai"><div class="l">◇ AI ticker</div><div class="s" style="font-size:.62rem">сон↑ настроение↑</div></div>
+          </div>
+          <div class="row" style="grid-template-columns:2fr 1fr">
+            <div class="box tall"><div class="l">Панель · метрика + под-стат</div><div class="spark" style="height:60px"></div><div class="s">главный график, переключаемый</div></div>
+            <div class="box tall"><div class="l">Live feed</div><div class="s" style="font-size:.66rem;line-height:1.7;color:var(--dim)">› push 3 commits<br>› agent: review done<br>› deploy ok<br>› BB +12</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="note"><b>Идея.</b> Каркас как <b>мониторинг-консоль</b>: верхняя <span class="m">live-строка</span> (текущий фокус/код, системный pulse, readiness, AI-тикер), большая панель с переключаемыми метриками и <b>real-time лента</b> событий (коммиты, агенты, деплои, биометрия). Максимально «дышит» и обновляется.</div>
+          <ul>
+            <li>Прямо кричит «инфра/devops/real-time инженер»</li>
+            <li>WebSocket-лента и live-апдейты = технический флекс</li>
+            <li>Уникальный характер, мало у кого такое в портфолио</li>
+            <li class="con">Плотно/«технично» — дальше всего от «уютного» life-tracker</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

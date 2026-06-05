@@ -15,7 +15,7 @@ export function renderTimeBreakdown(canvas, data) {
   const labels = days.map(d => d.weekday || d.date.slice(5));
   const cats = ['hours_work', 'hours_projects', 'hours_games', 'hours_rest', 'hours_food'];
   const names = ['Работа', 'Проекты', 'Игры', 'Отдых', 'Еда'];
-  const colors = ['#7fbbb3', '#a7c080', '#e69875', '#d699b6', '#dbbc7f'];
+  const colors = ['#69aed5', '#59be6c', '#e99355', '#c88ec3', '#e2c162'];
 
   if (chart) chart.destroy();
 
@@ -26,7 +26,7 @@ export function renderTimeBreakdown(canvas, data) {
       datasets: cats.map((cat, i) => ({
         label: names[i],
         data: days.map(d => d.schedule?.[cat] ?? 0),
-        backgroundColor: colors[i] + 'cc',
+        backgroundColor: colors[i] + 'd9',
         borderColor: colors[i],
         borderWidth: 1,
         borderRadius: 3,

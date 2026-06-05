@@ -2,6 +2,8 @@
  * WeatherForecast.js — Current weather + Hourly forecast
  */
 
+import { weatherIcon } from '../utils/icons.js';
+
 export async function initWeather() {
   const widget = document.getElementById('weatherWidget');
   if (!widget) return;
@@ -20,7 +22,7 @@ export async function initWeather() {
     const tempEl = document.getElementById('weatherTemp');
     const descEl = document.getElementById('weatherDesc');
 
-    if (iconEl) iconEl.textContent = today.icon || '';
+    if (iconEl) iconEl.innerHTML = weatherIcon(today.icon || current.icon, 24);
     if (tempEl) tempEl.textContent = `${Math.round(current.temp)}°`;
     if (descEl) descEl.textContent = today.desc || '';
 
@@ -91,7 +93,7 @@ function renderHourly(container, hourlyData) {
     return `
       <div class="hourly-item">
         <span class="hc-time">${localTimeLabel}</span>
-        <span class="hc-icon">${h.icon}</span>
+        <span class="hc-icon">${weatherIcon(h.icon, 17)}</span>
         <span class="hc-temp">${Math.round(h.temp)}°</span>
       </div>
     `;

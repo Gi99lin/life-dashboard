@@ -11,6 +11,7 @@ import { renderQuickEntry, loadEntryForDate } from './components/QuickEntry.js';
 import { initWeather } from './components/WeatherForecast.js';
 import { openScheduleEditor } from './components/ScheduleEditor.js';
 import { initGlobalTooltip } from './utils/tooltip.js';
+import { initChartTheme } from './utils/palette.js';
 
 // V2 Imports
 import { initAuth, showLoginModal } from './components/LoginModal.js';
@@ -62,6 +63,7 @@ async function init() {
 
   setGreeting();
   setDate();
+  initChartTheme();
 
   // Cookies are sent automatically — no fetch wrapper needed
 
@@ -165,10 +167,8 @@ async function init() {
     schedWidget.addEventListener('click', () => openScheduleEditor());
   }
 
-  // Health Charts (V2)
-  renderHealthCharts(data);
-
   // Tab switching
+  let healthLoaded = false;
   document.getElementById('tabs')?.addEventListener('click', (e) => {
     const btn = e.target.closest('.tab');
     if (!btn) return;
@@ -181,6 +181,13 @@ async function init() {
     // Lock body scroll when iframe tab is active
     const isAppTab = target?.classList.contains('app-iframe-tab');
     document.body.classList.toggle('app-mode', isAppTab);
+
+    // Lazy-render health charts on first visit (canvas must be visible so
+    // Chart.js measures the container correctly).
+    if (btn.dataset.tab === 'analytics' && !healthLoaded) {
+      healthLoaded = true;
+      renderHealthCharts(data);
+    }
   });
 
   // Sub-tab switching (Infrastructure)

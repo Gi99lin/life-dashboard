@@ -101,12 +101,12 @@ export function renderMoodHeatmap(container, data) {
   html += `
     <div class="heatmap-legend">
       <span>Меньше</span>
-      <div class="heatmap-legend-cell" style="background:#343f44"></div>
-      <div class="heatmap-legend-cell" style="background:#543a3a"></div>
-      <div class="heatmap-legend-cell" style="background:#6e5340"></div>
-      <div class="heatmap-legend-cell" style="background:#5c6a4a"></div>
-      <div class="heatmap-legend-cell" style="background:#6a8a50"></div>
-      <div class="heatmap-legend-cell" style="background:#8bb56a"></div>
+      <div class="heatmap-legend-cell" style="background:color-mix(in oklch, oklch(100% 0 0) 5%, transparent)"></div>
+      <div class="heatmap-legend-cell" style="background:oklch(34% 0.03 245)"></div>
+      <div class="heatmap-legend-cell" style="background:oklch(45% 0.07 175)"></div>
+      <div class="heatmap-legend-cell" style="background:oklch(56% 0.11 158)"></div>
+      <div class="heatmap-legend-cell" style="background:oklch(66% 0.14 150)"></div>
+      <div class="heatmap-legend-cell" style="background:oklch(76% 0.16 146)"></div>
       <span>Больше</span>
     </div>
   `;

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Обзор — макет</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1219; --fg:#eaeff3; --dim:#a3acb3; --mut:#727c84;
+    --green:#59be6c; --aqua:#5dc0a7; --blue:#69aed5; --yellow:#e2c162;
+    --orange:#e99355; --purple:#c88ec3; --red:#e3645e;
+    --card:rgba(255,255,255,0.04); --bord:rgba(255,255,255,0.09); --hair:rgba(255,255,255,0.07);
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;color:var(--fg);background:var(--bg);
+    background-image:
+      radial-gradient(90% 50% at 88% -10%, rgba(89,190,108,0.10), transparent 55%),
+      linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size:auto,56px 56px,56px 56px;padding:22px 26px 60px;-webkit-font-smoothing:antialiased}
+  .app{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+
+  /* header */
+  .top{display:flex;align-items:center;gap:14px}
+  .brand{display:flex;flex-direction:column;gap:3px;min-width:150px}
+  .logo{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .logo b{color:var(--green);font-weight:600}
+  .hi{font-family:var(--mono);font-weight:500;font-size:1.05rem}
+  .tabs{display:flex;gap:4px;background:rgba(255,255,255,0.03);border:1px solid var(--bord);border-radius:10px;padding:4px}
+  .tab{font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);padding:7px 14px;border-radius:7px}
+  .tab.on{background:rgba(89,190,108,0.14);color:var(--green)}
+  .wx{margin-left:auto;display:flex;align-items:center;gap:14px;border:1px solid var(--bord);border-radius:10px;padding:8px 14px;background:var(--card)}
+  .wx .t{font-family:var(--mono);font-weight:700;font-size:1.1rem}
+  .wx .d{font-family:var(--mono);font-size:.64rem;color:var(--mut)}
+
+  .lbl{font-family:var(--mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}
+  .src{font-family:var(--mono);font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);
+    border:1px solid var(--hair);border-radius:100px;padding:2px 7px}
+  .info{display:inline-grid;place-items:center;width:13px;height:13px;border-radius:50%;border:1px solid var(--hair);
+    font-size:.5rem;color:var(--mut);font-family:var(--mono)}
+  .more{font-family:var(--mono);font-size:.58rem;color:var(--green);letter-spacing:.04em}
+
+  /* hero */
+  .hero{display:grid;grid-template-columns:auto 1fr 1.05fr;gap:22px;align-items:center;
+    border:1px solid var(--bord);border-radius:16px;padding:20px 24px;background:rgba(255,255,255,0.02)}
+  .score{display:flex;align-items:center;gap:16px}
+  .ring{width:96px;height:96px;border-radius:50%;flex-shrink:0;position:relative;
+    background:conic-gradient(var(--green) 76%, rgba(255,255,255,0.07) 0)}
+  .ring::after{content:'';position:absolute;inset:7px;border-radius:50%;background:var(--bg)}
+  .ring .n{position:absolute;inset:0;display:grid;place-items:center;z-index:1;text-align:center;line-height:1}
+  .ring .n b{font-family:var(--mono);font-weight:700;font-size:1.7rem;text-shadow:0 0 22px rgba(89,190,108,.45)}
+  .ring .n span{display:block;font-family:var(--mono);font-size:.5rem;color:var(--mut);margin-top:3px;letter-spacing:.1em}
+  .score .meta .ttl{font-size:1.15rem;font-weight:700;letter-spacing:-.01em;margin:2px 0 4px}
+  .score .meta .sub{font-family:var(--mono);font-size:.66rem;color:var(--dim)}
+  .factors{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+  .fac{display:flex;align-items:center;gap:9px}
+  .fr{width:30px;height:30px;border-radius:50%;flex-shrink:0;position:relative}
+  .fr::after{content:'';position:absolute;inset:5px;border-radius:50%;background:var(--bg)}
+  .fac .fv{font-family:var(--mono);font-weight:700;font-size:.82rem}
+  .fac .fl{font-family:var(--mono);font-size:.56rem;color:var(--mut);text-transform:uppercase;letter-spacing:.06em}
+  .brief{border:1px solid rgba(200,142,195,0.28);background:rgba(200,142,195,0.05);border-radius:12px;padding:13px 15px;align-self:stretch;display:flex;flex-direction:column;gap:9px}
+  .brief .bh{display:flex;align-items:center;gap:8px}
+  .brief .bh .lbl{color:var(--purple)}
+  .brief p{font-size:.82rem;line-height:1.55;color:var(--fg)}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+
+  /* live strip */
+  .live{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .lcell{border:1px solid var(--bord);border-radius:11px;padding:11px 14px;background:var(--card);display:flex;flex-direction:column;gap:5px}
+  .lcell.now{border-color:rgba(105,174,213,0.3);background:rgba(105,174,213,0.05)}
+  .lcell .lv{font-family:var(--mono);font-weight:600;font-size:.82rem}
+  .lcell .ls{font-family:var(--mono);font-size:.6rem;color:var(--mut)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);display:inline-block;margin-right:5px}
+
+  /* domains */
+  .domains{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .dom{border:1px solid var(--bord);border-radius:14px;background:rgba(255,255,255,0.018);overflow:hidden;position:relative}
+  .dh{display:flex;align-items:center;gap:8px;padding:13px 15px 0}
+  .dh .nm{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .dh .more{margin-left:auto}
+  .db{padding:12px 15px 15px;display:flex;flex-direction:column;gap:12px}
+  .prim{display:flex;align-items:flex-end;gap:10px}
+  .prim .pv{font-family:var(--mono);font-weight:700;font-size:2rem;letter-spacing:-.02em;line-height:1}
+  .prim .pu{font-family:var(--mono);font-size:.8rem;color:var(--mut);margin-bottom:3px}
+  .prim .pd{margin-left:auto;font-family:var(--mono);font-size:.6rem;padding:3px 8px;border-radius:100px}
+  .pd.up{color:var(--green);background:rgba(89,190,108,.14)} .pd.dn{color:var(--red);background:rgba(227,100,94,.14)}
+
+  /* stage bar */
+  .stage{display:flex;height:14px;border-radius:5px;overflow:hidden;gap:1px}
+  .stage i{display:block}
+  .legend{display:flex;gap:12px;flex-wrap:wrap}
+  .legend span{font-family:var(--mono);font-size:.56rem;color:var(--mut);display:flex;align-items:center;gap:5px}
+  .legend span::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--c)}
+
+  /* sub stats with range bars */
+  .subs{display:flex;flex-direction:column;gap:9px;border-top:1px solid var(--hair);padding-top:11px}
+  .sub{display:grid;grid-template-columns:88px 1fr auto;align-items:center;gap:10px;cursor:pointer}
+  .sub .sl{font-family:var(--mono);font-size:.62rem;color:var(--dim);display:flex;align-items:center;gap:5px}
+  .track{height:6px;border-radius:3px;background:rgba(255,255,255,0.06);position:relative}
+  .band{position:absolute;top:0;bottom:0;border-radius:3px;background:rgba(255,255,255,0.07)}
+  .fill{position:absolute;top:0;bottom:0;left:0;border-radius:3px}
+  .pin{position:absolute;top:-2px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg)}
+  .sv{font-family:var(--mono);font-size:.7rem;font-weight:600;text-align:right;min-width:48px}
+
+  /* donut */
+  .donutrow{display:flex;align-items:center;gap:14px}
+  .donut{width:64px;height:64px;border-radius:50%;flex-shrink:0;position:relative;
+    background:conic-gradient(var(--blue) 0 40%,var(--yellow) 40% 66%,var(--aqua) 66% 86%,var(--orange) 86% 100%)}
+  .donut::after{content:'';position:absolute;inset:11px;border-radius:50%;background:var(--bg)}
+  .donut .c{position:absolute;inset:0;display:grid;place-items:center;z-index:1;font-family:var(--mono);font-weight:700;font-size:.8rem}
+  .langs{display:flex;flex-direction:column;gap:4px}
+  .lang{font-family:var(--mono);font-size:.62rem;color:var(--dim);display:flex;align-items:center;gap:6px}
+  .lang::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--c)}
+
+  /* spark */
+  .spark{height:34px;border-radius:6px;position:relative;
+    background:linear-gradient(to top, rgba(89,190,108,0.16), transparent),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 9px)}
+  .spark.purple{background:linear-gradient(to top, rgba(200,142,195,0.16), transparent),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 9px)}
+
+  /* tooltip demo */
+  .tip{position:relative}
+  .tipbox{position:absolute;left:0;top:120%;z-index:5;width:215px;background:#0e1620;border:1px solid var(--bord);
+    border-radius:9px;padding:10px 12px;box-shadow:0 14px 40px rgba(0,0,0,.6)}
+  .tipbox .th{font-family:var(--mono);font-size:.6rem;color:var(--fg);display:flex;justify-content:space-between;margin-bottom:6px}
+  .tipbox .tm{font-family:var(--mono);font-size:.56rem;color:var(--mut);line-height:1.6}
+  .tipbox .tlink{font-family:var(--mono);font-size:.56rem;color:var(--green);margin-top:6px;display:block}
+  .tipbox::before{content:'';position:absolute;top:-5px;left:24px;width:9px;height:9px;background:#0e1620;border-left:1px solid var(--bord);border-top:1px solid var(--bord);transform:rotate(45deg)}
+
+  /* bottom corr */
+  .bottom{display:grid;grid-template-columns:1.1fr 1fr;gap:14px}
+  .panel{border:1px solid var(--bord);border-radius:14px;background:rgba(255,255,255,0.018);padding:15px}
+  .panel h3{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .scatter{height:120px;border-radius:8px;position:relative;background:
+    linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px) 0 0/100% 30px,
+    linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px) 0 0/40px 100%;border:1px solid var(--hair)}
+  .pt{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--aqua);opacity:.8}
+  .trend{height:118px;border-radius:8px;border:1px solid var(--hair);position:relative;overflow:hidden;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,0.04) 0 1px,transparent 1px 46px)}
+  .tline{position:absolute;left:0;right:0;height:2px;border-radius:2px}
+  .hint{font-family:var(--mono);font-size:.6rem;color:var(--mut);margin-top:10px;display:flex;gap:18px;flex-wrap:wrap}
+  .hint b{color:var(--dim);font-weight:500}
+
+  /* hero v2 — concentric rings */
+  .hero2{display:grid;grid-template-columns:auto 1.05fr 1.05fr;gap:26px;align-items:stretch;
+    border:1px solid var(--bord);border-radius:16px;padding:20px 24px;background:rgba(255,255,255,0.02)}
+  .mring{position:relative;width:128px;height:128px;flex-shrink:0;align-self:center}
+  .mring .ctr{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1}
+  .mring .ctr b{font-family:var(--mono);font-weight:700;font-size:1.85rem;text-shadow:0 0 22px rgba(89,190,108,.45)}
+  .mring .ctr span{display:block;font-family:var(--mono);font-size:.5rem;color:var(--mut);margin-top:3px;letter-spacing:.1em}
+  .sctx{display:flex;flex-direction:column;gap:13px;justify-content:center}
+  .sctx .st{font-size:1.2rem;font-weight:700;letter-spacing:-.01em;margin:3px 0 3px}
+  .sctx .sd{font-family:var(--mono);font-size:.64rem;color:var(--dim)}
+  .sctx .desc{font-family:var(--mono);font-size:.62rem;color:var(--mut);line-height:1.5;max-width:280px}
+  .flegend{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+  .frow{display:grid;grid-template-columns:10px 76px 1fr 28px 24px;align-items:center;gap:9px;font-family:var(--mono);font-size:.62rem;color:var(--dim)}
+  .frow>i{width:10px;height:10px;border-radius:3px}
+  .fspark{width:100%;height:17px;display:block}
+  .frow .fv{color:var(--fg);font-weight:600;text-align:right}
+  .frow .fd{font-size:.54rem;text-align:right}
+  .strip{display:flex;align-items:flex-end;gap:3px;height:32px}
+  .strip i{flex:1;background:rgba(89,190,108,.45);border-radius:2px 2px 0 0;min-height:4px}
+  .strip i.today{background:var(--green);box-shadow:0 0 8px var(--green)}
+  .reco{font-family:var(--mono);font-size:.63rem;color:var(--green);display:flex;align-items:center;gap:7px;
+    border:1px solid rgba(89,190,108,.25);background:rgba(89,190,108,.06);border-radius:8px;padding:8px 11px}
+
+  /* correlation heatmap */
+  .hm{display:grid;grid-template-columns:28px repeat(6,38px);gap:4px;justify-content:start;flex-shrink:0}
+  .hm .hc{width:38px;height:38px;border-radius:5px;display:grid;place-items:center;font-family:var(--mono);font-size:.56rem;color:rgba(255,255,255,.7);cursor:pointer;transition:transform .15s}
+  .hm .hc:hover{transform:scale(1.1)}
+  .hm .hlbl{font-family:var(--mono);font-size:.56rem;color:var(--mut);display:grid;place-items:center}
+  .hm .hlbl.row{justify-content:end;padding-right:6px}
+
+  .hmwrap{display:flex;gap:22px;align-items:flex-start}
+  .corr-list{display:flex;flex-direction:column;gap:11px;flex:1;min-width:0;padding-top:2px}
+  .corr-list .lbl{margin-bottom:1px}
+  .corr-item{display:flex;align-items:flex-start;gap:11px}
+  .corr-item .ci-r{font-family:var(--mono);font-weight:700;font-size:.74rem;width:36px;flex-shrink:0;text-align:right}
+  .corr-item .ci-r.pos{color:var(--green)}
+  .corr-item .ci-r.neg{color:var(--red)}
+  .corr-item b{font-family:var(--mono);font-size:.64rem;font-weight:600;color:var(--fg);display:block;margin-bottom:1px}
+  .corr-item .cx{font-size:.62rem;color:var(--mut);line-height:1.4}
+
+  /* svg trend */
+  .tchart{width:100%;height:128px;display:block}
+  .tlegend{display:flex;gap:16px;font-family:var(--mono);font-size:.58rem;color:var(--mut);margin-top:9px}
+  .tlegend span{display:flex;align-items:center;gap:6px}
+  .tlegend i{width:12px;height:2px;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- header -->
+  <div class="top">
+    <div class="brand">
+      <div class="logo"><b>Life</b> Dashboard <span style="color:var(--green)">●</span></div>
+      <div class="hi">Добрый день</div>
+    </div>
+    <div class="tabs">
+      <div class="tab on">Обзор</div>
+      <div class="tab">Аналитика</div>
+      <div class="tab">Инфраструктура</div>
+      <div class="tab">Приложения ▾</div>
+    </div>
+    <div class="wx">
+      <div><div class="t">19°</div><div class="d">облачно</div></div>
+      <div><div class="d" style="color:var(--dim)">4 июня, чт</div><div class="d">14:00 · Глубокая работа</div></div>
+    </div>
+  </div>
+
+  <!-- HERO v2 -->
+  <div class="hero2">
+    <div class="mring">
+      <svg viewBox="0 0 128 128" width="128" height="128">
+        <g fill="none" stroke-width="8" stroke-linecap="round">
+          <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,.07)"/>
+          <circle cx="64" cy="64" r="56" stroke="#5dc0a7" stroke-dasharray="351.9" stroke-dashoffset="63.3" transform="rotate(-90 64 64)"/>
+          <circle cx="64" cy="64" r="44" stroke="rgba(255,255,255,.07)"/>
+          <circle cx="64" cy="64" r="44" stroke="#59be6c" stroke-dasharray="276.5" stroke-dashoffset="80.2" transform="rotate(-90 64 64)"/>
+          <circle cx="64" cy="64" r="32" stroke="rgba(255,255,255,.07)"/>
+          <circle cx="64" cy="64" r="32" stroke="#e2c162" stroke-dasharray="201.1" stroke-dashoffset="68.4" transform="rotate(-90 64 64)"/>
+          <circle cx="64" cy="64" r="20" stroke="rgba(255,255,255,.07)"/>
+          <circle cx="64" cy="64" r="20" stroke="#69aed5" stroke-dasharray="125.7" stroke-dashoffset="52.8" transform="rotate(-90 64 64)"/>
+        </g>
+      </svg>
+      <div class="ctr"><div><b>76</b><span>/ 100</span></div></div>
+    </div>
+    <div class="sctx">
+      <div>
+        <div class="lbl">Состояние дня · composite</div>
+        <div class="st">Готов к нагрузке</div>
+        <div class="sd" style="color:var(--green)">▲ 8 vs среднее 30д (68) · лучший за 9 дней</div>
+        <div class="desc">Тело восстановилось, нервная система спокойна — можно держать высокий темп.</div>
+      </div>
+      <div class="flegend">
+        <div class="frow"><i style="background:#5dc0a7"></i><span>Сон</span><svg class="fspark" viewBox="0 0 60 17" preserveAspectRatio="none"><polyline points="0,12 12,10 24,11 36,7 48,8 60,5" fill="none" stroke="#5dc0a7" stroke-width="1.6"/></svg><span class="fv">82</span><span class="fd" style="color:var(--green)">▲4</span></div>
+        <div class="frow"><i style="background:#59be6c"></i><span>Энергия</span><svg class="fspark" viewBox="0 0 60 17" preserveAspectRatio="none"><polyline points="0,13 12,11 24,12 36,9 48,7 60,6" fill="none" stroke="#59be6c" stroke-width="1.6"/></svg><span class="fv">71</span><span class="fd" style="color:var(--green)">▲6</span></div>
+        <div class="frow"><i style="background:#e2c162"></i><span>Спокойствие</span><svg class="fspark" viewBox="0 0 60 17" preserveAspectRatio="none"><polyline points="0,6 12,7 24,6 36,9 48,9 60,11" fill="none" stroke="#e2c162" stroke-width="1.6"/></svg><span class="fv">66</span><span class="fd" style="color:var(--red)">▼3</span></div>
+        <div class="frow"><i style="background:#69aed5"></i><span>HRV</span><svg class="fspark" viewBox="0 0 60 17" preserveAspectRatio="none"><polyline points="0,10 12,9 24,10 36,9 48,8 60,8" fill="none" stroke="#69aed5" stroke-width="1.6"/></svg><span class="fv">58</span><span class="fd" style="color:var(--green)">▲2</span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:13px;justify-content:center">
+      <div>
+        <div class="lbl" style="margin-bottom:6px">Готовность · 14 дней</div>
+        <div class="strip">
+          <i style="height:55%"></i><i style="height:48%"></i><i style="height:62%"></i><i style="height:58%"></i><i style="height:44%"></i><i style="height:70%"></i><i style="height:65%"></i><i style="height:52%"></i><i style="height:60%"></i><i style="height:72%"></i><i style="height:58%"></i><i style="height:50%"></i><i style="height:68%"></i><i class="today" style="height:78%"></i>
+        </div>
+      </div>
+      <div class="reco">◈ Хорошее окно для глубокой работы — держи нагрузку до 18:00</div>
+      <div class="brief" style="border:none;background:none;padding:0">
+        <div class="bh"><span class="lbl" style="color:var(--purple)">◇ AI-разбор дня</span><span class="more" style="margin-left:auto">развернуть →</span></div>
+        <p style="font-size:.78rem">Сон 7.4ч поднял восстановление, стресс ниже нормы. Глубокой работы 6.2ч — на 1.1ч выше обычного; настроение растёт следом за сном.</p>
+        <div class="chips"><span class="src">Garmin</span><span class="src">GitHub</span><span class="src">WakaTime</span><span class="src">Obsidian</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE -->
+  <div class="live">
+    <div class="lcell now"><div class="lbl">▸ Сейчас</div><div class="lv">coding · omniroute</div><div class="ls">фокус 41 мин · WakaTime</div></div>
+    <div class="lcell"><div class="lbl">По плану</div><div class="lv">Глубокая работа</div><div class="ls">14:00–18:00 · Obsidian</div></div>
+    <div class="lcell"><div class="lbl">Инфра</div><div class="lv"><span class="dot"></span>12/12 ok</div><div class="ls">контейнеры · Docker</div></div>
+    <div class="lcell"><div class="lbl">Стрик кода</div><div class="lv">23 дня</div><div class="ls">рекорд 31 · GitHub</div></div>
+  </div>
+
+  <!-- DOMAINS -->
+  <div class="domains">
+
+    <!-- ТЕЛО -->
+    <div class="dom">
+      <div class="dh"><span class="nm">Тело</span><span class="src">Garmin</span><span class="more">развернуть →</span></div>
+      <div class="db">
+        <div class="prim"><span class="pv" style="color:var(--aqua);text-shadow:0 0 22px rgba(93,192,167,.4)">7.4</span><span class="pu">ч сна</span><span class="pd up">▲ 0.6</span></div>
+        <div class="stage">
+          <i style="flex:18;background:#3b5566"></i><i style="flex:52;background:var(--aqua)"></i><i style="flex:22;background:var(--blue)"></i><i style="flex:8;background:var(--red)"></i>
+        </div>
+        <div class="legend"><span style="--c:#3b5566">Глубокий</span><span style="--c:var(--aqua)">Лёгкий</span><span style="--c:var(--blue)">REM</span><span style="--c:var(--red)">Бодр.</span></div>
+        <div class="subs">
+          <div class="sub tip"><span class="sl">Пульс покоя <span class="info">i</span></span><div class="track"><div class="band" style="left:30%;right:25%"></div><div class="fill" style="width:40%;background:var(--green)"></div><div class="pin" style="left:38%;background:var(--green)"></div></div><span class="sv">54</span>
+            <div class="tipbox"><div class="th"><span>Пульс покоя</span><span style="color:var(--mut)">Garmin</span></div><div class="tm">Сегодня 54 уд/мин · ср.30д 57 · диапазон 52–62<br>Норма для тебя — зелёная зона.</div><span class="tlink">→ открыть график и корреляции</span></div>
+          </div>
+          <div class="sub"><span class="sl">SpO₂ <span class="info">i</span></span><div class="track"><div class="band" style="left:55%;right:0"></div><div class="fill" style="width:84%;background:var(--blue)"></div><div class="pin" style="left:82%;background:var(--blue)"></div></div><span class="sv">96%</span></div>
+          <div class="sub"><span class="sl">Body Battery <span class="info">i</span></span><div class="track"><div class="band" style="left:20%;right:15%"></div><div class="fill" style="width:71%;background:var(--green)"></div><div class="pin" style="left:69%;background:var(--green)"></div></div><span class="sv">71</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- РАЗУМ -->
+    <div class="dom">
+      <div class="dh"><span class="nm">Разум</span><span class="src">Obsidian · Garmin</span><span class="more">развернуть →</span></div>
+      <div class="db">
+        <div class="prim"><span class="pv" style="color:var(--yellow);text-shadow:0 0 22px rgba(226,193,98,.4)">4</span><span class="pu">/ 5 настроение</span><span class="pd up">▲ 1</span></div>
+        <div class="spark purple"></div>
+        <div class="subs">
+          <div class="sub"><span class="sl">Стресс ср <span class="info">i</span></span><div class="track"><div class="band" style="left:25%;right:30%"></div><div class="fill" style="width:34%;background:var(--yellow)"></div><div class="pin" style="left:32%;background:var(--yellow)"></div></div><span class="sv">34</span></div>
+          <div class="sub"><span class="sl">Фокус <span class="info">i</span></span><div class="track"><div class="band" style="left:30%;right:20%"></div><div class="fill" style="width:60%;background:var(--green)"></div><div class="pin" style="left:58%;background:var(--green)"></div></div><span class="sv">4.8ч</span></div>
+          <div class="sub"><span class="sl">Связь <span class="info">i</span></span><div class="track" style="background:none"><div style="font-family:var(--mono);font-size:.58rem;color:var(--mut)">сон ↔ настроение&nbsp; r = 0.62</div></div><span class="sv" style="color:var(--green)">↗</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- РАБОТА -->
+    <div class="dom">
+      <div class="dh"><span class="nm">Работа</span><span class="src">WakaTime · GitHub</span><span class="more">развернуть →</span></div>
+      <div class="db">
+        <div class="prim"><span class="pv" style="color:var(--green);text-shadow:0 0 22px rgba(89,190,108,.4)">4.8</span><span class="pu">ч кода</span><span class="pd up">▲ 1.1</span></div>
+        <div class="donutrow">
+          <div class="donut"><div class="c">4.8ч</div></div>
+          <div class="langs">
+            <span class="lang" style="--c:var(--blue)">TypeScript · 1.9ч</span>
+            <span class="lang" style="--c:var(--yellow)">Python · 1.3ч</span>
+            <span class="lang" style="--c:var(--aqua)">Go · 1.0ч</span>
+            <span class="lang" style="--c:var(--orange)">Rust · 0.6ч</span>
+          </div>
+        </div>
+        <div class="subs">
+          <div class="sub"><span class="sl">Коммиты <span class="info">i</span></span><div class="track" style="background:none"><div style="display:flex;gap:3px;align-items:center">
+            <i style="width:7px;height:7px;border-radius:2px;background:rgba(89,190,108,.35)"></i><i style="width:7px;height:7px;border-radius:2px;background:rgba(89,190,108,.55)"></i><i style="width:7px;height:7px;border-radius:2px;background:var(--green)"></i><i style="width:7px;height:7px;border-radius:2px;background:rgba(89,190,108,.7)"></i><i style="width:7px;height:7px;border-radius:2px;background:var(--green)"></i><span style="font-family:var(--mono);font-size:.54rem;color:var(--mut);margin-left:4px">7д</span>
+          </div></div><span class="sv">16</span></div>
+          <div class="sub"><span class="sl">PR смержено <span class="info">i</span></span><div class="track" style="background:none"><div style="font-family:var(--mono);font-size:.58rem;color:var(--mut)">3 · review 5</div></div><span class="sv">3</span></div>
+          <div class="sub"><span class="sl">Deep-work <span class="info">i</span></span><div class="track"><div class="band" style="left:35%;right:15%"></div><div class="fill" style="width:78%;background:var(--green)"></div><div class="pin" style="left:76%;background:var(--green)"></div></div><span class="sv">6.2ч</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM: correlation matrix + trends -->
+  <div class="bottom">
+    <div class="panel">
+      <h3>Корреляции <span class="more" style="margin-left:auto">открыть в Аналитике →</span></h3>
+      <div class="hmwrap">
+        <div class="hm" id="hm"></div>
+        <div class="corr-list">
+          <div class="lbl">Сильнейшие связи</div>
+          <div class="corr-item"><span class="ci-r pos">+.62</span><div><b>Сон → Настроение</b><div class="cx">крепче спишь — лучше день</div></div></div>
+          <div class="corr-item"><span class="ci-r neg">−.50</span><div><b>Стресс → Энергия</b><div class="cx">стресс садит body battery</div></div></div>
+          <div class="corr-item"><span class="ci-r pos">+.41</span><div><b>Код → Стресс</b><div class="cx">длинные сессии повышают стресс</div></div></div>
+          <div class="corr-item"><span class="ci-r neg">−.38</span><div><b>Сон → Стресс</b><div class="cx">недосып → выше стресс днём</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Тренды · 30д <span class="more" style="margin-left:auto">наведи — день · клик — развернуть</span></h3>
+      <svg class="tchart" viewBox="0 0 600 128" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="gm" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#e2c162" stop-opacity=".22"/><stop offset="1" stop-color="#e2c162" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <g stroke="rgba(255,255,255,.05)"><line x1="0" y1="32" x2="600" y2="32"/><line x1="0" y1="64" x2="600" y2="64"/><line x1="0" y1="96" x2="600" y2="96"/></g>
+        <path d="M0,74 C50,64 90,80 140,58 C190,40 240,66 300,50 C360,34 420,60 480,42 C540,30 580,48 600,40 L600,128 L0,128 Z" fill="url(#gm)"/>
+        <path d="M0,74 C50,64 90,80 140,58 C190,40 240,66 300,50 C360,34 420,60 480,42 C540,30 580,48 600,40" fill="none" stroke="#e2c162" stroke-width="2.2"/>
+        <path d="M0,92 C60,86 120,96 180,82 C240,72 300,88 360,80 C420,74 480,84 540,76 C570,72 590,78 600,75" fill="none" stroke="#5dc0a7" stroke-width="1.6" stroke-dasharray="4 3"/>
+        <path d="M0,84 C60,90 120,76 180,86 C240,92 300,80 360,88 C420,94 480,82 540,88 C570,90 590,84 600,86" fill="none" stroke="#59be6c" stroke-width="1.6" opacity=".7"/>
+        <line x1="585" y1="0" x2="585" y2="128" stroke="rgba(255,255,255,.16)" stroke-dasharray="3 3"/>
+        <circle cx="600" cy="40" r="3.6" fill="#e2c162"/>
+      </svg>
+      <div class="tlegend">
+        <span><i style="background:#e2c162"></i>Настроение</span>
+        <span><i style="background:#5dc0a7"></i>Сон</span>
+        <span><i style="background:#59be6c"></i>Энергия</span>
+        <span style="margin-left:auto;color:var(--mut)">06.05 ─────────────── сегодня</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  const M=['Сон','Наст','Стр','Код','Шаг','BB'];
+  const R=[
+    [1,.62,-.38,-.12,.15,.55],
+    [.62,1,-.44,.28,.20,.40],
+    [-.38,-.44,1,.41,-.10,-.50],
+    [-.12,.28,.41,1,-.22,-.18],
+    [.15,.20,-.10,-.22,1,.12],
+    [.55,.40,-.50,-.18,.12,1]];
+  const hm=document.getElementById('hm');
+  let html='<div class="hlbl"></div>'+M.map(m=>`<div class="hlbl">${m}</div>`).join('');
+  R.forEach((row,i)=>{
+    html+=`<div class="hlbl row">${M[i]}</div>`;
+    row.forEach((r,j)=>{
+      if(i===j){html+='<div class="hc" style="background:rgba(255,255,255,.05);color:var(--mut)">—</div>';return;}
+      const a=(Math.abs(r)*0.5+0.08).toFixed(2);
+      const c=r>=0?`rgba(89,190,108,${a})`:`rgba(227,100,94,${a})`;
+      const t=(r>0?'.':'-.')+Math.round(Math.abs(r)*100);
+      html+=`<div class="hc" style="background:${c}">${t}</div>`;
+    });
+  });
+  hm.innerHTML=html;
+</script>
+</body>
+</html>
