@@ -15,6 +15,7 @@ import { Server } from 'socket.io';
 import Docker from 'dockerode';
 
 import crypto from 'crypto';
+import { buildCachedNowPulse, fetchWakatimeNow, nowPulseIntervalMs } from './nowPulse.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -166,6 +167,23 @@ setInterval(() => {
   }
   pollDocker();
 }, 5000);
+
+async function emitNowPulse() {
+  try {
+    const fresh = await fetchWakatimeNow(process.env.WAKATIME_API_KEY);
+    const pulse = fresh || buildCachedNowPulse(loadMetrics());
+    if (!pulse) return;
+
+    io.emit('now_pulse', { ...pulse, updated_at: new Date().toISOString() });
+  } catch (e) {
+    const cached = buildCachedNowPulse(loadMetrics());
+    if (!cached) {
+      console.warn('now_pulse skipped:', e.message);
+      return;
+    }
+    io.emit('now_pulse', { ...cached, updated_at: new Date().toISOString(), stale: true });
+  }
+}
 
 // ---- Server Metrics (Netdata Proxy) ----
 
@@ -892,4 +910,6 @@ httpServer.listen(PORT, () => {
   // Start docker polling and log tailing
   setTimeout(tailOpenclawLogs, 3000);
   pollDocker();
+  emitNowPulse();
+  setInterval(emitNowPulse, nowPulseIntervalMs());
 });

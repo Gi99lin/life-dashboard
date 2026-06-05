@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { renderLiveStrip } from '../src/components/LiveStrip.js';
+import { renderLiveStrip, updateLiveNow } from '../src/components/LiveStrip.js';
 
 describe('renderLiveStrip', () => {
   it('renders now, schedule, infra placeholder, and code streak', () => {
@@ -24,5 +24,27 @@ describe('renderLiveStrip', () => {
     expect(container.innerHTML).toContain('Глубокая работа');
     expect(container.innerHTML).toContain('23 дн');
     expect(container.innerHTML).toContain('id="liveInfra"');
+  });
+
+  it('updates the now cell in place from socket payloads', () => {
+    const value = { innerHTML: '' };
+    const detail = { textContent: '' };
+    const container = {
+      querySelector(selector) {
+        if (selector === '.lcell.now .lv') return value;
+        if (selector === '.lcell.now .ls') return detail;
+        return null;
+      },
+    };
+
+    updateLiveNow(container, {
+      activity: 'Код',
+      project: 'life-dashboard',
+      focus_min: 37,
+      source: 'WakaTime',
+    });
+
+    expect(value.innerHTML).toBe('Код · life-dashboard');
+    expect(detail.textContent).toBe('фокус 37 мин · WakaTime');
   });
 });

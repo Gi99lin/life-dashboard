@@ -28,3 +28,29 @@ export function renderLiveStrip(container, data, schedule) {
       <div class="ls">GitHub</div>
     </div>`;
 }
+
+function formatNowValue(now) {
+  const activity = now?.activity || 'Нет активности';
+  return now?.project ? `${activity} · ${now.project}` : activity;
+}
+
+function formatNowDetail(now) {
+  const minutes = Number.isFinite(now?.focus_min) ? now.focus_min : 0;
+  const source = now?.source || 'WakaTime';
+  return `фокус ${minutes} мин · ${source}`;
+}
+
+function setText(el, text) {
+  if (!el) return;
+  if ('textContent' in el) el.textContent = text;
+  else el.innerHTML = text;
+}
+
+export function updateLiveNow(rootOrNow, maybeNow) {
+  const root = maybeNow ? rootOrNow : document;
+  const now = maybeNow || rootOrNow;
+  if (!root || !now) return;
+
+  setText(root.querySelector('.lcell.now .lv'), formatNowValue(now));
+  setText(root.querySelector('.lcell.now .ls'), formatNowDetail(now));
+}

@@ -15,7 +15,7 @@ import { renderLiveSchedule } from './components/LiveSchedule.js';
 import { renderDevOpsHUD } from './components/DevOpsHUD.js';
 import { renderServerMetrics } from './components/ServerMetrics.js';
 import { renderHero } from './components/Hero.js';
-import { renderLiveStrip } from './components/LiveStrip.js';
+import { renderLiveStrip, updateLiveNow } from './components/LiveStrip.js';
 import { renderDomains } from './components/Domains.js';
 import { renderCorrelationPanel } from './components/CorrelationPanel.js';
 import { renderOverviewTrends } from './components/OverviewTrends.js';
@@ -84,6 +84,10 @@ async function init() {
   socket.on('agent_pulse', (state) => {
     const el = document.getElementById('agentRooms');
     if (el) renderDevOpsHUD(el, state);
+  });
+
+  socket.on('now_pulse', (state) => {
+    updateLiveNow(state);
   });
 
   // Fetch Live Schedule

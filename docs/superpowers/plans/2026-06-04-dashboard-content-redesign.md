@@ -1005,10 +1005,10 @@ def _prompt(day, correlations):
 
 **Files:** Modify `api/server.js`, `dashboard/src/main.js`
 
-- [ ] **Step 1:** Read `api/server.js` to match its socket.io + auth pattern. Add a server-side interval (e.g., every 60s) that reads today's WakaTime "Сейчас" (top project + minutes; reuse the collector's WakaTime logic or call a small Node fetch) and `io.emit('now_pulse', {...})`. Guard with the same auth used by `docker_pulse`.
-- [ ] **Step 2:** In `main.js`, `socket.on('now_pulse', s => updateLiveNow(s))` updating the live-strip "Сейчас" cell in place.
-- [ ] **Step 3: Verify** the live cell updates without reload (simulate by emitting from the server). 
-- [ ] **Step 4: Commit** `feat: live now_pulse for current activity`.
+- [x] **Step 1:** Read `api/server.js` to match its socket.io + auth pattern. Add a server-side interval (e.g., every 60s) that reads today's WakaTime "Сейчас" (top project + minutes; reuse the collector's WakaTime logic or call a small Node fetch) and `io.emit('now_pulse', {...})`. Guard with the same auth used by `docker_pulse`.
+- [x] **Step 2:** In `main.js`, `socket.on('now_pulse', s => updateLiveNow(s))` updating the live-strip "Сейчас" cell in place.
+- [x] **Step 3: Verify** the live cell updates without reload (simulate by emitting from the server). 
+- [x] **Step 4: Commit** `feat: live now_pulse for current activity`.
 
 ### Task 5.2: Empty states + responsive + cleanup
 
