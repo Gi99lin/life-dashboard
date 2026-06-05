@@ -75,12 +75,12 @@
 - Modify: `dashboard/package.json`
 - Create: `dashboard/test/smoke.test.js`
 
-- [ ] **Step 1: Install vitest**
+- [x] **Step 1: Install vitest**
 
 Run: `cd dashboard && npm install -D vitest`
 Expected: `vitest` added to devDependencies.
 
-- [ ] **Step 2: Add test script**
+- [x] **Step 2: Add test script**
 
 In `dashboard/package.json` `"scripts"`, add:
 ```json
@@ -88,7 +88,7 @@ In `dashboard/package.json` `"scripts"`, add:
 "test:watch": "vitest"
 ```
 
-- [ ] **Step 3: Write a smoke test**
+- [x] **Step 3: Write a smoke test**
 
 `dashboard/test/smoke.test.js`:
 ```js
@@ -96,12 +96,12 @@ import { describe, it, expect } from 'vitest';
 describe('tooling', () => { it('runs', () => { expect(1 + 1).toBe(2); }); });
 ```
 
-- [ ] **Step 4: Run**
+- [x] **Step 4: Run**
 
 Run: `cd dashboard && npm test`
 Expected: 1 passed.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add dashboard/package.json dashboard/package-lock.json dashboard/test/smoke.test.js
