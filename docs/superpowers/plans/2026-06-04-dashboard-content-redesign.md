@@ -979,10 +979,10 @@ def _prompt(day, correlations):
 - Create: `dashboard/src/components/AnalyticsDeep.js`
 - Modify: `dashboard/index.html` (Analytics sub-tabs: Тело / Разум / Работа / Корреляции), `dashboard/src/main.js`
 
-- [ ] **Step 1:** Implement sub-tab views: **Тело** (sleep stages history, HR/SpO₂/BB lines — reuse `HealthCharts.js`), **Разум** (mood + stress overlay), **Работа** (coding hours by language stacked, commits/PRs), **Корреляции** (large `heatmapMatrix` + a scatter rendered with Chart.js for a selected pair).
-- [ ] **Step 2:** Lazy-render on first open (follow the existing `healthLoaded` pattern in `main.js`).
-- [ ] **Step 3: Verify** each sub-tab fills with the new palette and is not empty after switching tabs. Screenshot.
-- [ ] **Step 4: Commit** `feat(dashboard): analytics deep-view`.
+- [x] **Step 1:** Implement sub-tab views: **Тело** (sleep stages history, HR/SpO₂/BB lines — reuse `HealthCharts.js`), **Разум** (mood + stress overlay), **Работа** (coding hours by language stacked, commits/PRs), **Корреляции** (large `heatmapMatrix` + a scatter rendered with Chart.js for a selected pair).
+- [x] **Step 2:** Lazy-render on first open (follow the existing `healthLoaded` pattern in `main.js`).
+- [x] **Step 3: Verify** each sub-tab fills with the new palette and is not empty after switching tabs. Screenshot.
+- [x] **Step 4: Commit** `feat(dashboard): analytics deep-view`.
 
 ### Task 4.2: Drill-down + tooltips + source links
 

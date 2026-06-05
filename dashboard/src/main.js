@@ -13,13 +13,13 @@ import { initChartTheme } from './utils/palette.js';
 import { initAuth, showLoginModal } from './components/LoginModal.js';
 import { renderLiveSchedule } from './components/LiveSchedule.js';
 import { renderDevOpsHUD } from './components/DevOpsHUD.js';
-import { renderHealthCharts } from './components/HealthCharts.js';
 import { renderServerMetrics } from './components/ServerMetrics.js';
 import { renderHero } from './components/Hero.js';
 import { renderLiveStrip } from './components/LiveStrip.js';
 import { renderDomains } from './components/Domains.js';
 import { renderCorrelationPanel } from './components/CorrelationPanel.js';
 import { renderOverviewTrends } from './components/OverviewTrends.js';
+import { renderAnalyticsDeep } from './components/AnalyticsDeep.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -147,7 +147,7 @@ async function init() {
   }
 
   // Tab switching
-  let healthLoaded = false;
+  let analyticsLoaded = false;
   const tabs = document.getElementById('tabs');
   const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
   const appsMenu = document.getElementById('appsMenu');
@@ -174,9 +174,9 @@ async function init() {
 
     // Lazy-render health charts on first visit (canvas must be visible so
     // Chart.js measures the container correctly).
-    if (tabName === 'analytics' && !healthLoaded) {
-      healthLoaded = true;
-      renderHealthCharts(data);
+    if (tabName === 'analytics' && !analyticsLoaded) {
+      analyticsLoaded = true;
+      renderAnalyticsDeep(document.getElementById('analyticsDeep'), data);
     }
   }
 

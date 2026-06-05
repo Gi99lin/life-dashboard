@@ -3950,3 +3950,126 @@ body.app-mode .app-iframe-tab {
   height: 160px;
   min-height: 160px;
 }
+
+/* ---- Analytics deep-view ---- */
+.analytics-deep {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-height: 520px;
+}
+
+.analytics-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.analytics-head h2 {
+  margin: 4px 0 0;
+  color: var(--fg);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.analytics-subtabs {
+  margin-bottom: 0;
+}
+
+.analytics-panel {
+  display: none;
+}
+
+.analytics-panel.active {
+  display: block;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.analytics-grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.analytics-grid.corr {
+  grid-template-columns: minmax(330px, 0.85fr) minmax(0, 1.15fr);
+}
+
+.analytics-card {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  background: color-mix(in oklch, oklch(100% 0 0) 1.8%, transparent);
+}
+
+.analytics-card.wide {
+  grid-column: span 2;
+}
+
+.analytics-card h3 {
+  margin: 0 0 12px;
+  color: var(--fg-dim);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.analytics-chart {
+  position: relative;
+  height: 220px;
+  min-height: 220px;
+}
+
+.analytics-chart.tall {
+  height: 280px;
+  min-height: 280px;
+}
+
+.analytics-card.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analytics-kv {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--hair);
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+}
+
+.analytics-kv:last-child {
+  border-bottom: none;
+}
+
+.analytics-kv b {
+  color: var(--fg);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.analytics-heatmap {
+  overflow-x: auto;
+}
+
+.analytics-heatmap .hm {
+  grid-template-columns: 34px repeat(6, 48px);
+}
+
+.analytics-heatmap .hm .hc {
+  width: 48px;
+  height: 48px;
+  border-radius: 7px;
+  font-size: 0.62rem;
+}
