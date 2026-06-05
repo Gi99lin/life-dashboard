@@ -20,6 +20,7 @@ import { renderDevOpsHUD } from './components/DevOpsHUD.js';
 import { renderHealthCharts } from './components/HealthCharts.js';
 import { renderServerMetrics } from './components/ServerMetrics.js';
 import { renderHero } from './components/Hero.js';
+import { renderLiveStrip } from './components/LiveStrip.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -78,6 +79,7 @@ async function init() {
   socket.on('docker_pulse', (state) => {
     const el = document.getElementById('agentRooms');
     if (el) renderDevOpsHUD(el, state);
+    updateLiveInfra(state);
   });
   
   socket.on('agent_pulse', (state) => {
@@ -86,9 +88,11 @@ async function init() {
   });
 
   // Fetch Live Schedule
+  let scheduleData = null;
   try {
     const sRes = await fetch('/api/schedule');
     const sData = await sRes.json();
+    scheduleData = sData;
     const sCont = document.getElementById('liveSchedule');
     if (sCont) renderLiveSchedule(sCont, sData);
   } catch(e) {
@@ -99,6 +103,7 @@ async function init() {
   setSyncDot(data.days ? 'ok' : 'error');
 
   renderHero(document.getElementById('hero'), data);
+  renderLiveStrip(document.getElementById('liveStrip'), data, scheduleData);
 
   // Stat cards
   const statContainer = document.getElementById('statCards');
@@ -212,6 +217,17 @@ async function init() {
       if (el) renderServerMetrics(el);
     }
   });
+}
+
+function updateLiveInfra(state) {
+  const el = document.getElementById('liveInfra');
+  const containers = state?.containers || [];
+  if (!el || !containers.length) return;
+
+  const ok = containers.filter((container) => container.state === 'running').length;
+  const total = containers.length;
+  const value = el.querySelector('.lv');
+  if (value) value.innerHTML = `<span class="dot"></span>${ok}/${total} ok`;
 }
 
 init();

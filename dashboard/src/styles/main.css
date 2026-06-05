@@ -3573,3 +3573,55 @@ body.app-mode .app-iframe-tab {
   font-size: 0.78rem;
   line-height: 1.55;
 }
+
+/* ---- Overview live strip ---- */
+.live {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: var(--gap);
+}
+
+.lcell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  padding: 11px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 11px;
+  background: var(--card-bg);
+}
+
+.lcell.now {
+  border-color: color-mix(in oklch, var(--blue) 30%, transparent);
+  background: color-mix(in oklch, var(--blue) 5%, transparent);
+}
+
+.lcell .lv {
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lcell .ls {
+  overflow: hidden;
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}

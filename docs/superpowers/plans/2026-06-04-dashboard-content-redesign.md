@@ -578,7 +578,7 @@ git commit -m "feat(dashboard): readiness hero"
 - Modify: `dashboard/index.html` (add `<section id="liveStrip" class="live"></section>` under the hero)
 - Modify: `dashboard/src/main.js`
 
-- [ ] **Step 1: Implement `renderLiveStrip(container, data, schedule)`** — 4 cells: «Сейчас» (`data.meta.now`), «По плану» (current block from `schedule`), «Инфра» (from latest docker pulse, default «—»), «Стрик кода» (`last.github?.streak` or `'—'`). Use the `.live/.lcell` markup from `mock-overview.html`.
+- [x] **Step 1: Implement `renderLiveStrip(container, data, schedule)`** — 4 cells: «Сейчас» (`data.meta.now`), «По плану» (current block from `schedule`), «Инфра» (from latest docker pulse, default «—»), «Стрик кода» (`last.github?.streak` or `'—'`). Use the `.live/.lcell` markup from `mock-overview.html`.
 
 ```js
 export function renderLiveStrip(container, data, schedule) {
@@ -594,11 +594,11 @@ export function renderLiveStrip(container, data, schedule) {
 }
 ```
 
-- [ ] **Step 2: Wire in `main.js`** (call after schedule fetch). Update `#liveInfra` inside the existing `socket.on('docker_pulse', …)` handler to show `okCount/total`.
+- [x] **Step 2: Wire in `main.js`** (call after schedule fetch). Update `#liveInfra` inside the existing `socket.on('docker_pulse', …)` handler to show `okCount/total`.
 
-- [ ] **Step 3: Verify in preview + screenshot.**
+- [x] **Step 3: Verify in preview + screenshot.**
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add dashboard/src/components/LiveStrip.js dashboard/src/main.js dashboard/index.html
