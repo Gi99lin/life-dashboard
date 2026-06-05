@@ -7,7 +7,7 @@ let tooltipEl = null;
 
 const SOURCE_URLS = {
   Garmin: 'https://connect.garmin.com/modern/',
-  GitHub: 'https://github.com/ivanyakimkin',
+  GitHub: 'https://github.com/Gi99lin',
   WakaTime: 'https://wakatime.com/dashboard',
 };
 

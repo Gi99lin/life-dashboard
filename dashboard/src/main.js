@@ -141,7 +141,9 @@ async function init() {
     if (e.target === qeOverlay) qeOverlay.classList.remove('open');
   });
 
-  // Expose openQuickEntry globally for MoodHeatmap clicks
+  // Programmatic opener for the manual mood/food entry modal. Its old trigger
+  // (the calendar heatmap) was removed in the Overview redesign; kept as a hook
+  // so the manual-entry path isn't lost (a UI trigger can be re-added later).
   window.__openQuickEntry = openQuickEntry;
 
   // Schedule editor — click on schedule widget opens editor
@@ -222,12 +224,9 @@ async function init() {
   });
 
   document.addEventListener('click', (e) => {
-    const cell = e.target.closest('.hc[data-i]');
-    if (cell) {
-      window.__openAnalytics?.('corr', { i: +cell.dataset.i, j: +cell.dataset.j });
-      return;
-    }
-
+    // Correlation-matrix cells bind their own click handlers (CorrelationPanel on
+    // the Overview, AnalyticsDeep inside the Analytics tab), so they are not
+    // handled here — only generic [data-drill] links are.
     const drill = e.target.closest('[data-drill]');
     if (drill) {
       window.__openAnalytics?.(drill.dataset.drill || 'body');

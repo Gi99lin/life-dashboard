@@ -13,7 +13,7 @@ describe('metric tooltips and source links', () => {
   });
 
   it('returns URLs for known source chips', () => {
-    expect(sourceUrlFor('GitHub')).toBe('https://github.com/ivanyakimkin');
+    expect(sourceUrlFor('GitHub')).toBe('https://github.com/Gi99lin');
     expect(sourceUrlFor('WakaTime')).toBe('https://wakatime.com/dashboard');
     expect(sourceUrlFor('Obsidian')).toBeNull();
   });

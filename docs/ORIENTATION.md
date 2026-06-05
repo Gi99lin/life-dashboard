@@ -158,5 +158,9 @@ cards. The content redesign (this plan) builds on top of that — do not revert 
   `/api/forecast` (live, what the widget renders).
 - Chart.js charts created while their tab is `display:none` render at 0 size — render them
   lazily on first tab open (see the `healthLoaded` pattern in `main.js`).
-- Temp/design scaffolding to delete at the end: `dashboard/vite.mock.config.js`,
-  `.claude/launch.json`, `dashboard/public/mock-approaches.html`, `dashboard/public/mock-overview.html`.
+- Design/preview harness, **kept intentionally** (not shipped — `public/` is dev-served, and
+  the mock config is only used by `--config vite.mock.config.js`): `dashboard/vite.mock.config.js`
+  (offline mock backend on :5174), `.claude/launch.json` (Claude Preview `dashboard-mock`),
+  `dashboard/public/mock-overview.html` (the visual source-of-truth for the Overview). Launch with
+  `npx vite --config vite.mock.config.js --port 5174`, then open `/` (app) and `/mock-overview.html`
+  (target). `mock-approaches.html` (early direction sketches) was removed — no longer needed.
