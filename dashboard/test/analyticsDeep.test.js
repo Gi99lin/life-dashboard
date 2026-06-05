@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAnalyticsDeepModel, renderAnalyticsDeep } from '../src/components/AnalyticsDeep.js';
+import { analyticsTabForTarget, buildAnalyticsDeepModel, renderAnalyticsDeep } from '../src/components/AnalyticsDeep.js';
 
 const sampleData = {
   days: {
@@ -80,5 +80,13 @@ describe('AnalyticsDeep', () => {
     expect(container.innerHTML).toContain('id="analyticsMindChart"');
     expect(container.innerHTML).toContain('id="analyticsWorkChart"');
     expect(container.innerHTML).toContain('id="analyticsScatter"');
+  });
+
+  it('maps overview drill targets to analytics tabs', () => {
+    expect(analyticsTabForTarget('body')).toBe('body');
+    expect(analyticsTabForTarget('mind')).toBe('mind');
+    expect(analyticsTabForTarget('work')).toBe('work');
+    expect(analyticsTabForTarget('corr')).toBe('corr');
+    expect(analyticsTabForTarget('ai')).toBe('corr');
   });
 });

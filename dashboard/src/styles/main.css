@@ -3455,6 +3455,16 @@ body.app-mode .app-iframe-tab {
   text-transform: uppercase;
 }
 
+.src.linked-source {
+  cursor: pointer;
+  transition: border-color 0.18s var(--ease-out), color 0.18s var(--ease-out);
+}
+
+.src.linked-source:hover {
+  border-color: color-mix(in oklch, var(--green) 35%, transparent);
+  color: var(--green);
+}
+
 .more {
   color: var(--green);
   font-family: var(--mono);

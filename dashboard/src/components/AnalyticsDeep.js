@@ -13,6 +13,15 @@ const TABS = [
   { key: 'corr', label: 'Корреляции' },
 ];
 
+const DRILL_TARGETS = {
+  body: 'body',
+  mind: 'mind',
+  work: 'work',
+  corr: 'corr',
+  ai: 'corr',
+  hero: 'body',
+};
+
 const METRICS = {
   'Сон': (day) => day.garmin?.sleep_hours ?? day.schedule?.hours_sleep,
   'Наст': (day) => day.manual?.mood,
@@ -24,6 +33,10 @@ const METRICS = {
 
 const stateByContainer = new WeakMap();
 const charts = new Map();
+
+export function analyticsTabForTarget(target) {
+  return DRILL_TARGETS[target] || 'body';
+}
 
 export function buildAnalyticsDeepModel(data, count = 30, pair = { i: 0, j: 1 }) {
   const days = getDays(data, count);
@@ -151,6 +164,8 @@ export function renderAnalyticsDeep(container, data) {
   container.addEventListener?.('click', (event) => {
     const button = event.target.closest?.('[data-analytics-tab]');
     if (button) activateAnalyticsDeep(container, button.dataset.analyticsTab);
+    const cell = event.target.closest?.('.analytics-heatmap .hc[data-i]');
+    if (cell) activateAnalyticsDeep(container, 'corr', { i: +cell.dataset.i, j: +cell.dataset.j });
   });
   activateAnalyticsDeep(container, 'body');
 }

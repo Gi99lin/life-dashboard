@@ -5,7 +5,13 @@ const LANG_COLORS = ['#69aed5', '#e2c162', '#5dc0a7', '#e99355'];
 
 const minmax = (days, extractor) => {
   const values = days.map(extractor).filter((value) => value != null);
-  return values.length ? { min: Math.min(...values), max: Math.max(...values) } : { min: 0, max: 1 };
+  return values.length
+    ? {
+      min: Math.min(...values),
+      max: Math.max(...values),
+      avg: round1(values.reduce((sum, value) => sum + value, 0) / values.length),
+    }
+    : { min: 0, max: 1, avg: '—' };
 };
 
 export function renderDomains(container, data) {
@@ -45,9 +51,9 @@ function renderBody(days, garmin) {
           <span style="--c:var(--red)">Бодр.</span>
         </div>
         <div class="subs">
-          ${subRow('Пульс покоя', garmin.resting_hr, ranges.hr, '#59be6c')}
-          ${subRow('SpO₂', garmin.spo2_avg != null ? `${garmin.spo2_avg}%` : null, ranges.spo2, '#69aed5', garmin.spo2_avg)}
-          ${subRow('Body Battery', garmin.body_battery_max, ranges.bb, '#59be6c')}
+          ${subRow('Пульс покоя', garmin.resting_hr, ranges.hr, '#59be6c', undefined, 'Garmin')}
+          ${subRow('SpO₂', garmin.spo2_avg != null ? `${garmin.spo2_avg}%` : null, ranges.spo2, '#69aed5', garmin.spo2_avg, 'Garmin')}
+          ${subRow('Body Battery', garmin.body_battery_max, ranges.bb, '#59be6c', undefined, 'Garmin')}
         </div>
       </div>
     </div>`;
@@ -66,9 +72,9 @@ function renderMind(days, day, garmin, wakatime, correlations) {
         <div class="prim"><span class="pv" style="color:var(--yellow)">${day.manual?.mood ?? '—'}</span><span class="pu">/ 5 настроение</span></div>
         <div class="spark-wrap">${sparkline(moodSeries.filter((value) => value != null), '#c88ec3', 300, 34).replace('fspark', 'spark-svg')}</div>
         <div class="subs">
-          ${subRow('Стресс ср', garmin.stress_avg, minmax(days, (item) => item.garmin?.stress_avg), '#e2c162')}
-          ${subRow('Фокус', wakatime?.focus_h != null ? `${wakatime.focus_h}ч` : null, { min: 0, max: 8 }, '#59be6c', wakatime?.focus_h)}
-          <div class="sub"><span class="sl">Связь <span class="info">i</span></span><div class="track text-track"><span>сон ↔ настроение r=${corr ? corr.r : '—'}</span></div><span class="sv" style="color:var(--green)">↗</span></div>
+          ${subRow('Стресс ср', garmin.stress_avg, minmax(days, (item) => item.garmin?.stress_avg), '#e2c162', undefined, 'Garmin')}
+          ${subRow('Фокус', wakatime?.focus_h != null ? `${wakatime.focus_h}ч` : null, { min: 0, max: 8, avg: '—' }, '#59be6c', wakatime?.focus_h, 'WakaTime')}
+          <div class="sub" data-label="Связь" data-value="r=${corr ? corr.r : '—'}" data-avg="—" data-range="-1..1" data-source="Collector Pearson"><span class="sl">Связь <span class="info">i</span></span><div class="track text-track"><span>сон ↔ настроение r=${corr ? corr.r : '—'}</span></div><span class="sv" style="color:var(--green)">↗</span></div>
         </div>
       </div>
     </div>`;
@@ -101,15 +107,15 @@ function renderWork(day, wakatime, github) {
         <div class="prim"><span class="pv" style="color:var(--green)">${primaryValue}</span><span class="pu">${primaryUnit}</span></div>
         ${segments.length ? `<div class="donutrow">${donut(segments, `${wakatime.total_h || ''}ч`)}<div class="langs">${languageLegend}</div></div>` : ''}
         <div class="subs">
-          ${subRow('Коммиты', commitsValue, { min: 0, max: 20 }, '#59be6c', day.git?.commits)}
-          ${subRow('PR / review', prReviewValue, { min: 0, max: 8 }, '#69aed5', github?.prs_merged)}
-          ${subRow('Deep-work', day.schedule?.hours_work != null ? `${day.schedule.hours_work}ч` : null, { min: 0, max: 8 }, '#59be6c', day.schedule?.hours_work)}
+          ${subRow('Коммиты', commitsValue, { min: 0, max: 20, avg: '—' }, '#59be6c', day.git?.commits, 'GitHub')}
+          ${subRow('PR / review', prReviewValue, { min: 0, max: 8, avg: '—' }, '#69aed5', github?.prs_merged, 'GitHub')}
+          ${subRow('Deep-work', day.schedule?.hours_work != null ? `${day.schedule.hours_work}ч` : null, { min: 0, max: 8, avg: '—' }, '#59be6c', day.schedule?.hours_work, 'Obsidian')}
         </div>
       </div>
     </div>`;
 }
 
-function subRow(label, displayValue, range, color, rawValue) {
+function subRow(label, displayValue, range, color, rawValue, source = '—') {
   const value = rawValue != null ? rawValue : (typeof displayValue === 'number' ? displayValue : null);
   const bar = value == null
     ? '<div class="track"></div>'
@@ -121,6 +127,17 @@ function subRow(label, displayValue, range, color, rawValue) {
       bandMax: range.min + (range.max - range.min) * 0.8,
       color,
     });
+  const rangeText = `${round1(range.min)}–${round1(range.max)}`;
+  const tooltipAttrs = `data-label="${attr(label)}" data-value="${attr(displayValue ?? '—')}" ` +
+    `data-avg="${attr(range.avg ?? '—')}" data-range="${attr(rangeText)}" data-source="${attr(source)}"`;
 
-  return `<div class="sub"><span class="sl">${label} <span class="info">i</span></span>${bar}<span class="sv">${displayValue ?? '—'}</span></div>`;
+  return `<div class="sub" ${tooltipAttrs}><span class="sl">${label} <span class="info">i</span></span>${bar}<span class="sv">${displayValue ?? '—'}</span></div>`;
+}
+
+function round1(value) {
+  return typeof value === 'number' ? +value.toFixed(1) : value;
+}
+
+function attr(value) {
+  return String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
 }

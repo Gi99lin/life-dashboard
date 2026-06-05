@@ -84,5 +84,8 @@ describe('renderDomains', () => {
     expect(container.innerHTML).toContain('16 · 23д');
     expect(container.innerHTML).toContain('PR / review');
     expect(container.innerHTML).toContain('2/5');
+    expect(container.innerHTML).toContain('data-source="GitHub"');
+    expect(container.innerHTML).toContain('data-range="0–20"');
+    expect(container.innerHTML).toContain('data-avg=');
   });
 });

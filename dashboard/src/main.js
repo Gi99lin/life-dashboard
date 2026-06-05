@@ -6,7 +6,7 @@ import { loadMetrics } from './utils/dataLoader.js';
 import { renderQuickEntry, loadEntryForDate } from './components/QuickEntry.js';
 import { initWeather } from './components/WeatherForecast.js';
 import { openScheduleEditor } from './components/ScheduleEditor.js';
-import { initGlobalTooltip } from './utils/tooltip.js';
+import { attachMetricTooltips, enhanceSourceLinks, initGlobalTooltip } from './utils/tooltip.js';
 import { initChartTheme } from './utils/palette.js';
 
 // V2 Imports
@@ -19,7 +19,7 @@ import { renderLiveStrip } from './components/LiveStrip.js';
 import { renderDomains } from './components/Domains.js';
 import { renderCorrelationPanel } from './components/CorrelationPanel.js';
 import { renderOverviewTrends } from './components/OverviewTrends.js';
-import { renderAnalyticsDeep } from './components/AnalyticsDeep.js';
+import { activateAnalyticsDeep, analyticsTabForTarget, renderAnalyticsDeep } from './components/AnalyticsDeep.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -112,6 +112,7 @@ async function init() {
 
   // Tooltip system
   initGlobalTooltip();
+  enhanceMetricInteractions(document);
 
   // Quick entry
   const quickEntry = document.getElementById('quickEntry');
@@ -152,6 +153,14 @@ async function init() {
   const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
   const appsMenu = document.getElementById('appsMenu');
 
+  function ensureAnalytics() {
+    if (analyticsLoaded) return;
+    analyticsLoaded = true;
+    const analyticsEl = document.getElementById('analyticsDeep');
+    renderAnalyticsDeep(analyticsEl, data);
+    enhanceMetricInteractions(analyticsEl);
+  }
+
   function loadAppIframe(tab) {
     const iframe = tab?.querySelector('iframe[data-src]');
     if (iframe && !iframe.getAttribute('src')) {
@@ -174,11 +183,15 @@ async function init() {
 
     // Lazy-render health charts on first visit (canvas must be visible so
     // Chart.js measures the container correctly).
-    if (tabName === 'analytics' && !analyticsLoaded) {
-      analyticsLoaded = true;
-      renderAnalyticsDeep(document.getElementById('analyticsDeep'), data);
-    }
+    if (tabName === 'analytics') ensureAnalytics();
   }
+
+  window.__openAnalytics = (target, params = {}) => {
+    const tab = analyticsTabForTarget(target);
+    const analyticsButton = tabs?.querySelector('.tab[data-tab="analytics"]');
+    activateTab('analytics', analyticsButton);
+    activateAnalyticsDeep(document.getElementById('analyticsDeep'), tab, params);
+  };
 
   tabs?.addEventListener('click', (e) => {
     const appItem = e.target.closest('.app-menu-item');
@@ -205,6 +218,18 @@ async function init() {
   });
 
   document.addEventListener('click', (e) => {
+    const cell = e.target.closest('.hc[data-i]');
+    if (cell) {
+      window.__openAnalytics?.('corr', { i: +cell.dataset.i, j: +cell.dataset.j });
+      return;
+    }
+
+    const drill = e.target.closest('[data-drill]');
+    if (drill) {
+      window.__openAnalytics?.(drill.dataset.drill || 'body');
+      return;
+    }
+
     if (!tabs?.contains(e.target)) {
       appsMenu?.classList.remove('open');
       appsTrigger?.setAttribute('aria-expanded', 'false');
@@ -230,6 +255,11 @@ async function init() {
       if (el) renderServerMetrics(el);
     }
   });
+}
+
+function enhanceMetricInteractions(root) {
+  attachMetricTooltips(root);
+  enhanceSourceLinks(root);
 }
 
 function updateLiveInfra(state) {

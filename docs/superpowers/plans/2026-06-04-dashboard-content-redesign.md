@@ -988,10 +988,10 @@ def _prompt(day, correlations):
 
 **Files:** Modify `dashboard/src/main.js`, `dashboard/src/components/AnalyticsDeep.js`, `dashboard/src/utils/tooltip.js`
 
-- [ ] **Step 1:** Implement `window.__openAnalytics(target, params)` — switches to the Analytics tab, activates the matching sub-tab, and (for `corr`) selects the `{i,j}` scatter. Bind all `[data-drill]` elements (hero "развернуть", domain "развернуть", matrix cells) to it in `main.js`.
-- [ ] **Step 2:** Add hover tooltips to every `.sub` / `.hc` showing `value · avg · range · source` using the existing global tooltip system (`utils/tooltip.js`); make `.src` chips link to the source where a URL exists (GitHub profile, etc.).
-- [ ] **Step 3: Verify** clicking a domain "развернуть" lands on the right sub-tab; hovering a sub-row shows the source tooltip. Screenshot the open state.
-- [ ] **Step 4: Commit** `feat(dashboard): drill-down + source tooltips`.
+- [x] **Step 1:** Implement `window.__openAnalytics(target, params)` — switches to the Analytics tab, activates the matching sub-tab, and (for `corr`) selects the `{i,j}` scatter. Bind all `[data-drill]` elements (hero "развернуть", domain "развернуть", matrix cells) to it in `main.js`.
+- [x] **Step 2:** Add hover tooltips to every `.sub` / `.hc` showing `value · avg · range · source` using the existing global tooltip system (`utils/tooltip.js`); make `.src` chips link to the source where a URL exists (GitHub profile, etc.).
+- [x] **Step 3: Verify** clicking a domain "развернуть" lands on the right sub-tab; hovering a sub-row shows the source tooltip. Screenshot the open state.
+- [x] **Step 4: Commit** `feat(dashboard): drill-down + source tooltips`.
 
 **Phase 4 acceptance:** Drill-downs navigate correctly; tooltips show source/avg/range; matrix cell opens its scatter.
 
