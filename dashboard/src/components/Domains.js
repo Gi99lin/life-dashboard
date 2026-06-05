@@ -32,6 +32,10 @@ export function renderDomains(container, data) {
 }
 
 function renderBody(days, garmin) {
+  if (!hasAnyMetric(garmin, ['sleep_hours', 'resting_hr', 'spo2_avg', 'body_battery_max', 'stress_avg'])) {
+    return emptyDomain('Тело', 'Garmin', 'body');
+  }
+
   const ranges = {
     hr: minmax(days, (day) => day.garmin?.resting_hr),
     spo2: minmax(days, (day) => day.garmin?.spo2_avg),
@@ -60,6 +64,12 @@ function renderBody(days, garmin) {
 }
 
 function renderMind(days, day, garmin, wakatime, correlations) {
+  const hasMindData = day.manual?.mood != null || garmin.stress_avg != null ||
+    wakatime?.focus_h != null || Boolean(correlations?.strongest?.length);
+  if (!hasMindData) {
+    return emptyDomain('Разум', 'Obsidian · Garmin', 'mind');
+  }
+
   const moodSeries = days.slice(-14).map((item) => item.manual?.mood);
   const corr = (correlations?.strongest || []).find((item) => (
     (item.a === 'Сон' && item.b === 'Наст') || (item.a === 'Наст' && item.b === 'Сон')
@@ -81,6 +91,12 @@ function renderMind(days, day, garmin, wakatime, correlations) {
 }
 
 function renderWork(day, wakatime, github) {
+  const hasWorkData = Boolean(wakatime) || Boolean(github) ||
+    day.git?.commits != null || day.schedule?.hours_work != null;
+  if (!hasWorkData) {
+    return emptyDomain('Работа', 'WakaTime · GitHub', 'work');
+  }
+
   const languages = wakatime?.by_language || {};
   const total = Object.values(languages).reduce((sum, value) => sum + value, 0) || 1;
   const segments = Object.entries(languages).slice(0, 4).map(([, hours], index) => ({
@@ -115,6 +131,19 @@ function renderWork(day, wakatime, github) {
     </div>`;
 }
 
+function emptyDomain(name, source, drill) {
+  return `
+    <div class="dom" data-drill="${drill}">
+      <div class="dh"><span class="nm">${name}</span><span class="src">${source}</span><span class="more">развернуть →</span></div>
+      <div class="db">
+        <div class="empty-state">
+          <b>Нет данных за день</b>
+          <span>Сбор начнётся ночью</span>
+        </div>
+      </div>
+    </div>`;
+}
+
 function subRow(label, displayValue, range, color, rawValue, source = '—') {
   const value = rawValue != null ? rawValue : (typeof displayValue === 'number' ? displayValue : null);
   const bar = value == null
@@ -132,6 +161,10 @@ function subRow(label, displayValue, range, color, rawValue, source = '—') {
     `data-avg="${attr(range.avg ?? '—')}" data-range="${attr(rangeText)}" data-source="${attr(source)}"`;
 
   return `<div class="sub" ${tooltipAttrs}><span class="sl">${label} <span class="info">i</span></span>${bar}<span class="sv">${displayValue ?? '—'}</span></div>`;
+}
+
+function hasAnyMetric(source, keys) {
+  return keys.some((key) => source?.[key] != null);
 }
 
 function round1(value) {

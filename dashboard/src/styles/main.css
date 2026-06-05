@@ -3961,6 +3961,202 @@ body.app-mode .app-iframe-tab {
   min-height: 160px;
 }
 
+.empty-state {
+  display: flex;
+  min-height: 118px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px;
+  border: 1px dashed color-mix(in oklch, var(--green) 24%, transparent);
+  border-radius: 10px;
+  background: color-mix(in oklch, var(--green) 5%, transparent);
+}
+
+.empty-state b {
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.empty-state span {
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.64rem;
+}
+
+@media (max-width: 1000px) {
+  .top-header-row {
+    flex-wrap: wrap;
+  }
+
+  .top-header-row > * {
+    min-width: 0;
+  }
+
+  .tabs {
+    flex: 1 1 520px;
+  }
+
+  .weather-widget-pane {
+    flex: 1 1 520px;
+  }
+
+  .schedule-widget-pane {
+    flex: 1 1 260px;
+  }
+
+  .hero2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mring {
+    justify-self: center;
+  }
+
+  .sctx .desc {
+    max-width: none;
+  }
+
+  .sctx,
+  .hcol,
+  .flegend,
+  .frow,
+  .reco,
+  .brief {
+    min-width: 0;
+  }
+
+  .live {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .domains,
+  .bottom {
+    grid-template-columns: 1fr;
+  }
+
+  .hmwrap {
+    flex-direction: column;
+  }
+
+  .analytics-grid,
+  .analytics-grid.two,
+  .analytics-grid.corr {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-card.wide {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 700px) {
+  .top-header-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .header-branding {
+    min-width: 0;
+  }
+
+  .tabs {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tab,
+  .apps-tab-group,
+  .apps-tab-trigger {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .weather-current-row {
+    flex-wrap: wrap;
+  }
+
+  .weather-metrics,
+  .weather-sun-col {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .weather-hourly {
+    min-width: 0;
+  }
+
+  .hero2 {
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .frow {
+    grid-template-columns: 10px 68px minmax(72px, 1fr) 28px 24px;
+    gap: 7px;
+  }
+
+  .fspark {
+    min-width: 0;
+  }
+
+  .sctx .desc,
+  .brief p,
+  .reco {
+    overflow-wrap: anywhere;
+  }
+
+  .live {
+    grid-template-columns: 1fr;
+  }
+
+  .dh {
+    flex-wrap: wrap;
+  }
+
+  .sub {
+    grid-template-columns: minmax(76px, 92px) minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .panel h3 {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .panel h3 .more {
+    margin-left: 0;
+  }
+
+  .hmwrap {
+    gap: 16px;
+  }
+
+  .hm {
+    width: 100%;
+    grid-template-columns: 24px repeat(6, minmax(30px, 1fr));
+  }
+
+  .hm .hc {
+    width: 100%;
+    height: 34px;
+  }
+
+  .corr-list {
+    width: 100%;
+  }
+
+  .analytics-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
 /* ---- Analytics deep-view ---- */
 .analytics-deep {
   display: flex;

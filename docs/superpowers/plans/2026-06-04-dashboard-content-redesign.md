@@ -1014,11 +1014,11 @@ def _prompt(day, correlations):
 
 **Files:** Modify `dashboard/src/styles/main.css`, components; delete temp files.
 
-- [ ] **Step 1:** Add tasteful empty states ("Нет данных за день", "Сбор начнётся ночью") for missing readiness/brief/domains instead of bare "—".
-- [ ] **Step 2:** Add responsive rules: hero stacks vertically, domains become 1 column, bottom panels stack, at `max-width: 1000px` and `700px`. Verify with `preview_resize` presets `tablet` and `mobile`.
-- [ ] **Step 3:** Remove temporary scaffolding: `dashboard/vite.mock.config.js`, `.claude/launch.json`, `dashboard/public/mock-approaches.html`, `dashboard/public/mock-overview.html`. Remove the `--no-save`-installed `socket.io-client` only if it was already a real dependency (it is — keep it).
-- [ ] **Step 4:** Final pass: `cd dashboard && npm test`, `cd collector && python -m pytest`, `cd dashboard && npm run build` all green; no console errors in preview.
-- [ ] **Step 5: Commit** `feat: empty states, responsive, cleanup`.
+- [x] **Step 1:** Add tasteful empty states ("Нет данных за день", "Сбор начнётся ночью") for missing readiness/brief/domains instead of bare "—".
+- [x] **Step 2:** Add responsive rules: hero stacks vertically, domains become 1 column, bottom panels stack, at `max-width: 1000px` and `700px`. Verify with `preview_resize` presets `tablet` and `mobile`.
+- [x] **Step 3:** Remove temporary scaffolding: `dashboard/vite.mock.config.js`, `.claude/launch.json`, `dashboard/public/mock-approaches.html`, `dashboard/public/mock-overview.html`. Remove the `--no-save`-installed `socket.io-client` only if it was already a real dependency (it is — keep it).
+- [x] **Step 4:** Final pass: `cd dashboard && npm test`, `cd collector && python -m pytest`, `cd dashboard && npm run build` all green; no console errors in preview.
+- [x] **Step 5: Commit** `feat: empty states, responsive, cleanup`.
 
 **Phase 5 acceptance:** Live "Сейчас" updates over socket; mobile/tablet layouts hold; build passes; temp files gone.
 

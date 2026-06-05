@@ -22,4 +22,13 @@ describe('renderCorrelationPanel', () => {
     expect(container.innerHTML).toContain('class="hm"');
     expect(container.innerHTML).toContain('+0.62');
   });
+
+  it('renders an empty state when correlations are unavailable', () => {
+    const container = { innerHTML: '' };
+
+    renderCorrelationPanel(container, { meta: {} });
+
+    expect(container.innerHTML).toContain('Нет данных за день');
+    expect(container.innerHTML).toContain('Сбор начнётся ночью');
+  });
 });

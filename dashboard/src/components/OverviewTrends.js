@@ -39,8 +39,25 @@ export function buildOverviewTrendSeries(data, count = 30) {
   };
 }
 
+export function hasTrendData(series) {
+  return ['mood', 'sleep', 'energy'].some((key) => (
+    (series[key] || []).some((value) => value != null)
+  ));
+}
+
 export function renderOverviewTrends(container, data) {
   if (!container) return;
+
+  const series = buildOverviewTrendSeries(data, 30);
+  if (!hasTrendData(series)) {
+    container.innerHTML = `
+      <h3>Тренды · 30д <span class="more">наведи — день · клик — развернуть</span></h3>
+      <div class="empty-state">
+        <b>Нет данных за день</b>
+        <span>Сбор начнётся ночью</span>
+      </div>`;
+    return;
+  }
 
   container.innerHTML = `
     <h3>Тренды · 30д <span class="more">наведи — день · клик — развернуть</span></h3>
@@ -50,7 +67,6 @@ export function renderOverviewTrends(container, data) {
   if (!canvas) return;
 
   const ctx = canvas.getContext('2d');
-  const series = buildOverviewTrendSeries(data, 30);
   const gradient = (color) => {
     const g = ctx.createLinearGradient(0, 0, 0, 160);
     g.addColorStop(0, rgba(color, 0.22));

@@ -22,6 +22,7 @@ export function renderHero(container, data) {
     : null;
   const delta = readiness.score != null && avg30 != null ? readiness.score - avg30 : null;
   const brief = data.meta?.ai_brief;
+  const isEmpty = readiness.score == null;
 
   const rings = multiRing({
     score: readiness.score,
@@ -73,21 +74,21 @@ export function renderHero(container, data) {
       <div class="reco">◈ ${recommendation(readiness.score)}</div>
       <div class="brief hero-brief">
         <div class="bh"><span class="lbl">◇ AI-разбор дня</span><span class="more" data-drill="ai">развернуть →</span></div>
-        <p> ${brief?.text || 'Анализ появится после сбора данных.'}</p>
+        <p> ${brief?.text || (isEmpty ? 'Сбор начнётся ночью: коллектор подтянет Garmin, WakaTime и Obsidian.' : 'Анализ появится после сбора данных.')}</p>
         <div class="chips">${sources}</div>
       </div>
     </div>`;
 }
 
 function statusLabel(score) {
-  if (score == null) return 'Нет данных';
+  if (score == null) return 'Нет данных за день';
   if (score >= 75) return 'Готов к нагрузке';
   if (score >= 55) return 'В норме';
   return 'Нужен отдых';
 }
 
 function description(score) {
-  if (score == null) return 'Коллектор ещё не собрал достаточно данных для балла.';
+  if (score == null) return 'Сбор начнётся ночью: readiness появится после свежего прохода collector.';
   if (score >= 75) return 'Тело восстановилось, нервная система спокойна — можно держать высокий темп.';
   if (score >= 55) return 'День рабочий, но лучше держать нагрузку ровной и смотреть на стресс.';
   return 'Сигналы восстановления слабые — стоит снизить темп и закрыть базовые потребности.';

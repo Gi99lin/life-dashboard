@@ -88,4 +88,16 @@ describe('renderDomains', () => {
     expect(container.innerHTML).toContain('data-range="0–20"');
     expect(container.innerHTML).toContain('data-avg=');
   });
+
+  it('renders tasteful empty states instead of bare placeholders for missing domains', () => {
+    const container = { className: '', innerHTML: '' };
+
+    renderDomains(container, { days: {}, meta: {} });
+
+    expect(container.innerHTML).toContain('Нет данных за день');
+    expect(container.innerHTML).toContain('Сбор начнётся ночью');
+    expect(container.innerHTML).not.toContain('<span class="pv" style="color:var(--aqua)">—</span>');
+    expect(container.innerHTML).not.toContain('<span class="pv" style="color:var(--yellow)">—</span>');
+    expect(container.innerHTML).not.toContain('<span class="pv" style="color:var(--green)">—</span>');
+  });
 });

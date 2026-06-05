@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildOverviewTrendSeries } from '../src/components/OverviewTrends.js';
+import { buildOverviewTrendSeries, hasTrendData } from '../src/components/OverviewTrends.js';
 
 describe('buildOverviewTrendSeries', () => {
   it('builds labels and three trend series from latest days', () => {
@@ -24,5 +24,11 @@ describe('buildOverviewTrendSeries', () => {
     expect(out.mood).toEqual([3, 4]);
     expect(out.sleep).toEqual([7.1, 7.4]);
     expect(out.energy).toEqual([65, 71]);
+  });
+
+  it('detects when trend series have no usable data', () => {
+    expect(hasTrendData({ labels: [], mood: [], sleep: [], energy: [] })).toBe(false);
+    expect(hasTrendData({ labels: ['05.06'], mood: [null], sleep: [null], energy: [null] })).toBe(false);
+    expect(hasTrendData({ labels: ['05.06'], mood: [4], sleep: [null], energy: [null] })).toBe(true);
   });
 });

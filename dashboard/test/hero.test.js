@@ -32,4 +32,13 @@ describe('renderHero', () => {
     expect((container.innerHTML.match(/class="frow"/g) || []).length).toBe(4);
     expect(container.innerHTML).toContain('class="strip"');
   });
+
+  it('renders a clear empty state when readiness and brief are missing', () => {
+    const container = { className: '', innerHTML: '' };
+
+    renderHero(container, { days: {}, meta: {} });
+
+    expect(container.innerHTML).toContain('Нет данных за день');
+    expect(container.innerHTML).toContain('Сбор начнётся ночью');
+  });
 });

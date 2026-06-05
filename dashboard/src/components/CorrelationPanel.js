@@ -11,8 +11,13 @@ export function renderCorrelationPanel(container, data) {
   if (!container) return;
 
   const correlations = data.meta?.correlations;
-  if (!correlations) {
-    container.innerHTML = '';
+  if (!correlations?.matrix?.length) {
+    container.innerHTML = `
+      <h3>Корреляции <span class="more" data-drill="corr">открыть в Аналитике →</span></h3>
+      <div class="empty-state">
+        <b>Нет данных за день</b>
+        <span>Сбор начнётся ночью</span>
+      </div>`;
     return;
   }
 
