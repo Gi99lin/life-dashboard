@@ -754,10 +754,10 @@ git commit -m "feat(dashboard): overview trends chart"
 **Files:**
 - Modify: `dashboard/index.html`, `dashboard/src/main.js`, `dashboard/src/styles/main.css`
 
-- [ ] **Step 1:** Remove the now-replaced old Overview markup (`stats-heatmap-row`, old `charts-row` if superseded) and the dead JS calls (`renderStatCards`, old heatmap on overview) — keep `MoodHeatmap`/`StatCards` modules for reuse in Analytics (Phase 4).
-- [ ] **Step 2:** Restructure tabs: group `LibreChat / Guacamole / OmniRoute` under a single **"Приложения ▾"** dropdown button; keep `Обзор / Аналитика / Инфраструктура` as primary tabs. Implement a minimal dropdown (click toggles a menu listing the three app tabs; selecting one activates the corresponding `tab-content`).
-- [ ] **Step 3: Verify** the Overview now shows only the new content; the apps dropdown switches to each iframe tab; no console errors (`preview_console_logs` level=error).
-- [ ] **Step 4: Commit**
+- [x] **Step 1:** Remove the now-replaced old Overview markup (`stats-heatmap-row`, old `charts-row` if superseded) and the dead JS calls (`renderStatCards`, old heatmap on overview) — keep `MoodHeatmap`/`StatCards` modules for reuse in Analytics (Phase 4).
+- [x] **Step 2:** Restructure tabs: group `LibreChat / Guacamole / OmniRoute` under a single **"Приложения ▾"** dropdown button; keep `Обзор / Аналитика / Инфраструктура` as primary tabs. Implement a minimal dropdown (click toggles a menu listing the three app tabs; selecting one activates the corresponding `tab-content`).
+- [x] **Step 3: Verify** the Overview now shows only the new content; the apps dropdown switches to each iframe tab; no console errors (`preview_console_logs` level=error).
+- [x] **Step 4: Commit**
 
 ```bash
 git add dashboard/index.html dashboard/src/main.js dashboard/src/styles/main.css

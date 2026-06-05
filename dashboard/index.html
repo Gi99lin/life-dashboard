@@ -26,11 +26,16 @@
             <!-- 2. Tabs Column -->
             <nav class="tabs" id="tabs">
                 <button class="tab active" data-tab="dashboard">Обзор</button>
-                <button class="tab" data-tab="devops">Инфраструктура</button>
                 <button class="tab" data-tab="analytics">Аналитика</button>
-                <button class="tab" data-tab="librechat">LibreChat</button>
-                <button class="tab" data-tab="guacamole">Guacamole</button>
-                <button class="tab" data-tab="omniroute">OmniRoute</button>
+                <button class="tab" data-tab="devops">Инфраструктура</button>
+                <div class="apps-tab-group">
+                    <button class="tab apps-tab-trigger" type="button" aria-expanded="false" aria-controls="appsMenu">Приложения ▾</button>
+                    <div class="apps-menu" id="appsMenu">
+                        <button class="app-menu-item" data-tab="librechat">LibreChat</button>
+                        <button class="app-menu-item" data-tab="guacamole">Guacamole</button>
+                        <button class="app-menu-item" data-tab="omniroute">OmniRoute</button>
+                    </div>
+                </div>
             </nav>
 
             <!-- 3. Weather Block -->
@@ -77,42 +82,6 @@
             <section class="bottom">
                 <div class="panel" id="corrPanel"></div>
                 <div class="panel" id="trendsPanel"></div>
-            </section>
-
-            <!-- Stat Cards + Heatmap Row -->
-            <!--
-            <section class="stats-heatmap-row">
-                <div class="stats-column" id="statCards"></div>
-                <div class="chart-card heatmap-card heatmap-inline" id="heatmapCard" style="--i: 2">
-                    <div class="chart-header">
-                        <h2>История настроения</h2>
-                        <button class="header-add-btn" id="quickAddBtn" title="Быстрый ввод">+</button>
-                    </div>
-                    <div id="moodHeatmap" class="heatmap-container"></div>
-                </div>
-            </section>
-            -->
-
-            <!-- Charts Row -->
-            <section class="charts-row">
-                <div class="chart-card" id="trendChartCard" style="--i: 0">
-                    <div class="chart-header">
-                        <h2>Тренды</h2>
-                        <div class="period-selector" id="periodSelector">
-                            <button class="period-btn" data-days="7">7д</button>
-                            <button class="period-btn active" data-days="30">30д</button>
-                            <button class="period-btn" data-days="90">90д</button>
-                        </div>
-                    </div>
-                    <canvas id="trendChart"></canvas>
-                </div>
-                <div class="chart-card" id="timeBreakdownCard" style="--i: 1">
-                    <div class="chart-header">
-                        <h2>Время за неделю</h2>
-                    </div>
-                    <canvas id="timeChart"></canvas>
-                    <div id="timeSummary" class="time-summary"></div>
-                </div>
             </section>
         </main>
 

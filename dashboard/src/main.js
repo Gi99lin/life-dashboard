@@ -2,11 +2,7 @@
  * Life Dashboard — main entry point
  */
 import './styles/main.css';
-import { loadMetrics, getDays } from './utils/dataLoader.js';
-import { renderStatCards } from './components/StatCards.js';
-import { renderTrendChart } from './components/TrendChart.js';
-import { renderTimeBreakdown } from './components/TimeBreakdown.js';
-import { renderMoodHeatmap } from './components/MoodHeatmap.js';
+import { loadMetrics } from './utils/dataLoader.js';
 import { renderQuickEntry, loadEntryForDate } from './components/QuickEntry.js';
 import { initWeather } from './components/WeatherForecast.js';
 import { openScheduleEditor } from './components/ScheduleEditor.js';
@@ -111,37 +107,8 @@ async function init() {
   renderCorrelationPanel(document.getElementById('corrPanel'), data);
   renderOverviewTrends(document.getElementById('trendsPanel'), data);
 
-  // Stat cards
-  const statContainer = document.getElementById('statCards');
-  if (statContainer) renderStatCards(statContainer, data);
-
   // Weather
   initWeather();
-
-  // Trend chart
-  const trendCanvas = document.getElementById('trendChart');
-  if (trendCanvas) renderTrendChart(trendCanvas, data, 30);
-
-  // Period selector
-  const periodSelector = document.getElementById('periodSelector');
-  if (periodSelector) {
-    periodSelector.addEventListener('click', (e) => {
-      const btn = e.target.closest('.period-btn');
-      if (!btn) return;
-      periodSelector.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const days = parseInt(btn.dataset.days);
-      renderTrendChart(trendCanvas, data, days);
-    });
-  }
-
-  // Time breakdown
-  const timeCanvas = document.getElementById('timeChart');
-  if (timeCanvas) renderTimeBreakdown(timeCanvas, data);
-
-  // Mood heatmap
-  const heatmapEl = document.getElementById('moodHeatmap');
-  if (heatmapEl) renderMoodHeatmap(heatmapEl, data);
 
   // Tooltip system
   initGlobalTooltip();
@@ -153,7 +120,6 @@ async function init() {
   // QuickEntry modal wiring
   const qeOverlay = document.getElementById('quickEntryOverlay');
   const qeCloseBtn = document.getElementById('qeModalClose');
-  const quickAddBtn = document.getElementById('quickAddBtn');
 
   function openQuickEntry(date) {
     if (qeOverlay) {
@@ -165,7 +131,6 @@ async function init() {
     }
   }
 
-  if (quickAddBtn) quickAddBtn.addEventListener('click', () => openQuickEntry());
   if (qeCloseBtn) qeCloseBtn.addEventListener('click', () => qeOverlay?.classList.remove('open'));
   if (qeOverlay) qeOverlay.addEventListener('click', (e) => {
     if (e.target === qeOverlay) qeOverlay.classList.remove('open');
@@ -183,13 +148,16 @@ async function init() {
 
   // Tab switching
   let healthLoaded = false;
-  document.getElementById('tabs')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.tab');
-    if (!btn) return;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const tabs = document.getElementById('tabs');
+  const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
+  const appsMenu = document.getElementById('appsMenu');
+
+  function activateTab(tabName, activeControl) {
+    document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    const target = document.getElementById(`tab-${btn.dataset.tab}`);
+    activeControl?.classList.add('active');
+
+    const target = document.getElementById(`tab-${tabName}`);
     if (target) target.classList.add('active');
 
     // Lock body scroll when iframe tab is active
@@ -198,9 +166,40 @@ async function init() {
 
     // Lazy-render health charts on first visit (canvas must be visible so
     // Chart.js measures the container correctly).
-    if (btn.dataset.tab === 'analytics' && !healthLoaded) {
+    if (tabName === 'analytics' && !healthLoaded) {
       healthLoaded = true;
       renderHealthCharts(data);
+    }
+  }
+
+  tabs?.addEventListener('click', (e) => {
+    const appItem = e.target.closest('.app-menu-item');
+    if (appItem) {
+      activateTab(appItem.dataset.tab, appsTrigger);
+      appsMenu?.classList.remove('open');
+      appsTrigger?.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
+    const trigger = e.target.closest('.apps-tab-trigger');
+    if (trigger) {
+      const open = !appsMenu?.classList.contains('open');
+      appsMenu?.classList.toggle('open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+      return;
+    }
+
+    const btn = e.target.closest('.tab[data-tab]');
+    if (!btn) return;
+    activateTab(btn.dataset.tab, btn);
+    appsMenu?.classList.remove('open');
+    appsTrigger?.setAttribute('aria-expanded', 'false');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!tabs?.contains(e.target)) {
+      appsMenu?.classList.remove('open');
+      appsTrigger?.setAttribute('aria-expanded', 'false');
     }
   });
 
