@@ -863,9 +863,9 @@ git commit -m "feat(collector): wakatime source"
 - Create: `collector/sources/ci_source.py`
 - Create: `collector/tests/test_ci_source.py`
 
-- [ ] **Step 1: Write failing test** mocking `GET https://api.github.com/repos/{owner}/{repo}/actions/runs?per_page=1` → asserts `fetch_status(repo)` returns `{repo, status, conclusion, updated_at}`.
-- [ ] **Step 2–4: Implement + pass.** `fetch_all(repos, token)` → list of statuses; tolerate missing repos.
-- [ ] **Step 5: Commit** `feat(collector): ci status source`.
+- [x] **Step 1: Write failing test** mocking `GET https://api.github.com/repos/{owner}/{repo}/actions/runs?per_page=1` → asserts `fetch_status(repo)` returns `{repo, status, conclusion, updated_at}`.
+- [x] **Step 2–4: Implement + pass.** `fetch_all(repos, token)` → list of statuses; tolerate missing repos.
+- [x] **Step 5: Commit** `feat(collector): ci status source`.
 
 ### Task 2.4: Integrate Phase-2 sources into `run_collect.py`
 
