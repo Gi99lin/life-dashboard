@@ -1,0 +1,17 @@
+# Node / npm
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+coverage/
+
+# Local runtime/cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/
