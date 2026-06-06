@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { METRICS, buildBoardModel } from '../src/components/EvidenceBoard.js';
+import { METRICS, buildBoardModel, renderEvidenceBoard } from '../src/components/EvidenceBoard.js';
 
 const data = { days: {
   '2026-06-01': { date: '2026-06-01', weekday: 'Пн', garmin: { sleep_hours: 6, stress_avg: 40 }, manual: { mood: 3 } },
@@ -29,5 +29,18 @@ describe('EvidenceBoard model', () => {
   it('timeline + distribution return arrays', () => {
     expect(buildBoardModel(data, { view: 'timeline', x: 'Стр', y: null }, 30).series.length).toBe(3);
     expect(buildBoardModel(data, { view: 'distribution', x: 'Сон', y: null }, 30).bins.length).toBeGreaterThan(0);
+  });
+
+  it('renders board controls and chart shell without a real canvas context', () => {
+    const container = {
+      innerHTML: '',
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    };
+    renderEvidenceBoard(container, data, { view: 'correlation', x: 'Сон', y: 'Наст' });
+    expect(container.innerHTML).toContain('Доска доказательств');
+    expect(container.innerHTML).toContain('data-view="correlation"');
+    expect(container.innerHTML).toContain('canvas');
+    expect(container.innerHTML).toContain('bchips');
   });
 });
