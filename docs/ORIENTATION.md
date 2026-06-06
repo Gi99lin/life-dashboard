@@ -4,7 +4,11 @@ Read this first. It explains the architecture, how to run everything locally, th
 data flow, env vars, and auth. Then read the redesign docs:
 - Design spec: `docs/superpowers/specs/2026-06-04-dashboard-content-redesign-design.md`
 - Implementation plan: `docs/superpowers/plans/2026-06-04-dashboard-content-redesign.md`
-- Visual target (do NOT delete until the plan's Phase 5): `dashboard/public/mock-overview.html`
+- Analytics spec: `docs/superpowers/specs/2026-06-06-analytics-redesign-design.md`
+- Infrastructure spec: `docs/superpowers/specs/2026-06-06-infrastructure-redesign-design.md`
+- Visual targets (do NOT delete until demo-mode work consumes/retires them):
+  `dashboard/public/mock-overview.html`, `dashboard/public/mock-analytics.html`,
+  `dashboard/public/mock-infrastructure.html`
 
 ---
 
@@ -33,7 +37,9 @@ the goal is "engineering flex on a genuinely useful tool".
   - `GET/POST /api/entry` — read/write today's mood/food/note (QuickEntry) → also writes the Obsidian daily note.
   - `GET/POST /api/schedule` — parse/write the day's schedule from Obsidian markdown tables.
   - `GET /api/forecast` — Open-Meteo 7-day + hourly + current (weather widget). Returns emoji icon codes (the frontend maps them to SVG in `utils/icons.js`).
-  - `GET /api/metrics/server` — Netdata + Docker container stats (Infrastructure → Resources tab).
+  - `GET /api/metrics/server` — legacy Netdata + Docker container stats endpoint, still kept for compatibility.
+  - `POST /api/analyze` — Analytics AI lab endpoint. Builds a grounded prompt from the selected period, `meta.findings`, correlations, and current metrics; calls an OpenAI-compatible LLM when configured; otherwise returns a graceful fallback `{answer, sources, board}`.
+  - `GET /api/infra/topology` — Homelab cockpit topology. Combines Docker networks/containers, Netdata host telemetry, nginx proxy routes, and Guacamole connections; returns an empty/fallback topology instead of throwing when any source is unavailable.
   - `POST /api/login`, `GET /api/auth-check` — cookie auth.
   - **socket.io:** emits `docker_pulse` (container states) and `agent_pulse` (active agent from OpenClaw logs). Requires the host Docker socket and a reachable Netdata.
 - **`dashboard/`** — Vite + **vanilla JS ES modules** + Chart.js + socket.io-client. Built to static files, served by **nginx** (`dashboard/nginx.conf`) which proxies `/api/` and `/socket.io/` to `life-dashboard-api:3001` and does SPA fallback. Entry: `dashboard/src/main.js`; components in `dashboard/src/components/*`; data access in `dashboard/src/utils/dataLoader.js` (`loadMetrics` tries `/api/sync`, then `/data/metrics.json`, then `/metrics.json`).
@@ -60,12 +66,17 @@ the goal is "engineering flex on a genuinely useful tool".
       // "readiness":{ "score": 76, "sleep": 82, "energy": 71, "calm": 66, "hrv": 58 }
     }
   },
-  "meta": { "last_updated": "...", "correlations": {...}, "ai_brief": {...}, "now": {...} }
+  "meta": {
+    "last_updated": "...", "correlations": {...}, "ai_brief": {...}, "now": {...},
+    "findings": [
+      { "type": "correlation", "title": "...", "evidence": { "view": "correlation", "x": "Сон", "y": "Наст" } }
+    ]
+  }
 }
 ```
 
 **Where derived values are computed (redesign):** the **collector** computes `day.readiness`,
-`meta.correlations`, and `meta.ai_brief` and writes them into `metrics.json`. The API's
+`meta.correlations`, `meta.findings`, and `meta.ai_brief` and writes them into `metrics.json`. The API's
 `/api/sync` only updates `manual.*` and preserves the rest, so they reach the frontend
 unchanged. **Caveat:** correlations/brief refresh on the collector's 2-hour run, not on
 mood edits. If you need instant recompute, port `collector/metrics_calc.py` to a small JS
@@ -97,6 +108,7 @@ cd dashboard && npm install && npm run dev
 cd dashboard && npm install
 npx vite --config vite.mock.config.js --port 5174
 # vite.mock.config.js stubs /api/auth-check, /api/sync, /api/forecast, /api/schedule with fake data.
+# It also stubs /api/analyze, meta.findings, and /api/infra/topology for the AI lab + homelab cockpit.
 # This is the server used to preview the redesign mockups (mock-overview.html etc).
 ```
 
@@ -133,11 +145,13 @@ everything is open (dev mode). The frontend shows a login modal when `/api/auth-
 | `METRICS_PATH` | collector, api | path to `metrics.json` (collector default `/data/metrics.json`) |
 | `DASHBOARD_PASS` | api | dashboard password (empty = open) |
 | `PORT` | api | API port (default 3001) |
-| `NETDATA_URL` | api | Netdata base URL for server metrics |
+| `NETDATA_URL` | api | Netdata base URL for server metrics and topology telemetry |
+| `NGINX_CONF_PATH` | api | optional nginx config parsed into public host → upstream routes |
+| `GUAC_URL`, `GUAC_USER`, `GUAC_PASS` | api | optional Guacamole REST credentials for VM connection nodes |
 | **`WAKATIME_API_KEY`** | collector | **(redesign)** coding stats |
 | **`GITHUB_TOKEN`, `GITHUB_USER`** | collector | **(redesign)** PRs/reviews/streak |
 | **`CI_REPOS`** | collector | **(redesign, optional)** comma-separated GitHub Actions repos (`owner/repo`) |
-| **`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`** | collector | **(redesign)** AI daily brief (OpenAI-compatible self-hosted LLM) |
+| **`LLM_BASE_URL`, `LLM_API_KEY`, `LLM_MODEL`** | collector, api | **(redesign)** AI daily brief and `/api/analyze` (OpenAI-compatible self-hosted LLM) |
 
 See `.env.example` for the canonical list.
 
@@ -146,7 +160,10 @@ See `.env.example` for the canonical list.
 The palette/typography redesign is done: cool near-black slate base, green accent aligned
 with the portfolio (`oklch(58% .16 145)`), JetBrains Mono labels, blueprint-grid background,
 SVG line icons (`utils/icons.js`), Chart.js palette/mono (`utils/palette.js`), structural
-cards. The content redesign (this plan) builds on top of that — do not revert it.
+cards. The content redesign builds on top of that: Analytics is now an AI lab
+(`Findings`, `AnalystChat`, `EvidenceBoard`) instead of `AnalyticsDeep`, and
+Infrastructure is now a homelab cockpit (`HostVitals`, `LiveTelemetry`, `StackTopology`)
+instead of `ServerMetrics`. Do not revert these replacements.
 
 ## 8. Gotchas
 
@@ -157,10 +174,11 @@ cards. The content redesign (this plan) builds on top of that — do not revert 
 - Weather appears twice: `day.weather` (collector, daily, unused by the widget) and
   `/api/forecast` (live, what the widget renders).
 - Chart.js charts created while their tab is `display:none` render at 0 size — render them
-  lazily on first tab open (see the `healthLoaded` pattern in `main.js`).
+  lazily on first tab open (see `ensureAnalytics()` and `ensureInfra()` in `main.js`).
 - Design/preview harness, **kept intentionally** (not shipped — `public/` is dev-served, and
   the mock config is only used by `--config vite.mock.config.js`): `dashboard/vite.mock.config.js`
   (offline mock backend on :5174), `.claude/launch.json` (Claude Preview `dashboard-mock`),
-  `dashboard/public/mock-overview.html` (the visual source-of-truth for the Overview). Launch with
-  `npx vite --config vite.mock.config.js --port 5174`, then open `/` (app) and `/mock-overview.html`
-  (target). `mock-approaches.html` (early direction sketches) was removed — no longer needed.
+  `dashboard/public/mock-overview.html`, `dashboard/public/mock-analytics.html`, and
+  `dashboard/public/mock-infrastructure.html` (visual sources-of-truth). Launch with
+  `npx vite --config vite.mock.config.js --port 5174`, then open `/` (app) and the relevant
+  `/mock-*.html` target. `mock-approaches.html` (early direction sketches) was removed — no longer needed.
