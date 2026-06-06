@@ -15,6 +15,7 @@ import { Server } from 'socket.io';
 import Docker from 'dockerode';
 
 import crypto from 'crypto';
+import { buildMessages, fallbackAnswer, parseBoardDirective, selectPeriodDays, sourcesFor } from './analyze.js';
 import { buildCachedNowPulse, fetchWakatimeNow, nowPulseIntervalMs } from './nowPulse.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -336,6 +337,40 @@ app.get('/api/metrics/server', async (req, res) => {
   } catch (err) {
     console.error('Server metrics error:', err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/analyze', async (req, res) => {
+  const { period = 30, question = '' } = req.body || {};
+  const metrics = loadMetrics();
+  const days = selectPeriodDays(metrics, period);
+  const base = process.env.LLM_BASE_URL;
+  const key = process.env.LLM_API_KEY;
+  const model = process.env.LLM_MODEL;
+
+  if (!base || !key || !model) {
+    return res.json(fallbackAnswer(days));
+  }
+
+  try {
+    const baseUrl = base.replace(/\/$/, '');
+    const llmRes = await fetch(`${baseUrl}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({
+        model,
+        temperature: 0.4,
+        messages: buildMessages(days, metrics.meta || {}, question),
+      }),
+    });
+    if (!llmRes.ok) throw new Error(`LLM ${llmRes.status}`);
+
+    const text = (await llmRes.json()).choices?.[0]?.message?.content || '';
+    const { answer, board } = parseBoardDirective(text);
+    return res.json({ answer, board, sources: sourcesFor(days) });
+  } catch (e) {
+    console.warn('analyze fallback:', e.message);
+    return res.json(fallbackAnswer(days));
   }
 });
 

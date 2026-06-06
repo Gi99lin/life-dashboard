@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildAnalyzeContext, parseBoardDirective, fallbackAnswer } from '../analyze.js';
+import { buildAnalyzeContext, parseBoardDirective, fallbackAnswer, selectPeriodDays } from '../analyze.js';
 
 test('buildAnalyzeContext summarizes the period and findings', () => {
   const days = [{ date: '2026-06-01', garmin: { sleep_hours: 7.4, stress_avg: 30 }, manual: { mood: 4 } }];
@@ -28,4 +28,19 @@ test('fallbackAnswer never throws and cites sources', () => {
   const out = fallbackAnswer([{ garmin: { sleep_hours: 7 }, manual: { mood: 4 } }]);
   assert.ok(out.answer.length > 0);
   assert.ok(Array.isArray(out.sources));
+});
+
+test('selectPeriodDays sorts days and clamps requested period', () => {
+  const metrics = {
+    days: Object.fromEntries(
+      Array.from({ length: 12 }, (_, i) => {
+        const day = String(i + 1).padStart(2, '0');
+        return [`2026-06-${day}`, { date: `2026-06-${day}` }];
+      }).reverse(),
+    ),
+  };
+  const out = selectPeriodDays(metrics, 3);
+  assert.equal(out.length, 7);
+  assert.equal(out[0].date, '2026-06-06');
+  assert.equal(out.at(-1).date, '2026-06-12');
 });

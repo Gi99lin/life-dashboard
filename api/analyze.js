@@ -55,6 +55,14 @@ export function buildMessages(days = [], meta = {}, question = '') {
   ];
 }
 
+export function selectPeriodDays(metrics = {}, period = 30) {
+  const requested = Number(period) || 30;
+  const count = Math.max(7, Math.min(365, requested));
+  return Object.values(metrics.days || {})
+    .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')))
+    .slice(-count);
+}
+
 export function parseBoardDirective(text = '') {
   const match = String(text).match(/```board\s*([\s\S]*?)```/);
   if (!match) return { answer: String(text).trim(), board: null };
