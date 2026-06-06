@@ -5,6 +5,46 @@ from types import SimpleNamespace
 from collector import run_collect
 
 
+def test_attach_findings_writes_meta_findings(monkeypatch):
+    metrics = {
+        "days": {
+            "2026-06-01": {"date": "2026-06-01"},
+            "2026-06-02": {"date": "2026-06-02"},
+        },
+        "meta": {},
+    }
+
+    monkeypatch.setattr(
+        run_collect,
+        "build_findings",
+        lambda days: [
+            {
+                "type": "record",
+                "title": f"{days[-1]['date']} record",
+                "evidence": {"view": "timeline", "x": "Код", "y": None},
+                "sources": ["GitHub"],
+            }
+        ],
+    )
+
+    run_collect.attach_findings(metrics)
+
+    assert metrics["meta"]["findings"][0]["title"] == "2026-06-02 record"
+
+
+def test_attach_findings_degrades_to_empty_list(monkeypatch):
+    metrics = {"days": {"2026-06-01": {"date": "2026-06-01"}}, "meta": {}}
+
+    def boom(days):
+        raise RuntimeError("collector unavailable")
+
+    monkeypatch.setattr(run_collect, "build_findings", boom)
+
+    run_collect.attach_findings(metrics)
+
+    assert metrics["meta"]["findings"] == []
+
+
 def test_main_attaches_readiness_and_correlations(tmp_path, monkeypatch):
     metrics_path = tmp_path / "metrics.json"
     monkeypatch.setattr(run_collect, "METRICS_PATH", str(metrics_path))

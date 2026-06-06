@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from findings import build_findings
 from metrics_calc import build_correlations, compute_readiness
 
 METRICS_PATH = os.environ.get('METRICS_PATH', '/data/metrics.json')
@@ -339,6 +340,17 @@ def attach_derived_metrics(metrics):
     meta['correlations'] = build_correlations(ordered[-30:])
 
 
+def attach_findings(metrics):
+    """Attach cached statistical findings for the Analytics lab."""
+    days = metrics.setdefault('days', {})
+    ordered = [days[k] for k in sorted(days)]
+    try:
+        metrics.setdefault('meta', {})['findings'] = build_findings(ordered[-30:])
+    except Exception as e:
+        metrics.setdefault('meta', {})['findings'] = []
+        print(f"  Findings error: {e}")
+
+
 def main():
     now = datetime.now()
     today = now.strftime('%Y-%m-%d')
@@ -360,6 +372,7 @@ def main():
     attach_github_streaks(metrics)
 
     attach_derived_metrics(metrics)
+    attach_findings(metrics)
     attach_ai_brief(metrics)
     attach_now_meta(metrics, today)
     collect_ci_meta(metrics)
