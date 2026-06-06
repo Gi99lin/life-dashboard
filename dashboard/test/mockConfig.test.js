@@ -9,4 +9,9 @@ describe('mock preview config', () => {
     expect(config).toContain('/api/analyze');
     expect(config).toContain('scriptedAnalyze');
   });
+
+  it('stubs infrastructure topology endpoint', () => {
+    expect(config).toContain('buildTopology');
+    expect(config).toContain('/api/infra/topology');
+  });
 });

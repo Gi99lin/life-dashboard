@@ -370,6 +370,73 @@ function buildServerMetrics() {
   };
 }
 
+function buildTopology() {
+  const nowSec = Math.floor(Date.now() / 1000);
+  const N = 60;
+  const r = (a, b) => a + Math.random() * (b - a);
+  const telemetry = { cpu: [], ram: [], net: [] };
+  for (let i = 0; i < N; i++) {
+    const t = nowSec - (N - 1 - i) * 60;
+    const wave = Math.sin(i / 9) * 0.5 + 0.5;
+    telemetry.cpu.push({ t, value: +(14 + wave * 18 + r(-3, 5)).toFixed(1) });
+    telemetry.ram.push({ t, value: +(61 + Math.sin(i / 17) * 3 + r(-1, 1)).toFixed(1) });
+    telemetry.net.push({ t, value: Math.round(140 + wave * 680 + r(-70, 160)) });
+  }
+
+  return {
+    host: {
+      name: 'gigglin-server',
+      uptime: 'up 21 день',
+      cpu: 24,
+      ram: 64,
+      disk: 68,
+      net: '0.8M',
+      vcpu: 8,
+      ram_total: 16,
+      os: 'Ubuntu 24.04 · Docker 27',
+      containers: { total: 11, running: 10 },
+    },
+    telemetry,
+    networks: [
+      { name: 'librechat-net', services: [
+        { name: 'LibreChat', tech: 'Node', purpose: 'Чат с LLM', status: 'running', cpu: 14, mem: 672, url: 'https://chat.gigglin.tech/', role: 'app' },
+        { name: 'Postgres', tech: 'pg16', status: 'running', cpu: 2, mem: 410, role: 'db' },
+        { name: 'Redis', tech: 'Redis', status: 'running', cpu: 1, mem: 64, role: 'cache' },
+      ] },
+      { name: 'omniroute-net', services: [
+        { name: 'OmniRoute', tech: 'Go', purpose: 'LLM router', status: 'running', cpu: 3, mem: 519, url: 'https://omniroute.gigglin.tech/', role: 'app' },
+        { name: 'Postgres', tech: 'pg16', status: 'running', cpu: 1, mem: 228, role: 'db' },
+        { name: 'Redis', tech: 'Redis', status: 'running', cpu: 1, mem: 38, role: 'cache' },
+      ] },
+      { name: 'guacamole-net', services: [
+        { name: 'Guacamole', tech: 'Java', purpose: 'Remote desktop', status: 'running', cpu: 1, mem: 281, url: 'https://rdp.gigglin.tech/', role: 'app' },
+        { name: 'guacd', tech: 'C', status: 'running', cpu: 1, mem: 36, role: 'worker' },
+        { name: 'Postgres', tech: 'pg16', status: 'running', cpu: 1, mem: 120, role: 'db' },
+      ] },
+      { name: 'dashboard-net', services: [
+        { name: 'dashboard-api', tech: 'Node', purpose: 'этот дашборд', status: 'running', cpu: 2, mem: 88, role: 'app' },
+        { name: 'collector', tech: 'Python', status: 'idle', cpu: 0, mem: 72, role: 'worker' },
+      ] },
+    ],
+    standalone: [
+      { name: 'nginx', role: 'gateway', status: 'running', cpu: 8 },
+      { name: '☁ внешние LLM', id: 'external-llm', role: 'external', status: 'running' },
+      { name: 'Netdata', role: 'monitor', status: 'running' },
+      { name: 'work-vm', role: 'vm', status: 'running', tech: 'VNC', via: 'guacamole', reachable: true, open: 'https://rdp.gigglin.tech/' },
+    ],
+    edges: [
+      { from: 'internet', to: 'nginx', type: 'http' },
+      { from: 'nginx', to: 'librechat-net', type: 'http' },
+      { from: 'nginx', to: 'omniroute-net', type: 'http' },
+      { from: 'nginx', to: 'guacamole-net', type: 'http' },
+      { from: 'nginx', to: 'dashboard-net', type: 'http' },
+      { from: 'omniroute', to: 'external-llm', type: 'llm' },
+      { from: 'guacamole', to: 'work-vm', type: 'vnc' },
+      { from: 'Netdata', to: 'dashboard-net', type: 'monitor' },
+    ],
+  };
+}
+
 const mockApi = () => ({
   name: 'mock-api',
   configureServer(server) {
@@ -381,6 +448,7 @@ const mockApi = () => ({
       if (url === '/api/analyze') return json(scriptedAnalyze(await readJsonBody(req)));
       if (url === '/api/forecast') return json(buildForecast());
       if (url === '/api/schedule') return json(buildSchedule());
+      if (url.startsWith('/api/infra/topology')) return json(buildTopology());
       if (url === '/api/metrics/server') return json(buildServerMetrics());
       if (url.startsWith('/socket.io')) { res.statusCode = 200; return res.end(''); }
       next();
