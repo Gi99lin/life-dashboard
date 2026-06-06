@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Аналитика — макет (AI-лаборатория)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg-dim:oklch(13% 0.015 245); --bg0:oklch(16% 0.017 245);
+    --green:#59be6c; --aqua:#5dc0a7; --blue:#69aed5; --yellow:#e2c162; --orange:#e99355; --purple:#c88ec3; --red:#e3645e;
+    --fg:#eaeff3; --fg-dim:#a3acb3; --fg-muted:#727c84;
+    --mono:'JetBrains Mono','IBM Plex Mono',ui-monospace,Menlo,monospace;
+    --card-bg:color-mix(in oklch, oklch(100% 0 0) 4%, transparent);
+    --card-border:color-mix(in oklch, oklch(100% 0 0) 9%, transparent);
+    --hair:color-mix(in oklch, oklch(100% 0 0) 8%, transparent);
+    --r:13px; --r-sm:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:Inter,system-ui,sans-serif; color:var(--fg); background:var(--bg-dim);
+    background-image:linear-gradient(var(--hair) 1px,transparent 1px),linear-gradient(90deg,var(--hair) 1px,transparent 1px);
+    background-size:34px 34px; padding:26px 30px 50px; min-height:100vh;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 88% 0%, color-mix(in oklch, var(--green) 9%, transparent), transparent 70%);}
+  .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--fg-muted)}
+  .wrap{max-width:1340px;margin:0 auto;position:relative}
+
+  /* header */
+  .head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:16px}
+  .head h2{font-size:1.5rem;font-weight:800;letter-spacing:-.01em;margin-top:3px}
+  .head h2 b{color:var(--green)}
+  .periods{display:flex;gap:5px;align-items:center}
+  .pbtn{font-family:var(--mono);font-size:.62rem;color:var(--fg-muted);padding:5px 11px;border:1px solid var(--card-border);border-radius:8px;background:transparent;cursor:pointer}
+  .pbtn.active{color:var(--green);border-color:color-mix(in oklch,var(--green) 55%,transparent);background:color-mix(in oklch,var(--green) 12%,transparent)}
+  .stamp{font-family:var(--mono);font-size:.6rem;color:var(--fg-muted);margin-left:10px}
+
+  /* findings lane */
+  .lane-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .lane{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(196px,1fr);gap:10px;overflow-x:auto;padding-bottom:5px;margin-bottom:16px}
+  .find{border:1px solid var(--card-border);border-radius:var(--r);background:var(--card-bg);padding:11px 12px;cursor:pointer;transition:border-color .15s,transform .15s;display:flex;flex-direction:column;gap:7px;min-height:96px}
+  .find:hover{border-color:color-mix(in oklch,var(--green) 35%,transparent);transform:translateY(-2px)}
+  .find.active{border-color:color-mix(in oklch,var(--green) 60%,transparent);box-shadow:0 0 0 1px color-mix(in oklch,var(--green) 30%,transparent) inset}
+  .find .tag{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:5px;align-self:flex-start}
+  .tag.corr{color:var(--green);background:color-mix(in oklch,var(--green) 14%,transparent)}
+  .tag.anom{color:var(--red);background:color-mix(in oklch,var(--red) 14%,transparent)}
+  .tag.rec{color:var(--yellow);background:color-mix(in oklch,var(--yellow) 14%,transparent)}
+  .tag.patt{color:var(--blue);background:color-mix(in oklch,var(--blue) 14%,transparent)}
+  .tag.thr{color:var(--purple);background:color-mix(in oklch,var(--purple) 14%,transparent)}
+  .find .fh{font-size:.76rem;font-weight:600;line-height:1.25}
+  .find .fh em{font-style:normal;font-family:var(--mono);font-weight:700}
+  .find .fsub{font-family:var(--mono);font-size:.55rem;color:var(--fg-muted);margin-top:auto}
+
+  /* body: chat | board */
+  .body2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:14px}
+  .panel{border:1px solid var(--card-border);border-radius:var(--r);background:color-mix(in oklch,oklch(100% 0 0) 1.6%,transparent);padding:15px;display:flex;flex-direction:column}
+  .ph{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.62rem;letter-spacing:.11em;text-transform:uppercase;color:var(--fg-dim);margin-bottom:13px}
+  .ph .tagdot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+  .ph .right{margin-left:auto;color:var(--fg-muted);font-size:.55rem;text-transform:none;letter-spacing:0}
+
+  /* chat */
+  .chat{min-height:430px}
+  .msgs{display:flex;flex-direction:column;gap:11px;flex:1;overflow:auto;padding-right:2px}
+  .bubble{max-width:90%;padding:11px 13px;border-radius:13px;font-size:.82rem;line-height:1.5}
+  .bubble.ai{align-self:flex-start;background:var(--card-bg);border:1px solid var(--card-border);border-top-left-radius:4px}
+  .bubble.me{align-self:flex-end;background:color-mix(in oklch,var(--green) 13%,transparent);border:1px solid color-mix(in oklch,var(--green) 30%,transparent);border-top-right-radius:4px}
+  .bubble .who{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-bottom:6px}
+  .bubble b{color:var(--fg);font-weight:700;font-family:var(--mono)}
+  .bubble .n{color:var(--green);font-family:var(--mono);font-weight:700}
+  .srcrow{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+  .src{font-family:var(--mono);font-size:.5rem;color:var(--fg-muted);border:1px solid var(--card-border);border-radius:20px;padding:2px 7px}
+  .pin{display:inline-block;font-family:var(--mono);font-size:.56rem;color:var(--blue);border-bottom:1px dashed color-mix(in oklch,var(--blue) 45%,transparent);cursor:pointer}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+  .chip{font-family:var(--mono);font-size:.6rem;color:var(--fg-dim);border:1px solid var(--card-border);border-radius:18px;padding:5px 11px;background:var(--card-bg);cursor:pointer}
+  .chip:hover{border-color:color-mix(in oklch,var(--green) 40%,transparent);color:var(--fg)}
+  .composer{display:flex;gap:8px;align-items:center;margin-top:12px;border:1px solid var(--card-border);border-radius:10px;padding:7px 8px 7px 12px;background:var(--bg0)}
+  .composer input{flex:1;background:transparent;border:0;outline:0;color:var(--fg);font-family:Inter,sans-serif;font-size:.8rem}
+  .composer input::placeholder{color:var(--fg-muted)}
+  .composer .send{font-family:var(--mono);font-size:.62rem;color:var(--bg-dim);background:var(--green);border-radius:7px;padding:6px 11px;font-weight:600}
+
+  /* board */
+  .board .bt{font-family:var(--mono);font-size:.62rem;color:var(--fg);margin-bottom:2px}
+  .board .bsub{font-family:var(--mono);font-size:.56rem;color:var(--fg-muted);margin-bottom:10px}
+  .viz{position:relative;flex:1;min-height:250px;border:1px solid var(--hair);border-radius:var(--r-sm);padding:10px;background:linear-gradient(color-mix(in oklch,var(--green) 4%,transparent),transparent 60%)}
+  .callout{position:absolute;font-family:var(--mono);font-size:.56rem;color:var(--red);background:color-mix(in oklch,var(--red) 12%,transparent);border:1px solid color-mix(in oklch,var(--red) 35%,transparent);border-radius:6px;padding:3px 7px;line-height:1.3}
+  .bchips{display:flex;gap:8px;margin-top:11px}
+  .bchip{display:flex;flex-direction:column;gap:2px;flex:1;border:1px solid var(--card-border);border-radius:9px;padding:8px 10px;background:var(--card-bg)}
+  .bchip span{font-family:var(--mono);font-size:.5rem;color:var(--fg-muted);text-transform:uppercase;letter-spacing:.06em}
+  .bchip b{font-family:var(--mono);font-size:.92rem}
+  .bchip b.g{color:var(--green)} .bchip b.r{color:var(--red)} .bchip b.b{color:var(--blue)}
+  /* board controls (shared by you + AI) */
+  .bctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:11px}
+  .seg{display:inline-flex;border:1px solid var(--card-border);border-radius:8px;overflow:hidden}
+  .seg button{font-family:var(--mono);font-size:.55rem;color:var(--fg-muted);padding:5px 8px;background:transparent;border:0;cursor:pointer}
+  .seg button.active{color:var(--green);background:color-mix(in oklch,var(--green) 13%,transparent)}
+  .pick{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:.58rem;color:var(--fg-muted);border:1px solid var(--card-border);border-radius:8px;padding:4px 9px;background:var(--card-bg);cursor:pointer}
+  .pick b{color:var(--fg)} .pick i{color:var(--fg-muted);font-style:normal}
+  .bctl .x{color:var(--fg-muted);font-family:var(--mono);font-size:.7rem}
+  .setby{margin-left:auto;font-family:var(--mono);font-size:.52rem;color:var(--purple)}
+  .rbadge{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--green);background:color-mix(in oklch,var(--green) 12%,transparent);border:1px solid color-mix(in oklch,var(--green) 35%,transparent);border-radius:7px;padding:4px 9px;z-index:2}
+  .axt2{position:absolute;font-family:var(--mono);font-size:.54rem;letter-spacing:.06em;color:var(--fg-dim);text-transform:uppercase}
+  .xlab2{position:absolute;bottom:6px;font-family:var(--mono);font-size:.52rem;color:var(--fg-muted)}
+  .foot{font-family:var(--mono);font-size:.56rem;color:var(--fg-muted);margin-top:16px;text-align:center;opacity:.75}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div>
+      <div class="lbl">Аналитика · AI-лаборатория</div>
+      <h2>Спроси свои <b>данные</b></h2>
+    </div>
+    <div class="periods">
+      <button class="pbtn">7д</button>
+      <button class="pbtn active">30д</button>
+      <button class="pbtn">90д</button>
+      <button class="pbtn">365д</button>
+      <button class="pbtn">⤢ свой</button>
+      <span class="stamp">30 дней · n=30 · LLM: gigglin-70b</span>
+    </div>
+  </div>
+
+  <div class="lane-head">
+    <span class="lbl">Что нашлось</span>
+    <span class="lbl" style="margin-left:auto;color:var(--green)">клик — спросить AI про находку →</span>
+  </div>
+  <div class="lane">
+    <div class="find active"><span class="tag thr">Порог</span><div class="fh">Сон <em>&lt;6.5ч</em> → продуктивность <em>−34%</em></div><div class="fsub">обсуждается сейчас</div></div>
+    <div class="find"><span class="tag corr">Корреляция</span><div class="fh">Сон → настроение <em>r=+0.62</em></div><div class="fsub">p&lt;0.01 · 30 дней</div></div>
+    <div class="find"><span class="tag anom">Аномалия</span><div class="fh">3 апр — стресс <em>78</em>, ×2 нормы</div><div class="fsub">сон в ночь 5.1ч</div></div>
+    <div class="find"><span class="tag rec">Рекорд</span><div class="fh">Глубокая работа — <em>9 дней</em> подряд</div><div class="fsub">прошлый рекорд 6</div></div>
+    <div class="find"><span class="tag patt">Паттерн</span><div class="fh">Выходные: сон <em>+1.2ч</em></div><div class="fsub">шаги −3100 · 12 нед</div></div>
+    <div class="find"><span class="tag corr">Драйвер</span><div class="fh">Рычаг готовности — <em>Сон +0.63</em></div><div class="fsub">сильнее всех</div></div>
+  </div>
+
+  <div class="body2">
+    <!-- LEFT: AI chat -->
+    <div class="panel chat">
+      <div class="ph"><span class="tagdot"></span>AI-аналитик<span class="right">видит данные за период</span></div>
+      <div class="msgs">
+        <div class="bubble ai">
+          <div class="who">◇ авто-разбор · 30 дней</div>
+          За месяц сон стабилен (<b>7.1ч</b>), но в дни с сном <b>&lt;6.5ч</b> продуктивность падает на <span class="n">~34%</span>. Был спайк стресса <b>3 апр</b> (78) — в ту ночь сон <b>5.1ч</b>. Главный рычаг готовности — <b>сон</b> (<span class="n">r=+0.63</span>).
+          <div class="srcrow"><span class="src">Garmin</span><span class="src">WakaTime</span><span class="src">Obsidian</span></div>
+        </div>
+        <div class="bubble me">Покажи, как сон влияет на настроение</div>
+        <div class="bubble ai">
+          <div class="who">◇ аналитик</div>
+          Связь заметная: <span class="n">r=+0.62</span> (p&lt;0.01) — <b>+1 час сна ≈ +0.18</b> к настроению, сильнее в будни. Вывел корреляцию на доску <span class="pin">↗ Сон ↔ Настроение</span> — синим отметил выходные, они выше тренда. Можешь сменить метрики на осях сам.
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">Сон ↔ продуктивность</span>
+        <span class="chip">Объясни 3 апреля</span>
+        <span class="chip">Что улучшить на неделе?</span>
+      </div>
+      <div class="composer">
+        <input placeholder="Спроси про свои данные за период…" />
+        <span class="send">▶</span>
+      </div>
+    </div>
+
+    <!-- RIGHT: evidence board (controlled by AI + you) -->
+    <div class="panel board">
+      <div class="ph">Доска доказательств<span class="right">ведёт AI · можешь и ты</span></div>
+      <div class="bctl">
+        <span class="seg"><button class="active">корреляция</button><button>таймлайн</button><button>дни недели</button><button>распределение</button></span>
+        <span class="pick">X <b>Сон</b>, ч <i>▾</i></span>
+        <span class="x">↔</span>
+        <span class="pick">Y <b>Настроение</b> <i>▾</i></span>
+        <span class="setby">◇ задал AI</span>
+      </div>
+      <div class="viz">
+        <div class="rbadge">r = +0.62</div>
+        <span class="axt2" style="left:14px;top:12px">Настроение</span>
+        <span class="axt2" style="right:14px;bottom:26px">Сон, ч</span>
+        <svg viewBox="0 0 600 280" width="100%" height="100%" preserveAspectRatio="none" style="position:absolute;inset:0;padding:10px">
+          <line x1="44" y1="236" x2="556" y2="58" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4" opacity="0.85"/>
+          <g fill="var(--aqua)" opacity="0.85">
+            <circle cx="74" cy="220" r="5"/><circle cx="100" cy="232" r="5"/><circle cx="126" cy="198" r="5"/>
+            <circle cx="156" cy="214" r="5"/><circle cx="186" cy="186" r="5"/><circle cx="214" cy="202" r="5"/>
+            <circle cx="250" cy="174" r="5"/><circle cx="276" cy="190" r="5"/><circle cx="300" cy="156" r="5"/>
+            <circle cx="332" cy="168" r="5"/><circle cx="362" cy="140" r="5"/><circle cx="392" cy="154" r="5"/>
+            <circle cx="424" cy="120" r="5"/><circle cx="452" cy="134" r="5"/><circle cx="484" cy="100" r="5"/>
+            <circle cx="512" cy="112" r="5"/><circle cx="536" cy="84" r="5"/><circle cx="558" cy="96" r="5"/>
+            <circle cx="140" cy="228" r="5"/><circle cx="270" cy="184" r="5"/><circle cx="408" cy="150" r="5"/>
+          </g>
+          <!-- AI annotation: weekend outliers above trend -->
+          <g fill="var(--blue)">
+            <circle cx="318" cy="120" r="5.5"/><circle cx="470" cy="70" r="5.5"/>
+          </g>
+        </svg>
+        <div class="callout" style="left:42%;top:14%;color:var(--blue);background:color-mix(in oklch,var(--blue) 12%,transparent);border-color:color-mix(in oklch,var(--blue) 35%,transparent)">выходные — выше тренда</div>
+        <span class="xlab2" style="left:44px">5.0</span><span class="xlab2" style="left:48%">7.0</span><span class="xlab2" style="right:14px">9.0</span>
+      </div>
+      <div class="bchips">
+        <div class="bchip"><span>коэффициент r</span><b class="g">+0.62</b></div>
+        <div class="bchip"><span>наклон</span><b class="b">+0.18 /ч</b></div>
+        <div class="bchip"><span>точек (n)</span><b>30</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">находка/чип/вопрос → AI отвечает и подсвечивает доказательство на доске · числа кликабельны к первоисточнику · в демо — сценарные ответы, в приложении — живой LLM</div>
+</div>
+</body>
+</html>
