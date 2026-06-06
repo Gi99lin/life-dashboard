@@ -16,6 +16,7 @@ import Docker from 'dockerode';
 
 import crypto from 'crypto';
 import { buildMessages, fallbackAnswer, parseBoardDirective, selectPeriodDays, sourcesFor } from './analyze.js';
+import { collectTopology, emptyTopology } from './infraTopology.js';
 import { buildCachedNowPulse, fetchWakatimeNow, nowPulseIntervalMs } from './nowPulse.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -371,6 +372,16 @@ app.post('/api/analyze', async (req, res) => {
   } catch (e) {
     console.warn('analyze fallback:', e.message);
     return res.json(fallbackAnswer(days));
+  }
+});
+
+app.get('/api/infra/topology', async (req, res) => {
+  try {
+    const minutes = Math.min(parseInt(req.query.minutes) || 60, 1440);
+    res.json(await collectTopology({ docker, getNetdataChart, minutes }));
+  } catch (err) {
+    console.warn('infra topology fallback:', err.message);
+    res.json(emptyTopology());
   }
 });
 
