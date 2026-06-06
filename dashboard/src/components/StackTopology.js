@@ -56,6 +56,7 @@ function networkBox(network, index) {
 
 function standaloneNode(node, index) {
   const byRole = {
+    internet: { left: 42, top: 220, tag: '', cls: 'ext' },
     gateway: { left: 188, top: 220, tag: 'proxy', cls: '' },
     external: { left: 1012, top: 128, tag: '', cls: 'ext' },
     monitor: { left: 1122, top: 300, tag: 'C', cls: '' },
@@ -63,12 +64,12 @@ function standaloneNode(node, index) {
   };
   const pos = byRole[node.role] || { left: 42, top: 220, tag: '', cls: 'ext' };
   const open = node.open ? `<span class="open" data-open="${esc(node.open)}">↗ открыть</span>` : '';
-  const meta = node.role === 'vm' ? `через Guacamole · ${open}` : node.role === 'monitor' ? 'наблюдает за всеми' : node.role === 'external' ? 'через OmniRoute' : 'шлюз · TLS';
+  const meta = node.role === 'internet' ? '' : node.role === 'vm' ? `через Guacamole · ${open}` : node.role === 'monitor' ? 'наблюдает за всеми' : node.role === 'external' ? 'через OmniRoute' : 'шлюз · TLS';
 
   return `
     <div class="tnode ${pos.cls}" style="left:${pos.left}px;top:${pos.top}px">
       <div class="th"><span class="dot ${dot(node.status)}"></span><span class="tn">${esc(node.name)}</span>${pos.tag ? `<span class="tt">${esc(pos.tag)}</span>` : ''}</div>
-      <div class="tm">${node.role === 'gateway' ? ring(node.cpu || 8) : ''}${meta}</div>
+      ${meta ? `<div class="tm">${node.role === 'gateway' ? ring(node.cpu || 8) : ''}${meta}</div>` : ''}
     </div>`;
 }
 
@@ -98,7 +99,7 @@ function edgeLayer(topology) {
 export function renderStackTopology(container, topology = {}) {
   if (!container) return;
   const standalone = topology.standalone || [];
-  const internet = { name: '🌐 Интернет', role: 'external', status: 'running' };
+  const internet = { name: '🌐 Интернет', role: 'internet', status: 'running' };
   const coreNodes = [
     internet,
     ...standalone.filter((node) => node.role === 'gateway' || node.name === 'nginx'),

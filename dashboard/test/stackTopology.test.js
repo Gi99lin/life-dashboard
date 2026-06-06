@@ -8,6 +8,7 @@ const topo = {
   ] }],
   standalone: [
     { name: 'nginx', role: 'gateway', status: 'running' },
+    { name: 'внешние LLM', role: 'external', status: 'running' },
     { name: 'work-vm', role: 'vm', status: 'running', open: 'https://rdp.x' },
   ],
   edges: [{ from: 'nginx', to: 'librechat-net', type: 'http' }],
@@ -22,5 +23,13 @@ describe('renderStackTopology', () => {
     expect(container.innerHTML).toContain('class="net"');
     expect(container.innerHTML).toContain('<svg');
     expect(container.innerHTML).toContain('work-vm');
+  });
+
+  it('places the Internet and external services in separate lanes', () => {
+    const container = { innerHTML: '', querySelectorAll: () => [] };
+    renderStackTopology(container, topo);
+
+    expect(container.innerHTML).toMatch(/style="left:42px;top:220px"[\s\S]*🌐 Интернет/);
+    expect(container.innerHTML).toMatch(/style="left:1012px;top:128px"[\s\S]*внешние LLM/);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildTelemetryModel } from '../src/components/LiveTelemetry.js';
+import { buildTelemetryModel, renderLiveTelemetry } from '../src/components/LiveTelemetry.js';
 
 describe('buildTelemetryModel', () => {
   it('normalizes topology telemetry into chart labels and series', () => {
@@ -15,5 +15,22 @@ describe('buildTelemetryModel', () => {
     expect(model.cpu).toEqual([20, 35]);
     expect(model.ram).toEqual([60, 64]);
     expect(model.net.at(-1)).toBe(100);
+  });
+});
+
+describe('renderLiveTelemetry', () => {
+  it('uses header period controls instead of rendering a duplicate selector', () => {
+    const container = {
+      classList: { add() {} },
+      closest: () => ({ querySelectorAll: () => [] }),
+      innerHTML: '',
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    };
+
+    renderLiveTelemetry(container, { telemetry: {} });
+
+    expect(container.innerHTML).toContain('Телеметрия хоста');
+    expect(container.innerHTML).not.toContain('infra-periods');
   });
 });

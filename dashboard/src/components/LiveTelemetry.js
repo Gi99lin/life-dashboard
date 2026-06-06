@@ -82,18 +82,23 @@ export function renderLiveTelemetry(container, topology = {}, minutes = 60) {
   container.innerHTML = `
     <div class="lh">
       <span class="lbl">Телеметрия хоста · ${WINDOWS.find(([value]) => value === minutes)?.[1] || `${minutes}м`}</span>
-      <span class="periods infra-periods">
-        ${WINDOWS.map(([value, label]) => `<button class="pbtn ${value === minutes ? 'active' : ''}" data-min="${value}" type="button">${label}</button>`).join('')}
-      </span>
       <span class="leg"><i style="background:var(--green)"></i>CPU</span>
       <span class="leg"><i style="background:var(--yellow)"></i>RAM</span>
       <span class="leg"><i style="background:var(--blue)"></i>Сеть</span>
     </div>
     <div class="livechart"><canvas data-live-chart></canvas></div>`;
 
-  container.querySelectorAll?.('.infra-periods .pbtn').forEach((button) => {
+  const root = container.closest?.('#tab-devops') || (typeof document !== 'undefined' ? document : null);
+  root?.querySelectorAll?.('.infra-head-periods .pbtn').forEach((button) => {
+    const value = Number(button.dataset?.min) || 60;
+    button.classList?.toggle?.('active', value === minutes);
+    if (button.dataset?.liveTelemetryBound) return;
+    if (button.dataset) button.dataset.liveTelemetryBound = '1';
     button.addEventListener('click', async () => {
       const next = Number(button.dataset.min) || 60;
+      root?.querySelectorAll?.('.infra-head-periods .pbtn').forEach((candidate) => {
+        candidate.classList?.toggle?.('active', candidate === button);
+      });
       if (currentAbort) currentAbort.abort();
       currentAbort = new AbortController();
       try {
