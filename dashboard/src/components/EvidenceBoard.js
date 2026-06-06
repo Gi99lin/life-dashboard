@@ -202,6 +202,7 @@ function drawChart(container, model) {
         ],
       },
       options: lineOptions({
+        legend: { display: false },
         scales: {
           x: { type: 'linear', title: { display: true, text: model.xLabel, color: PAL.fgMuted } },
           y: { type: 'linear', title: { display: true, text: model.yLabel, color: PAL.fgMuted } },
