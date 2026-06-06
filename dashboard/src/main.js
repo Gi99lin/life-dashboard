@@ -18,7 +18,9 @@ import { renderLiveStrip, updateLiveNow } from './components/LiveStrip.js';
 import { renderDomains } from './components/Domains.js';
 import { renderCorrelationPanel } from './components/CorrelationPanel.js';
 import { renderOverviewTrends } from './components/OverviewTrends.js';
-import { activateAnalyticsDeep, analyticsTabForTarget, renderAnalyticsDeep } from './components/AnalyticsDeep.js';
+import { renderFindings } from './components/Findings.js';
+import { renderAnalystChat } from './components/AnalystChat.js';
+import { renderEvidenceBoard, setBoardState } from './components/EvidenceBoard.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -155,9 +157,10 @@ async function init() {
   function ensureAnalytics() {
     if (analyticsLoaded) return;
     analyticsLoaded = true;
-    const analyticsEl = document.getElementById('analyticsDeep');
-    renderAnalyticsDeep(analyticsEl, data);
-    enhanceMetricInteractions(analyticsEl);
+    renderFindings(document.getElementById('anFindings'), data);
+    renderEvidenceBoard(document.getElementById('anBoard'), data, { view: 'correlation', x: 'Сон', y: 'Наст' });
+    renderAnalystChat(document.getElementById('anChat'), data, { onBoard: (board) => setBoardState(board) });
+    enhanceMetricInteractions(document.getElementById('tab-analytics'));
   }
 
   // Server metrics need a visible container (Chart.js measures it), so render
@@ -196,10 +199,26 @@ async function init() {
   }
 
   window.__openAnalytics = (target, params = {}) => {
-    const tab = analyticsTabForTarget(target);
     const analyticsButton = tabs?.querySelector('.tab[data-tab="analytics"]');
     activateTab('analytics', analyticsButton);
-    activateAnalyticsDeep(document.getElementById('analyticsDeep'), tab, params);
+
+    if (params.i != null && params.j != null) {
+      const labels = data.meta?.correlations?.labels || [];
+      const x = labels[params.i];
+      const y = labels[params.j];
+      if (x && y) setBoardState({ view: 'correlation', x, y });
+      return;
+    }
+
+    if (params.driver) {
+      const driverMap = { sleep: 'Сон', steps: 'Шаг', code: 'Код', mood: 'Наст', rhr: 'Пульс' };
+      setBoardState({ view: 'correlation', x: driverMap[params.driver] || 'Сон', y: 'Готов' });
+      return;
+    }
+
+    if (target === 'ai') {
+      setBoardState({ view: 'timeline', x: 'Готов', y: null });
+    }
   };
 
   tabs?.addEventListener('click', (e) => {
@@ -227,9 +246,8 @@ async function init() {
   });
 
   document.addEventListener('click', (e) => {
-    // Correlation-matrix cells bind their own click handlers (CorrelationPanel on
-    // the Overview, AnalyticsDeep inside the Analytics tab), so they are not
-    // handled here — only generic [data-drill] links are.
+    // Correlation-matrix cells bind their own click handlers on the Overview, so
+    // they are not handled here — only generic [data-drill] links are.
     const drill = e.target.closest('[data-drill]');
     if (drill) {
       window.__openAnalytics?.(drill.dataset.drill || 'body');

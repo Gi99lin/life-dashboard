@@ -13,6 +13,7 @@ export const METRICS = {
   'Шаг': (day) => day.garmin?.steps ?? null,
   'Код': (day) => day.wakatime?.total_h ?? day.schedule?.hours_work ?? null,
   'BB': (day) => day.garmin?.body_battery_max ?? null,
+  'Пульс': (day) => day.garmin?.resting_hr ?? null,
   'Готов': (day) => day.readiness?.score ?? null,
 };
 
