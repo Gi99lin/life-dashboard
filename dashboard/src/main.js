@@ -12,7 +12,6 @@ import { initChartTheme } from './utils/palette.js';
 // V2 Imports
 import { initAuth, showLoginModal } from './components/LoginModal.js';
 import { renderLiveSchedule } from './components/LiveSchedule.js';
-import { renderDevOpsHUD } from './components/DevOpsHUD.js';
 import { renderServerMetrics } from './components/ServerMetrics.js';
 import { renderHero } from './components/Hero.js';
 import { renderLiveStrip, updateLiveNow } from './components/LiveStrip.js';
@@ -76,14 +75,7 @@ async function init() {
   });
 
   socket.on('docker_pulse', (state) => {
-    const el = document.getElementById('agentRooms');
-    if (el) renderDevOpsHUD(el, state);
     updateLiveInfra(state);
-  });
-  
-  socket.on('agent_pulse', (state) => {
-    const el = document.getElementById('agentRooms');
-    if (el) renderDevOpsHUD(el, state);
   });
 
   socket.on('now_pulse', (state) => {
@@ -155,6 +147,7 @@ async function init() {
 
   // Tab switching
   let analyticsLoaded = false;
+  let metricsLoaded = false;
   const tabs = document.getElementById('tabs');
   const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
   const appsMenu = document.getElementById('appsMenu');
@@ -165,6 +158,15 @@ async function init() {
     const analyticsEl = document.getElementById('analyticsDeep');
     renderAnalyticsDeep(analyticsEl, data);
     enhanceMetricInteractions(analyticsEl);
+  }
+
+  // Server metrics need a visible container (Chart.js measures it), so render
+  // on first Infrastructure-tab open.
+  function ensureServerMetrics() {
+    if (metricsLoaded) return;
+    metricsLoaded = true;
+    const el = document.getElementById('serverMetrics');
+    if (el) renderServerMetrics(el);
   }
 
   function loadAppIframe(tab) {
@@ -187,9 +189,10 @@ async function init() {
     document.body.classList.toggle('app-mode', isAppTab);
     if (isAppTab) loadAppIframe(target);
 
-    // Lazy-render health charts on first visit (canvas must be visible so
-    // Chart.js measures the container correctly).
+    // Lazy-render charts on first visit (canvas must be visible so Chart.js
+    // measures the container correctly).
     if (tabName === 'analytics') ensureAnalytics();
+    if (tabName === 'devops') ensureServerMetrics();
   }
 
   window.__openAnalytics = (target, params = {}) => {
@@ -239,25 +242,6 @@ async function init() {
     }
   });
 
-  // Sub-tab switching (Infrastructure)
-  let metricsLoaded = false;
-  document.getElementById('devopsSubTabs')?.addEventListener('click', (e) => {
-    const btn = e.target.closest('.sub-tab');
-    if (!btn) return;
-    const parent = btn.closest('.tab-content');
-    parent.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-    parent.querySelectorAll('.sub-tab-content').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
-    const target = document.getElementById(`subtab-${btn.dataset.subtab}`);
-    if (target) target.classList.add('active');
-
-    // Lazy-load server metrics on first visit
-    if (btn.dataset.subtab === 'resources' && !metricsLoaded) {
-      metricsLoaded = true;
-      const el = document.getElementById('serverMetrics');
-      if (el) renderServerMetrics(el);
-    }
-  });
 }
 
 function enhanceMetricInteractions(root) {

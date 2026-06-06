@@ -1,5 +1,5 @@
-// TEMPORARY mock config — renders dashboard with fake data for design review.
-// Not committed. Run: npx vite --config vite.mock.config.js
+// Offline design/preview harness — renders the dashboard with fake data so it
+// can be worked on without the API/backend. Run: npx vite --config vite.mock.config.js
 import { defineConfig } from 'vite';
 
 function pad(n) { return String(n).padStart(2, '0'); }
@@ -195,6 +195,65 @@ function buildSchedule() {
   return { current, next: blocks.find(b => b.start > hm) || null, blocks };
 }
 
+function buildServerMetrics() {
+  const nowSec = Math.floor(Date.now() / 1000);
+  const N = 60;
+  const r = (a, b) => a + Math.random() * (b - a);
+  const cpu = [];
+  const net = [];
+  for (let i = 0; i < N; i++) {
+    const t = nowSec - (N - 1 - i) * 60;
+    const wave = Math.sin(i / 9) * 0.5 + 0.5;
+    const user = +(6 + wave * 14 + r(-3, 4)).toFixed(1);
+    const system = +(2 + wave * 5 + r(-1, 2)).toFixed(1);
+    const iowait = +Math.max(0, r(0, 2.5)).toFixed(1);
+    cpu.push({ t, user, system, iowait, idle: +Math.max(0, 100 - user - system - iowait).toFixed(1) });
+    net.push({
+      t,
+      received: Math.round(Math.max(0, 120 + wave * 600 + r(-80, 200))),
+      sent: Math.round(Math.max(0, 60 + wave * 260 + r(-40, 120))),
+    });
+  }
+  const apps = {
+    librechat: {
+      containers: [
+        { name: 'librechat', state: 'running', status: 'Up 6 days' },
+        { name: 'librechat-mongo', state: 'running', status: 'Up 6 days' },
+        { name: 'librechat-meili', state: 'running', status: 'Up 6 days' },
+      ],
+      totalCpu: +r(4, 22).toFixed(1), totalMem: Math.round(r(640, 1100)),
+    },
+    omniroute: {
+      containers: [
+        { name: 'omniroute-api', state: 'running', status: 'Up 12 days' },
+        { name: 'omniroute-web', state: 'running', status: 'Up 12 days' },
+      ],
+      totalCpu: +r(2, 14).toFixed(1), totalMem: Math.round(r(280, 520)),
+    },
+    guacamole: {
+      containers: [
+        { name: 'guacd', state: 'running', status: 'Up 9 days' },
+        { name: 'guacamole', state: 'running', status: 'Up 9 days' },
+        { name: 'guac-postgres', state: 'exited', status: 'Exited (0) 2h ago' },
+      ],
+      totalCpu: +r(0.5, 5).toFixed(1), totalMem: Math.round(r(180, 360)),
+    },
+    netdata: {
+      containers: [{ name: 'netdata', state: 'running', status: 'Up 21 days' }],
+      totalCpu: +r(1, 6).toFixed(1), totalMem: Math.round(r(120, 240)),
+    },
+  };
+  return {
+    system: {
+      cpu,
+      ram: { used: Math.round(r(8200, 10500)), free: Math.round(r(5000, 7000)) },
+      disk: { used: 348, avail: 164 },
+      net,
+    },
+    apps,
+  };
+}
+
 const mockApi = () => ({
   name: 'mock-api',
   configureServer(server) {
@@ -205,6 +264,7 @@ const mockApi = () => ({
       if (url === '/api/sync') return json(buildMetrics());
       if (url === '/api/forecast') return json(buildForecast());
       if (url === '/api/schedule') return json(buildSchedule());
+      if (url === '/api/metrics/server') return json(buildServerMetrics());
       if (url.startsWith('/socket.io')) { res.statusCode = 200; return res.end(''); }
       next();
     });
