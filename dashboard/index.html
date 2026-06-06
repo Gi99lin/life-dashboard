@@ -85,9 +85,27 @@
             </section>
         </main>
 
-        <!-- Tab: Infrastructure (server resources) -->
+        <!-- Tab: Infrastructure -->
         <main class="tab-content" id="tab-devops">
-            <div id="serverMetrics"></div>
+            <section class="infra-cockpit">
+                <div class="infra-head">
+                    <div>
+                        <div class="lbl">Инфраструктура · хоумлаб</div>
+                        <h2>Мой <b>стек</b></h2>
+                    </div>
+                    <div class="periods">
+                        <button class="pbtn">10м</button>
+                        <button class="pbtn active">1ч</button>
+                        <button class="pbtn">6ч</button>
+                        <button class="pbtn">24ч</button>
+                    </div>
+                </div>
+                <div class="top">
+                    <div class="lcol" id="infraVitals"></div>
+                    <div class="panel livewrap" id="infraLive"></div>
+                </div>
+                <div id="stackTopo"></div>
+            </section>
         </main>
 
         <!-- Tab: Analytics -->

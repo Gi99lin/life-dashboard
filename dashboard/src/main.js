@@ -12,7 +12,6 @@ import { initChartTheme } from './utils/palette.js';
 // V2 Imports
 import { initAuth, showLoginModal } from './components/LoginModal.js';
 import { renderLiveSchedule } from './components/LiveSchedule.js';
-import { renderServerMetrics } from './components/ServerMetrics.js';
 import { renderHero } from './components/Hero.js';
 import { renderLiveStrip, updateLiveNow } from './components/LiveStrip.js';
 import { renderDomains } from './components/Domains.js';
@@ -21,6 +20,9 @@ import { renderOverviewTrends } from './components/OverviewTrends.js';
 import { renderFindings } from './components/Findings.js';
 import { renderAnalystChat } from './components/AnalystChat.js';
 import { renderEvidenceBoard, setBoardState } from './components/EvidenceBoard.js';
+import { renderHostVitals } from './components/HostVitals.js';
+import { renderLiveTelemetry } from './components/LiveTelemetry.js';
+import { renderStackTopology } from './components/StackTopology.js';
 import { io } from 'socket.io-client';
 
 function setGreeting() {
@@ -149,7 +151,7 @@ async function init() {
 
   // Tab switching
   let analyticsLoaded = false;
-  let metricsLoaded = false;
+  let infraLoaded = false;
   const tabs = document.getElementById('tabs');
   const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
   const appsMenu = document.getElementById('appsMenu');
@@ -163,13 +165,17 @@ async function init() {
     enhanceMetricInteractions(document.getElementById('tab-analytics'));
   }
 
-  // Server metrics need a visible container (Chart.js measures it), so render
-  // on first Infrastructure-tab open.
-  function ensureServerMetrics() {
-    if (metricsLoaded) return;
-    metricsLoaded = true;
-    const el = document.getElementById('serverMetrics');
-    if (el) renderServerMetrics(el);
+  // Infrastructure charts need visible containers (Chart.js measures them), so
+  // render on first Infrastructure-tab open.
+  async function ensureInfra() {
+    if (infraLoaded) return;
+    infraLoaded = true;
+    const topology = await fetch('/api/infra/topology')
+      .then((res) => res.json())
+      .catch(() => ({ host: {}, telemetry: { cpu: [], ram: [], net: [] }, networks: [], standalone: [], edges: [] }));
+    renderHostVitals(document.getElementById('infraVitals'), topology);
+    renderLiveTelemetry(document.getElementById('infraLive'), topology, 60);
+    renderStackTopology(document.getElementById('stackTopo'), topology);
   }
 
   function loadAppIframe(tab) {
@@ -195,7 +201,7 @@ async function init() {
     // Lazy-render charts on first visit (canvas must be visible so Chart.js
     // measures the container correctly).
     if (tabName === 'analytics') ensureAnalytics();
-    if (tabName === 'devops') ensureServerMetrics();
+    if (tabName === 'devops') ensureInfra();
   }
 
   window.__openAnalytics = (target, params = {}) => {
@@ -219,6 +225,23 @@ async function init() {
     if (target === 'ai') {
       setBoardState({ view: 'timeline', x: 'Готов', y: null });
     }
+  };
+
+  window.__openApp = (urlOrName = '') => {
+    const value = String(urlOrName).toLowerCase();
+    const appTab = value.includes('chat') || value.includes('libre') ? 'librechat'
+      : value.includes('rdp') || value.includes('guac') || value.includes('vnc') ? 'guacamole'
+        : value.includes('omni') ? 'omniroute'
+          : null;
+
+    if (appTab) {
+      activateTab(appTab, appsTrigger);
+      appsMenu?.classList.remove('open');
+      appsTrigger?.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
+    if (/^https?:\/\//.test(urlOrName)) window.open(urlOrName, '_blank', 'noopener');
   };
 
   tabs?.addEventListener('click', (e) => {
