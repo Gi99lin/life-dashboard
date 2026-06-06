@@ -14,6 +14,71 @@ function isoWeek(d) {
 
 const WD = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
+function buildFindings() {
+  return [
+    {
+      type: 'threshold',
+      title: 'Сон <6.5ч → продуктивность −34%',
+      subtitle: 'обсуждается сейчас',
+      metrics: ['Сон', 'Код'],
+      stat: -34,
+      evidence: { view: 'distribution', x: 'Сон', y: 'Код', annotations: [{ label: 'короткий сон' }] },
+      explanation: 'В дни короткого сна кодовых часов заметно меньше.',
+      sources: ['Garmin', 'WakaTime'],
+    },
+    {
+      type: 'correlation',
+      title: 'Сон ↔ Наст · r=+0.62',
+      subtitle: 'p<0.01 · 30 дней',
+      metrics: ['Сон', 'Наст'],
+      stat: 0.62,
+      evidence: { view: 'correlation', x: 'Сон', y: 'Наст', annotations: [{ label: 'выходные выше тренда' }] },
+      explanation: 'Больше сна связано с лучшим настроением.',
+      sources: ['Garmin', 'Obsidian'],
+    },
+    {
+      type: 'anomaly',
+      title: '3 апр — стресс 78, ×2 нормы',
+      subtitle: 'сон в ночь 5.1ч',
+      metrics: ['Стр'],
+      stat: 2.1,
+      evidence: { view: 'timeline', x: 'Стр', y: null, annotations: [{ date: '2026-04-03', label: 'стресс-спайк' }] },
+      explanation: 'Изолированный пик стресса после короткого сна.',
+      sources: ['Garmin'],
+    },
+    {
+      type: 'record',
+      title: 'Глубокая работа — 9 дней подряд',
+      subtitle: 'прошлый рекорд 6',
+      metrics: ['Код'],
+      stat: 9,
+      evidence: { view: 'timeline', x: 'Код', y: null, annotations: [{ label: 'стрик' }] },
+      explanation: 'Серия дней с устойчивой глубокой работой.',
+      sources: ['WakaTime', 'GitHub'],
+    },
+    {
+      type: 'pattern',
+      title: 'Выходные: сон +1.2ч',
+      subtitle: 'шаги −3100 · 12 нед',
+      metrics: ['Сон'],
+      stat: 1.2,
+      evidence: { view: 'weekday', x: 'Сон', y: null, annotations: [{ label: 'выходные' }] },
+      explanation: 'По выходным сон длиннее, но активность ниже.',
+      sources: ['Garmin'],
+    },
+    {
+      type: 'driver',
+      title: 'Рычаг готовности — Сон +0.63',
+      subtitle: 'сильнее всех',
+      metrics: ['Сон', 'Готов'],
+      stat: 0.63,
+      evidence: { view: 'correlation', x: 'Сон', y: 'Готов', annotations: [{ label: 'главный рычаг' }] },
+      explanation: 'Сон сильнее остальных факторов связан с readiness.',
+      sources: ['Garmin'],
+    },
+  ];
+}
+
 function buildMetrics() {
   const days = {};
   const today = new Date();
@@ -144,6 +209,7 @@ function buildMetrics() {
           { a: 'Сон', b: 'Стр', r: -.38 },
         ],
       },
+      findings: buildFindings(),
       ai_brief: {
         text: 'Сон 7.4ч поднял восстановление, стресс ниже нормы. Глубокой работы 6.2ч — выше обычного.',
         sources: ['Garmin', 'GitHub', 'WakaTime', 'Obsidian'],
@@ -151,6 +217,56 @@ function buildMetrics() {
       },
       now: { activity: 'Код', project: 'omniroute', focus_min: 41, source: 'WakaTime' },
     },
+  };
+}
+
+function readJsonBody(req) {
+  return new Promise((resolve) => {
+    let raw = '';
+    req.on('data', (chunk) => { raw += chunk; });
+    req.on('end', () => {
+      try {
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch {
+        resolve({});
+      }
+    });
+    req.on('error', () => resolve({}));
+  });
+}
+
+function scriptedAnalyze(body = {}) {
+  const question = String(body.question || '').toLowerCase();
+  const sources = ['Garmin', 'WakaTime', 'Obsidian'];
+
+  if (question.includes('аномал') || question.includes('апрел')) {
+    return {
+      answer: '3 апреля выглядит как изолированный стресс-спайк: стресс 78 при сне около 5.1ч. Я вывел таймлайн стресса и отметил этот день.',
+      sources: ['Garmin'],
+      board: { view: 'timeline', x: 'Стр', y: null, annotations: [{ date: '2026-04-03', label: 'стресс 78' }] },
+    };
+  }
+
+  if (question.includes('сон') || question.includes('настро')) {
+    return {
+      answer: 'Связь заметная: r=+0.62. В этом окне больше сна обычно совпадает с лучшим настроением, особенно в будни.',
+      sources,
+      board: { view: 'correlation', x: 'Сон', y: 'Наст', annotations: [{ label: 'выходные выше тренда' }] },
+    };
+  }
+
+  if (question.includes('улучш')) {
+    return {
+      answer: 'Самый сильный рычаг — сон: цель на неделю удержать 7.2–7.6ч и не проваливаться ниже 6.5ч. Второй ход — ограничить длинные стрессовые код-сессии без перерывов.',
+      sources,
+      board: { view: 'correlation', x: 'Сон', y: 'Готов', annotations: [{ label: 'рычаг готовности' }] },
+    };
+  }
+
+  return {
+    answer: 'За 30 дней сон стабилен, но дни ниже 6.5ч заметно режут продуктивность. Главный рычаг готовности — сон, а самый явный выброс — стрессовый день после короткой ночи.',
+    sources,
+    board: { view: 'correlation', x: 'Сон', y: 'Наст', annotations: [{ label: 'авто-разбор' }] },
   };
 }
 
@@ -257,11 +373,12 @@ function buildServerMetrics() {
 const mockApi = () => ({
   name: 'mock-api',
   configureServer(server) {
-    server.middlewares.use((req, res, next) => {
+    server.middlewares.use(async (req, res, next) => {
       const url = req.url.split('?')[0];
       const json = (obj) => { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(obj)); };
       if (url === '/api/auth-check') { res.statusCode = 200; return res.end('ok'); }
       if (url === '/api/sync') return json(buildMetrics());
+      if (url === '/api/analyze') return json(scriptedAnalyze(await readJsonBody(req)));
       if (url === '/api/forecast') return json(buildForecast());
       if (url === '/api/schedule') return json(buildSchedule());
       if (url === '/api/metrics/server') return json(buildServerMetrics());
