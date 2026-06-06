@@ -1029,6 +1029,63 @@ Call `ensureInfra()` in `activateTab` for `tabName === 'devops'` (replace the `e
 **Part B acceptance:** Infrastructure renders host vitals + live telemetry + a network-grouped living topology from `/api/infra/topology`; nginx/guacamole/topology pure logic unit-tested; `node --test` + vitest green; `npm run build` clean; no console errors; matches `mock-infrastructure.html`.
 
 ---
+---
+
+# PART C — DEMO MODE (after Parts A + B)
+
+**Outcome:** A password-free **static** build (`VITE_DEMO=1 vite build`) that renders every tab from **in-browser** mock data (dates relative to today), with no `/api/*` calls, auth bypassed, embedded-app iframes replaced by safe placeholders. Single source of truth — the demo *is* the real app fed by the dev-mock generators (no fork, no rot).
+
+**Decisions on record:** flag in this repo (NOT a separate repo); demo runs after A+B so it showcases the AI lab + topology. Reuses the generators already in `dashboard/vite.mock.config.js`.
+
+## Phase C1 — Extract generators (DRY)
+
+**Files:** Create `dashboard/src/demo/demoData.js`; Modify `dashboard/vite.mock.config.js`
+
+- [ ] **Step 1:** Move the pure generators (`buildMetrics`, `buildForecast`, `buildSchedule`, `buildTopology`, the scripted `analyze` responses, `meta.findings`) out of `vite.mock.config.js` into `src/demo/demoData.js` as exported functions (no Vite/node deps; dates via `new Date()` so the latest day is always "today").
+- [ ] **Step 2:** `vite.mock.config.js` imports from `src/demo/demoData.js` and serves them via middleware (dev behavior unchanged). Run the mock preview to confirm parity (all tabs render as before).
+- [ ] **Step 3: Commit** `refactor(dashboard): extract demo data generators (DRY with mock)`.
+
+## Phase C2 — Demo flag + in-browser data provider
+
+**Files:** Create `dashboard/src/utils/demo.js`; Modify `dataLoader.js`, `AnalystChat.js`, `EvidenceBoard.js` fetch, infra fetch + `init()` in `main.js`.
+
+- [ ] **Step 1:** `src/utils/demo.js`:
+```js
+import { buildMetrics, buildForecast, buildSchedule, buildTopology, scriptedAnalyze } from '../demo/demoData.js';
+export const DEMO = import.meta.env.VITE_DEMO === '1' || location.hostname.startsWith('demo.');
+const ROUTES = {
+  '/api/sync': () => buildMetrics(), '/api/metrics': () => buildMetrics(),
+  '/api/forecast': () => buildForecast(), '/api/schedule': () => buildSchedule(),
+  '/api/infra/topology': () => buildTopology(),
+};
+export async function demoFetch(url, opts) {
+  const path = url.split('?')[0];
+  if (path === '/api/analyze') return { json: async () => scriptedAnalyze(JSON.parse(opts?.body || '{}')) };
+  const fn = ROUTES[path];
+  return { ok: true, headers: { get: () => 'application/json' }, json: async () => (fn ? fn() : {}) };
+}
+```
+- [ ] **Step 2:** At each data-access site, branch on `DEMO` → use `demoFetch` instead of `fetch('/api/*')` (or wrap a single `apiFetch(url,opts)` used everywhere). In `init()` (main.js), if `DEMO`, skip `initAuth()`/login entirely and proceed.
+- [ ] **Step 3:** Run `cd dashboard && VITE_DEMO=1 npm run dev` — all tabs render with fake data, no login, zero failed `/api/*` in the console.
+- [ ] **Step 4: Commit** `feat(dashboard): demo flag + in-browser data provider`.
+
+## Phase C3 — Safe iframes + DEMO badge
+
+**Files:** Modify `main.js`, `index.html`, `main.css`
+
+- [ ] **Step 1:** In demo, the app-iframe tabs render a placeholder ("Доступно в полной версии") instead of loading real URLs — guard `loadAppIframe`/`__openApp`. Topology/live-strip "↗ открыть" become no-ops/placeholders in demo.
+- [ ] **Step 2:** Add a "DEMO" badge in the header, shown only when `DEMO`.
+- [ ] **Step 3: Commit** `feat(dashboard): demo iframe placeholders + badge`.
+
+## Phase C4 — Build & deploy
+
+- [ ] **Step 1:** `cd dashboard && VITE_DEMO=1 npm run build`; serve it (`npx serve dist`) and verify all tabs render, no `/api/*` requests, no console errors.
+- [ ] **Step 2:** Document the static deploy target (`demo.<domain>` on GH Pages/Netlify/nginx); optionally add a GitHub Actions job that builds + publishes the demo artifact.
+- [ ] **Step 3: Commit** `chore: demo static build + deploy notes`.
+
+**Part C acceptance:** `VITE_DEMO=1 npm run build` produces a static site rendering Overview + Analytics (AI lab) + Infrastructure (topology) with fresh-dated mock data, no auth, no backend calls, safe iframes; no console errors.
+
+---
 
 ## Cross-cutting / final
 
