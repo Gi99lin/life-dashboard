@@ -3955,11 +3955,164 @@ body.app-mode .app-iframe-tab {
   line-height: 1.4;
 }
 
+/* Trends panel is a flex column so the chart grows to fill the row height
+   (which is driven by the taller correlation tile). */
+#trendsPanel {
+  display: flex;
+  flex-direction: column;
+}
+
 .overview-trends-shell {
   position: relative;
-  height: 160px;
-  min-height: 160px;
+  flex: 1 1 auto;
+  min-height: 168px;
 }
+
+/* ---- Readiness drivers (correlation panel) ---- */
+.corr-drivers {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 13px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hair);
+}
+
+.corr-drivers .lbl {
+  margin-bottom: 2px;
+}
+
+.drv {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.drv .dl {
+  width: 84px;
+  flex-shrink: 0;
+  color: var(--fg-dim);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+
+.drv .dbar {
+  position: relative;
+  flex: 1;
+  height: 7px;
+  min-width: 0;
+  border-radius: 4px;
+  background: color-mix(in oklch, oklch(100% 0 0) 5%, transparent);
+}
+
+.drv .dbar::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  left: 50%;
+  width: 1px;
+  background: color-mix(in oklch, oklch(100% 0 0) 16%, transparent);
+}
+
+.drv .dbar i {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.drv .dbar i.pos {
+  background: var(--green);
+}
+
+.drv .dbar i.neg {
+  background: var(--red);
+}
+
+.drv .dv {
+  width: 38px;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.drv .dv.pos { color: var(--green); }
+.drv .dv.neg { color: var(--red); }
+.drv:hover .dl { color: var(--fg); }
+
+/* ---- Trends: period toggle + summary chips ---- */
+.trend-range {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 4px;
+}
+
+.trend-range button {
+  padding: 2px 7px;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+
+.trend-range button:hover {
+  color: var(--fg-dim);
+  border-color: color-mix(in oklch, var(--green) 35%, transparent);
+}
+
+.trend-range button.active {
+  color: var(--green);
+  border-color: color-mix(in oklch, var(--green) 55%, transparent);
+  background: color-mix(in oklch, var(--green) 12%, transparent);
+}
+
+.trend-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  padding-top: 11px;
+  border-top: 1px solid var(--hair);
+}
+
+.tchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--fg-muted);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+}
+
+.tchip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.tchip b {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.tchip em {
+  font-style: normal;
+  font-size: 0.6rem;
+}
+
+.tchip .d-up { color: var(--green); }
+.tchip .d-down { color: var(--red); }
+.tchip .d-flat { color: var(--fg-muted); }
 
 .empty-state {
   display: flex;

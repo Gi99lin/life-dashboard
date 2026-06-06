@@ -5,6 +5,15 @@ import { PAL, TOOLTIP, rgba } from '../utils/palette.js';
 Chart.register(...registerables);
 
 let chart = null;
+const CHART_H = 196;
+const WINDOWS = [7, 30, 90];
+
+// Per-series presentation config (shared by chips + datasets).
+const SERIES = [
+  { key: 'mood', label: 'Настроение', color: PAL.yellow, unit: '', decimals: 1 },
+  { key: 'sleep', label: 'Сон', color: PAL.aqua, unit: 'ч', decimals: 1 },
+  { key: 'energy', label: 'Энергия', color: PAL.green, unit: '', decimals: 0 },
+];
 
 const todayLinePlugin = {
   id: 'overviewTodayLine',
@@ -45,30 +54,50 @@ export function hasTrendData(series) {
   ));
 }
 
-export function renderOverviewTrends(container, data) {
-  if (!container) return;
+/** Per-series {avg, delta, dir, n} over the window (first-half vs last-half drift). */
+export function summarizeTrendSeries(series) {
+  const stat = (arr) => {
+    const v = (arr || []).filter((x) => x != null);
+    if (!v.length) return null;
+    const avg = v.reduce((a, b) => a + b, 0) / v.length;
+    const half = Math.max(1, Math.floor(v.length / 2));
+    const firstAvg = v.slice(0, half).reduce((a, b) => a + b, 0) / half;
+    const lastAvg = v.slice(-half).reduce((a, b) => a + b, 0) / half;
+    const delta = lastAvg - firstAvg;
+    const threshold = Math.max(0.01, Math.abs(avg) * 0.02);
+    const dir = Math.abs(delta) < threshold ? 'flat' : (delta > 0 ? 'up' : 'down');
+    return { avg, delta, dir, n: v.length };
+  };
+  return { mood: stat(series.mood), sleep: stat(series.sleep), energy: stat(series.energy) };
+}
 
-  const series = buildOverviewTrendSeries(data, 30);
-  if (!hasTrendData(series)) {
-    container.innerHTML = `
-      <h3>Тренды · 30д <span class="more">наведи — день · клик — развернуть</span></h3>
-      <div class="empty-state">
-        <b>Нет данных за день</b>
-        <span>Сбор начнётся ночью</span>
-      </div>`;
-    return;
-  }
+const ARROW = { up: '▲', down: '▼', flat: '→' };
 
-  container.innerHTML = `
-    <h3>Тренды · 30д <span class="more">наведи — день · клик — развернуть</span></h3>
-    <div class="overview-trends-shell"><canvas id="overviewTrends"></canvas></div>`;
+function statsRow(series) {
+  const summary = summarizeTrendSeries(series);
+  const chips = SERIES.map((s) => {
+    const st = summary[s.key];
+    if (!st) {
+      return `<span class="tchip"><i style="background:${s.color}"></i>${s.label} <b>—</b></span>`;
+    }
+    const avg = st.avg.toFixed(s.decimals);
+    return `<span class="tchip"><i style="background:${s.color}"></i>${s.label} `
+      + `<b>${avg}${s.unit}</b><em class="d-${st.dir}">${ARROW[st.dir]}</em></span>`;
+  }).join('');
+  return `<div class="trend-stats">${chips}</div>`;
+}
 
-  const canvas = container.querySelector('#overviewTrends');
-  if (!canvas) return;
+function rangeToggle(win) {
+  return `<span class="trend-range">${WINDOWS.map((w) => (
+    `<button type="button" data-win="${w}" class="${w === win ? 'active' : ''}">${w}д</button>`
+  )).join('')}</span>`;
+}
 
+function drawChart(canvas, series) {
   const ctx = canvas.getContext('2d');
+  const gh = canvas.clientHeight || CHART_H; // fill the actual (flex-grown) chart height
   const gradient = (color) => {
-    const g = ctx.createLinearGradient(0, 0, 0, 160);
+    const g = ctx.createLinearGradient(0, 0, 0, gh);
     g.addColorStop(0, rgba(color, 0.22));
     g.addColorStop(1, rgba(color, 0));
     return g;
@@ -121,20 +150,52 @@ export function renderOverviewTrends(container, data) {
           grid: { display: false },
           border: { display: false },
         },
-        yEnergy: {
-          display: false,
-          min: 0,
-          max: 100,
-        },
+        yEnergy: { display: false, min: 0, max: 100 },
         x: {
           ticks: { color: PAL.fgMuted, maxRotation: 0, maxTicksLimit: 8 },
           grid: { color: PAL.grid },
           border: { display: false },
         },
       },
-      animation: { duration: 700, easing: 'easeOutCubic' },
+      animation: { duration: 600, easing: 'easeOutCubic' },
     },
     plugins: [todayLinePlugin],
+  });
+}
+
+export function renderOverviewTrends(container, data, win = 30) {
+  if (!container) return;
+
+  const series = buildOverviewTrendSeries(data, win);
+  if (!hasTrendData(series)) {
+    container.innerHTML = `
+      <h3>Тренды ${rangeToggle(win)}<span class="more">наведи — день · клик — развернуть</span></h3>
+      <div class="empty-state">
+        <b>Нет данных за день</b>
+        <span>Сбор начнётся ночью</span>
+      </div>`;
+    bindRange(container, data);
+    return;
+  }
+
+  container.innerHTML = `
+    <h3>Тренды ${rangeToggle(win)}<span class="more">наведи — день · клик — развернуть</span></h3>
+    <div class="overview-trends-shell"><canvas id="overviewTrends"></canvas></div>
+    ${statsRow(series)}`;
+
+  const canvas = container.querySelector('#overviewTrends');
+  if (canvas) drawChart(canvas, series);
+  bindRange(container, data);
+}
+
+function bindRange(container, data) {
+  const toggle = container.querySelector('.trend-range');
+  if (!toggle || toggle.dataset.bound === 'true') return;
+  toggle.dataset.bound = 'true';
+  toggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-win]');
+    if (!btn) return;
+    renderOverviewTrends(container, data, +btn.dataset.win);
   });
 }
 

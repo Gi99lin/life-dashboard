@@ -31,6 +31,16 @@ const METRICS = {
   'BB': (day) => day.garmin?.body_battery_max,
 };
 
+// Behavioural drivers (from the correlation panel's "Драйверы готовности"),
+// plotted against the daily readiness score.
+const DRIVER_METRICS = {
+  sleep: { label: 'Сон, ч', get: (day) => day.garmin?.sleep_hours },
+  steps: { label: 'Шаги', get: (day) => day.garmin?.steps },
+  code: { label: 'Код, ч', get: (day) => day.wakatime?.total_h ?? day.schedule?.hours_work },
+  mood: { label: 'Настроение', get: (day) => day.manual?.mood },
+  rhr: { label: 'Пульс покоя', get: (day) => day.garmin?.resting_hr },
+};
+
 const stateByContainer = new WeakMap();
 const charts = new Map();
 
@@ -38,7 +48,7 @@ export function analyticsTabForTarget(target) {
   return DRILL_TARGETS[target] || 'body';
 }
 
-export function buildAnalyticsDeepModel(data, count = 30, pair = { i: 0, j: 1 }) {
+export function buildAnalyticsDeepModel(data, count = 30, pair = { i: 0, j: 1 }, driver = null) {
   const days = getDays(data, count);
   const labels = days.map(formatLabel);
   const correlations = data.meta?.correlations || { labels: [], matrix: [], strongest: [] };
@@ -79,7 +89,7 @@ export function buildAnalyticsDeepModel(data, count = 30, pair = { i: 0, j: 1 })
       reviews: days.map((day) => day.github?.reviews ?? null),
     },
     correlations,
-    scatter: buildScatter(days, correlations, pair),
+    scatter: driver ? buildDriverScatter(days, driver) : buildScatter(days, correlations, pair),
   };
 }
 
@@ -181,7 +191,12 @@ export function activateAnalyticsDeep(container, tab = 'body', params = {}) {
     panel.classList.toggle('active', panel.dataset.analyticsPanel === tab);
   });
 
-  if (tab === 'corr' && params.i != null && params.j != null) {
+  if (tab === 'corr' && params.driver) {
+    state.model = buildAnalyticsDeepModel(state.data, 30, undefined, params.driver);
+    const title = container.querySelector?.('#analyticsScatterTitle');
+    if (title) title.textContent = `Скаттер · ${state.model.scatter.xLabel} ↔ ${state.model.scatter.yLabel}`;
+    state.rendered.delete('corr');
+  } else if (tab === 'corr' && params.i != null && params.j != null) {
     state.model = buildAnalyticsDeepModel(state.data, 30, { i: params.i, j: params.j });
     const title = container.querySelector?.('#analyticsScatterTitle');
     if (title) title.textContent = `Скаттер · ${state.model.scatter.xLabel} ↔ ${state.model.scatter.yLabel}`;
@@ -302,6 +317,17 @@ function renderScatterChart(container, model) {
       scales: chartScales({ x: { position: 'bottom' }, y: { position: 'left' } }),
     },
   });
+}
+
+function buildDriverScatter(days, driverKey) {
+  const metric = DRIVER_METRICS[driverKey] || { label: '—', get: () => null };
+  return {
+    xLabel: metric.label,
+    yLabel: 'Готовность',
+    points: days
+      .map((day) => ({ x: metric.get(day), y: day.readiness?.score, date: day.date }))
+      .filter((point) => point.x != null && point.y != null),
+  };
 }
 
 function buildScatter(days, correlations, pair) {

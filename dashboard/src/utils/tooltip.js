@@ -62,6 +62,13 @@ export function attachMetricTooltips(root = document) {
     attachTooltip(el, formatMetricTooltip(el.dataset));
     el.dataset.tooltipBound = 'true';
   });
+
+  // Readiness-driver bars carry a ready-made tooltip string in data-tip.
+  root.querySelectorAll('.drv[data-tip]').forEach((el) => {
+    if (el.dataset.tooltipBound === 'true') return;
+    attachTooltip(el, el.dataset.tip);
+    el.dataset.tooltipBound = 'true';
+  });
 }
 
 export function enhanceSourceLinks(root = document) {
