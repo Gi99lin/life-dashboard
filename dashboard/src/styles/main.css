@@ -4220,6 +4220,10 @@ body.app-mode .app-iframe-tab {
   gap: 14px;
 }
 
+.chat {
+  min-height: 430px;
+}
+
 .ph {
   display: flex;
   align-items: center;
@@ -4246,6 +4250,117 @@ body.app-mode .app-iframe-tab {
   font-size: 0.55rem;
   letter-spacing: 0;
   text-transform: none;
+}
+
+.msgs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 11px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.bubble {
+  max-width: 90%;
+  border-radius: 13px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  padding: 11px 13px;
+}
+
+.bubble.ai {
+  align-self: flex-start;
+  border: 1px solid var(--card-border);
+  border-top-left-radius: 4px;
+  background: var(--card-bg);
+}
+
+.bubble.me {
+  align-self: flex-end;
+  border: 1px solid color-mix(in oklch, var(--green) 30%, transparent);
+  border-top-right-radius: 4px;
+  background: color-mix(in oklch, var(--green) 13%, transparent);
+}
+
+.bubble .who {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  color: var(--purple);
+  font-family: var(--mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.srcrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 8px;
+}
+
+.chat .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.chip {
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  background: var(--card-bg);
+  color: var(--fg-dim);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  padding: 5px 11px;
+}
+
+.chip:hover {
+  border-color: color-mix(in oklch, var(--green) 40%, transparent);
+  color: var(--fg);
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--bg0);
+  padding: 7px 8px 7px 12px;
+}
+
+.composer input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--fg);
+  font-family: Inter, sans-serif;
+  font-size: 0.8rem;
+}
+
+.composer input::placeholder {
+  color: var(--fg-muted);
+}
+
+.composer .send {
+  border: 0;
+  border-radius: 7px;
+  background: var(--green);
+  color: var(--bg-dim);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 6px 11px;
 }
 
 .board {
