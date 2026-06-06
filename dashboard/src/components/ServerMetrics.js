@@ -4,6 +4,8 @@
  */
 
 import { Chart } from 'chart.js';
+import { PAL } from '../utils/palette.js';
+import { lineSeries, lineOptions } from '../utils/charts.js';
 
 let cpuChart = null;
 let netChart = null;
@@ -168,9 +170,9 @@ function renderSystemCharts(sys) {
         data: {
           labels,
           datasets: [
-            { label: 'User', data: userVals, borderColor: '#59be6c', backgroundColor: '#59be6c20', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
-            { label: 'System', data: sysVals, borderColor: '#e99355', backgroundColor: '#e9935520', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
-            { label: 'IO Wait', data: ioVals, borderColor: '#e3645e', backgroundColor: '#e3645e15', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1 },
+            lineSeries('User', userVals, PAL.green, { fill: true, width: 1.5 }),
+            lineSeries('System', sysVals, PAL.orange, { fill: true, width: 1.5 }),
+            lineSeries('IO Wait', ioVals, PAL.red, { fill: true, width: 1.2 }),
           ],
         },
         options: chartOpts('% CPU'),
@@ -195,8 +197,8 @@ function renderSystemCharts(sys) {
         data: {
           labels,
           datasets: [
-            { label: 'Входящий', data: inVals, borderColor: '#69aed5', backgroundColor: '#69aed520', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
-            { label: 'Исходящий', data: outVals, borderColor: '#c88ec3', backgroundColor: '#c88ec320', fill: true, tension: 0.3, pointRadius: 0, borderWidth: 1.5 },
+            lineSeries('Входящий', inVals, PAL.blue, { fill: true, width: 1.5 }),
+            lineSeries('Исходящий', outVals, PAL.purple, { fill: true, width: 1.5 }),
           ],
         },
         options: chartOpts('KB/s'),
@@ -206,24 +208,14 @@ function renderSystemCharts(sys) {
 }
 
 function chartOpts(yLabel) {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: { mode: 'index', intersect: false },
-    plugins: {
-      legend: { labels: { color: '#a3acb3', boxWidth: 8, font: { size: 10 } } },
-      tooltip: {
-        backgroundColor: 'rgba(11,18,25,0.96)',
-        titleColor: '#eaeff3', bodyColor: '#a3acb3',
-        padding: 10, cornerRadius: 8,
-      },
-    },
+  return lineOptions({
+    legend: { labels: { boxWidth: 8 } },
     scales: {
-      x: { ticks: { color: '#727c84', font: { size: 9 }, maxTicksLimit: 10 }, grid: { display: false } },
-      y: { title: { display: true, text: yLabel, color: '#727c84', font: { size: 9 } }, ticks: { color: '#727c84', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+      x: { ticks: { maxTicksLimit: 10 }, grid: { display: false } },
+      y: { title: { display: true, text: yLabel, color: PAL.fgMuted } },
     },
     animation: { duration: 500 },
-  };
+  });
 }
 
 function fmtMem(mb) {

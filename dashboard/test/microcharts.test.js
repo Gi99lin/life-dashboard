@@ -47,7 +47,7 @@ describe('microcharts', () => {
 
   it('donut and sparkline and streakDots return strings', () => {
     expect(donut([{ pct: 40, color: '#69aed5' }, { pct: 60, color: '#59be6c' }])).toContain('conic-gradient');
-    expect(sparkline([1, 2, 3, 2, 4], '#5dc0a7')).toContain('<polyline');
+    expect(sparkline([1, 2, 3, 2, 4], '#5dc0a7')).toContain('<path');
     expect(streakDots([0, 1, 2, 3, 4])).toContain('commit-dot');
   });
 });
