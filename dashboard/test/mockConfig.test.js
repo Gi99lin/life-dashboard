@@ -5,7 +5,7 @@ const config = readFileSync(new URL('../vite.mock.config.js', import.meta.url), 
 
 describe('mock preview config', () => {
   it('stubs analytics findings and analyze endpoint', () => {
-    expect(config).toContain('findings:');
+    expect(config).toContain("from './src/demo/demoData.js'");
     expect(config).toContain('/api/analyze');
     expect(config).toContain('scriptedAnalyze');
   });
