@@ -89,7 +89,6 @@ function edgeLayer(topology) {
     <svg class="edges" viewBox="0 0 1240 470" preserveAspectRatio="none">
       <path class="edge flow" d="M74,220 L150,220"/>
       ${networkEdges}
-      <path class="edge flow" d="M888,92 C950,92 985,110 1008,128"/>
       <path class="edge mon" d="M1118,300 C980,250 820,170 598,140"/>
       <path class="edge mon" d="M1118,300 C1000,330 820,350 598,372"/>
       ${vmEdges}

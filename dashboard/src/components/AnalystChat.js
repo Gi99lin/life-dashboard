@@ -21,13 +21,18 @@ export function renderSourceChips(sources = []) {
   return `<div class="srcrow">${sources.map((source) => `<span class="src">${esc(source)}</span>`).join('')}</div>`;
 }
 
-export function renderAnalystChat(container, data, { onBoard } = {}) {
+export function analystPeriodText(period = 30) {
+  const days = Math.max(1, Math.round(Number(period) || 30));
+  return `${days} дней`;
+}
+
+export function renderAnalystChat(container, data, { onBoard, period = 30 } = {}) {
   if (!container) return;
   const findings = data?.meta?.findings || [];
-  const period = 30;
+  const selectedPeriod = Math.max(1, Math.round(Number(period) || 30));
 
   container.innerHTML = `
-    <div class="ph"><span class="tagdot"></span>AI-аналитик<span class="right">видит данные за период</span></div>
+    <div class="ph"><span class="tagdot"></span>AI-аналитик<span class="right">видит данные за ${esc(analystPeriodText(selectedPeriod))}</span></div>
     <div class="msgs" id="anMsgs"></div>
     <div class="chips" id="anChips">
       <span class="chip">Сон ↔ продуктивность</span>
@@ -58,7 +63,7 @@ export function renderAnalystChat(container, data, { onBoard } = {}) {
       const response = await apiFetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ period, question: clean }),
+        body: JSON.stringify({ period: selectedPeriod, question: clean }),
       });
       const payload = await response.json();
       pending.innerHTML = `<div class="who">◇ аналитик</div>${answerHtml(payload.answer || 'Нет ответа.')}${renderSourceChips(payload.sources || [])}`;

@@ -16,4 +16,9 @@ describe('demo iframe safety', () => {
     expect(css).toContain('.demo-badge');
     expect(css).toContain('.demo-placeholder');
   });
+
+  it('keeps the apps dropdown above embedded app frames', () => {
+    expect(css).toMatch(/body\.app-mode \.top-header-row\s*{[\s\S]*position:\s*relative[\s\S]*z-index:\s*50/);
+    expect(css).toMatch(/body\.app-mode \.apps-menu\s*{[\s\S]*z-index:\s*80/);
+  });
 });

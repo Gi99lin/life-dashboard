@@ -117,13 +117,13 @@
                         <div class="lbl">Аналитика · AI-лаборатория</div>
                         <h2>Спроси свои <b>данные</b></h2>
                     </div>
-                    <div class="periods">
-                        <button class="pbtn">7д</button>
-                        <button class="pbtn active">30д</button>
-                        <button class="pbtn">90д</button>
-                        <button class="pbtn">365д</button>
-                        <button class="pbtn">⤢ свой</button>
-                        <span class="stamp">30 дней · LLM</span>
+                    <div class="periods analytics-periods">
+                        <button class="pbtn" data-period="7" type="button">7д</button>
+                        <button class="pbtn active" data-period="30" type="button">30д</button>
+                        <button class="pbtn" data-period="90" type="button">90д</button>
+                        <button class="pbtn" data-period="365" type="button">365д</button>
+                        <button class="pbtn" data-period-custom type="button">⤢ свой</button>
+                        <span class="stamp" data-analytics-stamp>30 дней · LLM</span>
                     </div>
                 </div>
                 <section id="anFindings"></section>

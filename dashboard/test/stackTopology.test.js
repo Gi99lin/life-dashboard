@@ -32,4 +32,11 @@ describe('renderStackTopology', () => {
     expect(container.innerHTML).toMatch(/style="left:42px;top:220px"[\s\S]*🌐 Интернет/);
     expect(container.innerHTML).toMatch(/style="left:1012px;top:128px"[\s\S]*внешние LLM/);
   });
+
+  it('does not draw a decorative dangling line to external LLM providers', () => {
+    const container = { innerHTML: '', querySelectorAll: () => [] };
+    renderStackTopology(container, topo);
+
+    expect(container.innerHTML).not.toContain('M888,92 C950,92 985,110 1008,128');
+  });
 });

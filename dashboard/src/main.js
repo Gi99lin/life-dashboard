@@ -19,7 +19,7 @@ import { renderDomains } from './components/Domains.js';
 import { renderCorrelationPanel } from './components/CorrelationPanel.js';
 import { renderOverviewTrends } from './components/OverviewTrends.js';
 import { renderFindings } from './components/Findings.js';
-import { renderAnalystChat } from './components/AnalystChat.js';
+import { analystPeriodText, renderAnalystChat } from './components/AnalystChat.js';
 import { renderEvidenceBoard, setBoardState } from './components/EvidenceBoard.js';
 import { renderHostVitals } from './components/HostVitals.js';
 import { renderLiveTelemetry } from './components/LiveTelemetry.js';
@@ -158,18 +158,56 @@ async function init() {
 
   // Tab switching
   let analyticsLoaded = false;
+  let analyticsPeriod = 30;
+  let analyticsBoardState = { view: 'correlation', x: 'Сон', y: 'Наст' };
   let infraLoaded = false;
   const tabs = document.getElementById('tabs');
   const appsTrigger = tabs?.querySelector('.apps-tab-trigger');
   const appsMenu = document.getElementById('appsMenu');
 
+  function syncAnalyticsPeriodControls() {
+    document.querySelectorAll('.analytics-periods [data-period]').forEach((button) => {
+      button.classList.toggle('active', Number(button.dataset.period) === analyticsPeriod);
+    });
+
+    const stamp = document.querySelector('[data-analytics-stamp]');
+    if (stamp) stamp.textContent = `${analystPeriodText(analyticsPeriod)} · LLM`;
+  }
+
+  function renderAnalyticsWorkspace() {
+    renderEvidenceBoard(document.getElementById('anBoard'), data, analyticsBoardState, analyticsPeriod);
+    renderAnalystChat(document.getElementById('anChat'), data, {
+      period: analyticsPeriod,
+      onBoard: (board) => {
+        if (!board) return;
+        analyticsBoardState = { ...analyticsBoardState, ...(board || {}) };
+        setBoardState(board);
+      },
+    });
+    enhanceMetricInteractions(document.getElementById('tab-analytics'));
+  }
+
+  function setAnalyticsPeriod(period) {
+    const next = Number(period);
+    if (!Number.isFinite(next) || next <= 0) return;
+    analyticsPeriod = Math.round(next);
+    syncAnalyticsPeriodControls();
+    if (analyticsLoaded) renderAnalyticsWorkspace();
+  }
+
+  function bindAnalyticsPeriods() {
+    document.querySelectorAll('.analytics-periods [data-period]').forEach((button) => {
+      button.addEventListener('click', () => setAnalyticsPeriod(button.dataset.period));
+    });
+    syncAnalyticsPeriodControls();
+  }
+
   function ensureAnalytics() {
     if (analyticsLoaded) return;
     analyticsLoaded = true;
+    bindAnalyticsPeriods();
     renderFindings(document.getElementById('anFindings'), data);
-    renderEvidenceBoard(document.getElementById('anBoard'), data, { view: 'correlation', x: 'Сон', y: 'Наст' });
-    renderAnalystChat(document.getElementById('anChat'), data, { onBoard: (board) => setBoardState(board) });
-    enhanceMetricInteractions(document.getElementById('tab-analytics'));
+    renderAnalyticsWorkspace();
   }
 
   // Infrastructure charts need visible containers (Chart.js measures them), so

@@ -1909,7 +1909,13 @@ body.app-mode .top-header-row {
   margin-bottom: 4px;
   gap: 8px;
   align-items: center;
+  position: relative;
   flex-shrink: 0;
+  z-index: 50;
+}
+
+body.app-mode .apps-menu {
+  z-index: 80;
 }
 
 /* Tabs become single horizontal row */
@@ -1986,6 +1992,8 @@ body.app-mode .app-iframe-tab {
   height: auto;
   border-radius: 6px 6px 0 0;
   min-height: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ========================================
@@ -4286,10 +4294,15 @@ body.app-mode .app-iframe-tab {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   gap: 14px;
+  align-items: stretch;
 }
 
 .chat {
+  height: 430px;
   min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .ph {
@@ -4323,6 +4336,7 @@ body.app-mode .app-iframe-tab {
 .msgs {
   display: flex;
   flex: 1;
+  min-height: 0;
   flex-direction: column;
   gap: 11px;
   overflow: auto;
@@ -4330,6 +4344,7 @@ body.app-mode .app-iframe-tab {
 }
 
 .bubble {
+  flex-shrink: 0;
   max-width: 90%;
   border-radius: 13px;
   font-size: 0.82rem;
@@ -4432,7 +4447,11 @@ body.app-mode .app-iframe-tab {
 }
 
 .board {
+  height: 430px;
   min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .bctl {
