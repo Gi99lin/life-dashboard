@@ -71,6 +71,9 @@ async function init() {
   setGreeting();
   setDate();
   initChartTheme();
+  document.body.classList.toggle('demo-mode', DEMO);
+  const demoBadge = document.getElementById('demoBadge');
+  if (demoBadge) demoBadge.hidden = !DEMO;
 
   // Cookies are sent automatically in the live app. The static demo uses
   // in-browser data only and intentionally opens no socket connection.
@@ -182,7 +185,35 @@ async function init() {
     renderStackTopology(document.getElementById('stackTopo'), topology);
   }
 
+  function showDemoOpenNotice(label = '') {
+    let notice = document.getElementById('demoOpenNotice');
+    if (!notice) {
+      notice = document.createElement('div');
+      notice.id = 'demoOpenNotice';
+      notice.className = 'demo-open';
+      document.body.appendChild(notice);
+    }
+    notice.textContent = label ? `Доступно в полной версии · ${label}` : 'Доступно в полной версии';
+    clearTimeout(showDemoOpenNotice.timer);
+    showDemoOpenNotice.timer = setTimeout(() => notice.remove(), 1800);
+  }
+
+  function renderDemoPlaceholder(tab) {
+    const iframe = tab?.querySelector('iframe[data-src]');
+    const placeholder = tab?.querySelector('[data-demo-placeholder]');
+    if (iframe) {
+      iframe.removeAttribute('src');
+      iframe.hidden = true;
+    }
+    if (placeholder) placeholder.hidden = false;
+  }
+
   function loadAppIframe(tab) {
+    if (DEMO) {
+      renderDemoPlaceholder(tab);
+      return;
+    }
+
     const iframe = tab?.querySelector('iframe[data-src]');
     if (iframe && !iframe.getAttribute('src')) {
       iframe.setAttribute('src', iframe.dataset.src);
@@ -242,6 +273,11 @@ async function init() {
       activateTab(appTab, appsTrigger);
       appsMenu?.classList.remove('open');
       appsTrigger?.setAttribute('aria-expanded', 'false');
+      return;
+    }
+
+    if (DEMO) {
+      showDemoOpenNotice(value);
       return;
     }
 

@@ -12,4 +12,10 @@ describe('embedded app iframes', () => {
     expect(html).not.toContain('<iframe src="https://rdp.gigglin.tech/"');
     expect(html).not.toContain('<iframe src="https://omniroute.gigglin.tech/"');
   });
+
+  it('includes static demo placeholders for embedded apps', () => {
+    expect(html).toContain('id="demoBadge"');
+    expect(html).toContain('class="demo-placeholder"');
+    expect(html).toContain('Доступно в полной версии');
+  });
 });

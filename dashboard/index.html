@@ -19,6 +19,7 @@
                 <div class="header-logo-row">
                     <span class="logo"><span class="logo-accent">Life</span> Dashboard</span>
                     <span class="sync-dot" id="syncDot" title="Sync Status"></span>
+                    <span class="demo-badge" id="demoBadge" hidden>DEMO</span>
                 </div>
                 <h1 class="greeting" id="greeting">—</h1>
             </div>
@@ -136,14 +137,29 @@
         <!-- Embedded Apps Tabs -->
         <main class="tab-content app-iframe-tab" id="tab-librechat">
             <iframe data-src="https://chat.gigglin.tech/" class="app-iframe" allow="microphone; camera; clipboard-read; clipboard-write" title="LibreChat"></iframe>
+            <div class="demo-placeholder" data-demo-placeholder hidden>
+                <span>LibreChat</span>
+                <b>Доступно в полной версии</b>
+                <em>В демо-режиме внешние приложения не загружаются.</em>
+            </div>
         </main>
 
         <main class="tab-content app-iframe-tab" id="tab-guacamole">
             <iframe data-src="https://rdp.gigglin.tech/" class="app-iframe" allow="clipboard-read; clipboard-write" title="Guacamole"></iframe>
+            <div class="demo-placeholder" data-demo-placeholder hidden>
+                <span>Guacamole</span>
+                <b>Доступно в полной версии</b>
+                <em>Удалённый рабочий стол скрыт в публичном static demo.</em>
+            </div>
         </main>
 
         <main class="tab-content app-iframe-tab" id="tab-omniroute">
             <iframe data-src="https://omniroute.gigglin.tech/" class="app-iframe" title="OmniRoute"></iframe>
+            <div class="demo-placeholder" data-demo-placeholder hidden>
+                <span>OmniRoute</span>
+                <b>Доступно в полной версии</b>
+                <em>Боевой LLM router не открывается из демо-сборки.</em>
+            </div>
         </main>
     <!-- QuickEntry Modal -->
     <div class="modal-overlay" id="quickEntryOverlay">
