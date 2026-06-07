@@ -112,6 +112,18 @@ npx vite --config vite.mock.config.js --port 5174
 # This is the server used to preview the redesign mockups (mock-overview.html etc).
 ```
 
+**Static public demo (no backend, no auth, safe app placeholders):**
+```bash
+cd dashboard && npm install
+VITE_DEMO=1 npm run build
+npx serve dist -l 4176
+```
+The demo build runs entirely from in-browser generators in `dashboard/src/demo/demoData.js`.
+It renders Overview + Analytics + Infrastructure with fresh-dated fake data, bypasses auth
+and `/api/*` calls, and replaces embedded app iframes with "Доступно в полной версии"
+placeholders. Deploy this artifact to `demo.<domain>` via GitHub Pages, Netlify, or a static
+nginx vhost that serves `dashboard/dist` with SPA fallback to `index.html`.
+
 **Collector (writes metrics.json once):**
 ```bash
 cd collector && pip install -r requirements.txt
