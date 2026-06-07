@@ -1,15 +1,21 @@
 /**
  * dataLoader.js — loads metrics.json and provides helpers.
  */
+import { apiFetch, DEMO } from './demo.js';
 
 let metricsData = null;
 
 export async function loadMetrics() {
   if (metricsData) return metricsData;
 
+  if (DEMO) {
+    metricsData = await (await apiFetch('/api/sync')).json();
+    return metricsData;
+  }
+
   // 1. Try API sync (reads Obsidian → updates metrics.json → returns fresh data)
   try {
-    const response = await fetch('/api/sync');
+    const response = await apiFetch('/api/sync');
     const ct = response.headers.get('content-type') || '';
     if (response.ok && ct.includes('application/json')) {
       metricsData = await response.json();

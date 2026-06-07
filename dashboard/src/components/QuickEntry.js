@@ -2,6 +2,7 @@
  * QuickEntry.js — Refined entry form with mini-card sections.
  * Pre-loads existing data when opening for a specific date.
  */
+import { apiFetch } from '../utils/demo.js';
 
 let selectedMood = null;
 let currentEntryDate = null;
@@ -72,7 +73,7 @@ export function renderQuickEntry(container) {
     const btn = container.querySelector('#saveBtn');
 
     try {
-      const res = await fetch('/api/entry', {
+      const res = await apiFetch('/api/entry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(entry),
@@ -128,7 +129,7 @@ export async function loadEntryForDate(date) {
 
   // Fetch existing data
   try {
-    const res = await fetch(`/api/entry?date=${currentEntryDate}`);
+    const res = await apiFetch(`/api/entry?date=${currentEntryDate}`);
     if (!res.ok) return;
     const data = await res.json();
 

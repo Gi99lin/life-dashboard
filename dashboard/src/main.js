@@ -3,6 +3,7 @@
  */
 import './styles/main.css';
 import { loadMetrics } from './utils/dataLoader.js';
+import { DEMO, apiFetch } from './utils/demo.js';
 import { renderQuickEntry, loadEntryForDate } from './components/QuickEntry.js';
 import { initWeather } from './components/WeatherForecast.js';
 import { openScheduleEditor } from './components/ScheduleEditor.js';
@@ -59,37 +60,40 @@ function setSyncDot(status) {
 
 async function init() {
   // Check auth via cookie
-  const authed = await initAuth();
-  if (!authed) {
-    showLoginModal();
-    return;
+  if (!DEMO) {
+    const authed = await initAuth();
+    if (!authed) {
+      showLoginModal();
+      return;
+    }
   }
 
   setGreeting();
   setDate();
   initChartTheme();
 
-  // Cookies are sent automatically — no fetch wrapper needed
+  // Cookies are sent automatically in the live app. The static demo uses
+  // in-browser data only and intentionally opens no socket connection.
+  if (!DEMO) {
+    const socket = io('/');
 
-  // V2 live sockets (cookies sent via handshake)
-  const socket = io('/');
+    socket.on('connect_error', (err) => {
+      if (err.message === 'Unauthorized') showLoginModal('Сессия истекла');
+    });
 
-  socket.on('connect_error', (err) => {
-    if (err.message === 'Unauthorized') showLoginModal('Сессия истекла');
-  });
+    socket.on('docker_pulse', (state) => {
+      updateLiveInfra(state);
+    });
 
-  socket.on('docker_pulse', (state) => {
-    updateLiveInfra(state);
-  });
-
-  socket.on('now_pulse', (state) => {
-    updateLiveNow(state);
-  });
+    socket.on('now_pulse', (state) => {
+      updateLiveNow(state);
+    });
+  }
 
   // Fetch Live Schedule
   let scheduleData = null;
   try {
-    const sRes = await fetch('/api/schedule');
+    const sRes = await apiFetch('/api/schedule');
     const sData = await sRes.json();
     scheduleData = sData;
     const sCont = document.getElementById('liveSchedule');
@@ -170,7 +174,7 @@ async function init() {
   async function ensureInfra() {
     if (infraLoaded) return;
     infraLoaded = true;
-    const topology = await fetch('/api/infra/topology')
+    const topology = await apiFetch('/api/infra/topology')
       .then((res) => res.json())
       .catch(() => ({ host: {}, telemetry: { cpu: [], ram: [], net: [] }, networks: [], standalone: [], edges: [] }));
     renderHostVitals(document.getElementById('infraVitals'), topology);

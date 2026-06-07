@@ -3,6 +3,7 @@
  * Supports date navigation, inline editing, add/delete rows,
  * and Quick Confirm (option A: shift subsequent activities up).
  */
+import { apiFetch } from '../utils/demo.js';
 
 let currentDate = null;
 let blocks = [];
@@ -76,7 +77,7 @@ async function loadAndRender() {
   if (titleEl) titleEl.textContent = formatDateRu(currentDate);
 
   try {
-    const res = await fetch(`/api/schedule?date=${currentDate}`);
+    const res = await apiFetch(`/api/schedule?date=${currentDate}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     blocks = (data.blocks || []).map(b => ({ ...b }));
@@ -249,7 +250,7 @@ function minToTime(min) {
 async function saveSchedule() {
   const btn = document.getElementById('schedSaveBtn');
   try {
-    const res = await fetch('/api/schedule', {
+    const res = await apiFetch('/api/schedule', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date: currentDate, blocks }),

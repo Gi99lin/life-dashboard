@@ -1,3 +1,5 @@
+import { apiFetch } from '../utils/demo.js';
+
 function esc(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -53,7 +55,7 @@ export function renderAnalystChat(container, data, { onBoard } = {}) {
     const pending = addBubble('ai', '<div class="who">◇ аналитик</div>...');
 
     try {
-      const response = await fetch('/api/analyze', {
+      const response = await apiFetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ period, question: clean }),

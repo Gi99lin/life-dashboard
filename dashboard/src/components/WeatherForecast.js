@@ -3,13 +3,14 @@
  */
 
 import { weatherIcon } from '../utils/icons.js';
+import { apiFetch } from '../utils/demo.js';
 
 export async function initWeather() {
   const widget = document.getElementById('weatherWidget');
   if (!widget) return;
 
   try {
-    const res = await fetch('/api/forecast');
+    const res = await apiFetch('/api/forecast');
     if (!res.ok) return;
 
     const { days, hourly, current } = await res.json();

@@ -1,5 +1,6 @@
 import { Chart, registerables } from 'chart.js';
 import { gradientFill, lineOptions, lineSeries } from '../utils/charts.js';
+import { apiFetch } from '../utils/demo.js';
 import { PAL } from '../utils/palette.js';
 
 Chart.register(...registerables);
@@ -102,7 +103,7 @@ export function renderLiveTelemetry(container, topology = {}, minutes = 60) {
       if (currentAbort) currentAbort.abort();
       currentAbort = new AbortController();
       try {
-        const res = await fetch(`/api/infra/topology?minutes=${next}`, { signal: currentAbort.signal });
+        const res = await apiFetch(`/api/infra/topology?minutes=${next}`, { signal: currentAbort.signal });
         renderLiveTelemetry(container, await res.json(), next);
       } catch (err) {
         if (err.name !== 'AbortError') renderLiveTelemetry(container, topology, next);
