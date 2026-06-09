@@ -84,7 +84,7 @@ export function assembleTopology({
 
   const standalone = [
     { name: 'nginx', role: 'gateway', status: 'running' },
-    { name: '☁ внешние LLM', id: 'external-llm', role: 'external', status: 'running' },
+    { name: 'внешние LLM', id: 'external-llm', role: 'external', status: 'running' },
     { name: 'Netdata', role: 'monitor', status: 'running' },
     ...vms.map((vm) => ({
       name: vm.name,

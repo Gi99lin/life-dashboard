@@ -27,6 +27,7 @@ test('parseBoardDirective tolerates no board block', () => {
 test('fallbackAnswer never throws and cites sources', () => {
   const out = fallbackAnswer([{ garmin: { sleep_hours: 7 }, manual: { mood: 4 } }]);
   assert.ok(out.answer.length > 0);
+  assert.doesNotMatch(out.answer, /LLM недоступен/);
   assert.ok(Array.isArray(out.sources));
 });
 

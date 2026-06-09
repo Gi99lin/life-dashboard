@@ -23,6 +23,24 @@ function ring(cpu = 0) {
   return `<span class="ring2" style="--p:${pct};--gc:var(--green)"><span>${Math.round(pct)}</span></span>`;
 }
 
+function netPos(index) {
+  const col = index % 2;
+  const row = Math.floor(index / 2);
+  return {
+    left: 330 + col * 290,
+    top: 24 + row * 232,
+    cx: 330 + col * 290,
+    cy: 92 + row * 232,
+  };
+}
+
+function findNetworkIndex(topology, pattern) {
+  return (topology.networks || []).findIndex((network) => {
+    const haystack = `${network.name || ''} ${(network.services || []).map((service) => service.name || '').join(' ')}`;
+    return pattern.test(haystack);
+  });
+}
+
 function serviceNode(service, compact = false) {
   const isApp = service.role === 'app' || service.url;
   const open = service.url ? `<span class="open" data-open="${esc(service.url)}">↗ открыть</span>` : '';
@@ -38,31 +56,36 @@ function serviceNode(service, compact = false) {
 }
 
 function networkBox(network, index) {
-  const col = index % 2;
-  const row = Math.floor(index / 2);
-  const left = 330 + col * 290;
-  const top = 24 + row * 232;
+  const { left, top } = netPos(index);
   const services = network.services || [];
   const app = services.find((service) => service.role === 'app' || service.url) || services[0] || {};
   const data = services.filter((service) => service !== app).slice(0, 3);
 
   return `
     <div class="net" style="left:${left}px;top:${top}px">
-      <span class="nlabel">🖧 ${esc(network.name)}</span>
+      <span class="nlabel"><span class="nkind">NET</span>${esc(network.name)}</span>
       ${serviceNode(app)}
       ${data.length ? `<div class="datarow">${data.map((service) => serviceNode(service, true)).join('')}</div>` : ''}
     </div>`;
 }
 
-function standaloneNode(node, index) {
+function standalonePosition(node, index, topology = {}) {
+  const omniIndex = findNetworkIndex(topology, /omni/i);
+  const monitorIndex = Math.max(0, (topology.networks || []).length - 1);
+  const externalAnchor = omniIndex >= 0 ? netPos(omniIndex) : netPos(0);
+  const monitorAnchor = netPos(monitorIndex);
   const byRole = {
     internet: { left: 42, top: 220, tag: '', cls: 'ext' },
     gateway: { left: 188, top: 220, tag: 'proxy', cls: '' },
-    external: { left: 1012, top: 128, tag: '', cls: 'ext' },
-    monitor: { left: 1122, top: 300, tag: 'C', cls: '' },
+    external: { left: 930, top: externalAnchor.cy, tag: 'LLM', cls: 'ext' },
+    monitor: { left: 930, top: Math.max(300, monitorAnchor.cy), tag: 'obs', cls: '' },
     vm: { left: 915, top: 414 + index * 4, tag: node.tech || 'VNC', cls: '' },
   };
-  const pos = byRole[node.role] || { left: 42, top: 220, tag: '', cls: 'ext' };
+  return byRole[node.role] || { left: 42, top: 220, tag: '', cls: 'ext' };
+}
+
+function standaloneNode(node, index, topology) {
+  const pos = standalonePosition(node, index, topology);
   const open = node.open ? `<span class="open" data-open="${esc(node.open)}">↗ открыть</span>` : '';
   const meta = node.role === 'internet' ? '' : node.role === 'vm' ? `через Guacamole · ${open}` : node.role === 'monitor' ? 'наблюдает за всеми' : node.role === 'external' ? 'через OmniRoute' : 'шлюз · TLS';
 
@@ -83,22 +106,32 @@ function canvasSize(topology) {
 
 function edgeLayer(topology, size) {
   const networkEdges = (topology.networks || []).map((network, index) => {
-    const col = index % 2;
-    const row = Math.floor(index / 2);
-    const x = 330 + col * 290;
-    const y = 92 + row * 232;
-    return `<path class="edge flow" d="M245,220 C${300 + col * 160},${160 + row * 120} ${300 + col * 240},${y} ${x},${y}"/>`;
+    const { cx, cy } = netPos(index);
+    const bendX = 300 + (index % 2) * 160;
+    const bendY = 160 + Math.floor(index / 2) * 120;
+    return `<path class="edge flow" d="M245,220 C${bendX},${bendY} ${cx - 30},${cy} ${cx},${cy}"/>`;
   }).join('');
   const vmEdges = (topology.standalone || []).filter((node) => node.role === 'vm')
     .map((node, index) => `<path class="edge remote" d="M598,344 C720,420 800,418 ${852 + index * 8},${414 + index * 4}"/>`)
     .join('');
+  const monitor = (topology.standalone || []).find((node) => node.role === 'monitor');
+  const monitorPos = monitor ? standalonePosition(monitor, 0, topology) : null;
+  const monitorEdges = monitorPos ? (topology.networks || []).map((network, index) => {
+    const { cx, cy } = netPos(index);
+    return `<path class="edge mon" d="M${monitorPos.left - 48},${monitorPos.top} C${monitorPos.left - 160},${monitorPos.top} ${cx + 128},${cy + 54} ${cx + 95},${cy + 54}"/>`;
+  }).join('') : '';
+  const external = (topology.standalone || []).find((node) => node.role === 'external');
+  const externalPos = external ? standalonePosition(external, 0, topology) : null;
+  const omniIndex = findNetworkIndex(topology, /omni/i);
+  const llmAnchor = netPos(omniIndex >= 0 ? omniIndex : 0);
+  const llmEdge = externalPos ? `<path class="edge llm" d="M${llmAnchor.cx + 128},${llmAnchor.cy} C${llmAnchor.cx + 230},${llmAnchor.cy} ${externalPos.left - 120},${externalPos.top} ${externalPos.left - 52},${externalPos.top}"/>` : '';
 
   return `
     <svg class="edges" viewBox="0 0 ${size.width} ${size.height}" preserveAspectRatio="none">
       <path class="edge flow" d="M74,220 L150,220"/>
       ${networkEdges}
-      <path class="edge mon" d="M1118,300 C980,250 820,170 598,140"/>
-      <path class="edge mon" d="M1118,300 C1000,330 820,350 598,372"/>
+      ${llmEdge}
+      ${monitorEdges}
       ${vmEdges}
     </svg>`;
 }
@@ -117,20 +150,30 @@ export function renderStackTopology(container, topology = {}) {
   ];
 
   container.innerHTML = `
-    <div class="topohead">
-      <span class="lbl">Топология стека</span>
-      <span class="lbl topo-live">живая · поток = трафик · кольцо = нагрузка</span>
-      <div class="leg2">
-        <span><span class="dot up"></span>работает</span>
-        <span><span class="dot warn"></span>idle</span>
-        <span><span class="dot down"></span>упал</span>
+    <div class="topo-frame">
+      <div class="topohead">
+        <span class="lbl">Топология стека</span>
+        <span class="lbl topo-live">живая · поток = трафик · кольцо = нагрузка</span>
+        <div class="topo-controls" aria-label="Масштаб карты">
+          <button class="topo-ctl" data-topo-zoom="out" type="button" aria-label="Уменьшить">−</button>
+          <button class="topo-ctl" data-topo-zoom="reset" type="button" aria-label="Сбросить масштаб">100</button>
+          <button class="topo-ctl" data-topo-zoom="in" type="button" aria-label="Увеличить">+</button>
+          <button class="topo-ctl wide" data-topo-fullscreen type="button" aria-label="Открыть карту на весь экран">FULL</button>
+        </div>
+        <div class="leg2">
+          <span><span class="dot up"></span>работает</span>
+          <span><span class="dot warn"></span>idle</span>
+          <span><span class="dot down"></span>упал</span>
+        </div>
       </div>
-    </div>
-    <div class="topo" tabindex="0" aria-label="Прокручиваемая карта инфраструктуры">
-      <div class="topo-canvas" style="width:${size.width}px;height:${size.height}px">
-        ${edgeLayer(topology, size)}
-        ${coreNodes.map(standaloneNode).join('')}
-        ${(topology.networks || []).map(networkBox).join('')}
+      <div class="topo" tabindex="0" aria-label="Прокручиваемая карта инфраструктуры">
+        <div class="topo-canvas" style="width:${size.width}px;height:${size.height}px" data-base-width="${size.width}" data-base-height="${size.height}">
+          <div class="topo-plane" style="width:${size.width}px;height:${size.height}px">
+            ${edgeLayer(topology, size)}
+            ${coreNodes.map((node, index) => standaloneNode(node, index, topology)).join('')}
+            ${(topology.networks || []).map(networkBox).join('')}
+          </div>
+        </div>
       </div>
     </div>
     <div class="foot">парсится из инфры: Docker API · nginx · Guacamole · Netdata · labels</div>`;
@@ -140,5 +183,46 @@ export function renderStackTopology(container, topology = {}) {
       event.stopPropagation();
       window.__openApp?.(el.dataset.open || el.textContent);
     });
+  });
+
+  const frame = container.querySelector?.('.topo-frame');
+  const canvas = container.querySelector?.('.topo-canvas');
+  const plane = container.querySelector?.('.topo-plane');
+  let zoom = 1;
+  const applyZoom = () => {
+    if (!canvas || !plane) return;
+    const baseWidth = Number(canvas.dataset.baseWidth) || size.width;
+    const baseHeight = Number(canvas.dataset.baseHeight) || size.height;
+    canvas.style.width = `${Math.round(baseWidth * zoom)}px`;
+    canvas.style.height = `${Math.round(baseHeight * zoom)}px`;
+    plane.style.transform = `scale(${zoom})`;
+    plane.style.transformOrigin = '0 0';
+  };
+
+  container.querySelectorAll?.('[data-topo-zoom]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const action = button.dataset.topoZoom;
+      if (action === 'in') zoom = Math.min(1.6, Math.round((zoom + 0.15) * 100) / 100);
+      else if (action === 'out') zoom = Math.max(0.55, Math.round((zoom - 0.15) * 100) / 100);
+      else zoom = 1;
+      applyZoom();
+    });
+  });
+
+  container.querySelector?.('[data-topo-fullscreen]')?.addEventListener('click', async () => {
+    if (!frame) return;
+    if (typeof document !== 'undefined' && document.fullscreenElement) {
+      await document.exitFullscreen?.();
+      return;
+    }
+    if (frame.requestFullscreen) {
+      try {
+        await frame.requestFullscreen();
+      } catch {
+        frame.classList.toggle('is-fullscreen');
+      }
+    } else {
+      frame.classList.toggle('is-fullscreen');
+    }
   });
 }

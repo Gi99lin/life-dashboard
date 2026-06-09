@@ -392,7 +392,7 @@ export function buildTopology(minutes = 60) {
     ],
     standalone: [
       { name: 'nginx', role: 'gateway', status: 'running', cpu: 8 },
-      { name: '☁ внешние LLM', id: 'external-llm', role: 'external', status: 'running' },
+      { name: 'внешние LLM', id: 'external-llm', role: 'external', status: 'running' },
       { name: 'Netdata', role: 'monitor', status: 'running' },
       { name: 'work-vm', role: 'vm', status: 'running', tech: 'VNC', via: 'guacamole', reachable: true, open: 'https://rdp.gigglin.tech/' },
     ],

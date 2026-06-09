@@ -84,7 +84,7 @@ export function fallbackAnswer(days = []) {
   const last = days[days.length - 1] || {};
   const garmin = last.garmin || {};
   return {
-    answer: `LLM недоступен. Кратко по числам: сон ${garmin.sleep_hours ?? '—'}ч, стресс ${garmin.stress_avg ?? '—'}, настроение ${last.manual?.mood ?? '—'}/5.`,
+    answer: `Локальное резюме по числам: сон ${garmin.sleep_hours ?? '—'}ч, стресс ${garmin.stress_avg ?? '—'}, настроение ${last.manual?.mood ?? '—'}/5. Для глубокого диалога подключи OpenAI-compatible LLM через LLM_BASE_URL, LLM_API_KEY и LLM_MODEL.`,
     sources: sourcesFor(days),
     board: null,
   };
