@@ -133,7 +133,10 @@ export function assembleTopology({
 function netdataSeries(chart, mapRow) {
   if (!chart?.data?.length) return [];
   const labels = chart.labels || [];
-  return chart.data.map((row) => mapRow(row, labels)).filter(Boolean);
+  return chart.data
+    .map((row) => mapRow(row, labels))
+    .filter(Boolean)
+    .sort((a, b) => (Number(a.t) || 0) - (Number(b.t) || 0));
 }
 
 async function collectTelemetry(getNetdataChart, minutes) {

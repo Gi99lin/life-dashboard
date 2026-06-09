@@ -4795,13 +4795,19 @@ body.app-mode .app-iframe-tab {
 
 .topo {
   position: relative;
-  overflow: hidden;
+  overflow: auto;
   height: 470px;
+  overscroll-behavior: contain;
   border: 1px solid var(--card-border);
   border-radius: var(--radius);
   background:
     radial-gradient(120% 120% at 50% 0%, color-mix(in oklch, var(--green) 5%, transparent), transparent 55%),
     color-mix(in oklch, oklch(100% 0 0) 1.4%, transparent);
+}
+
+.topo-canvas {
+  position: relative;
+  min-width: 100%;
 }
 
 .edges {

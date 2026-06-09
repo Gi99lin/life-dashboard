@@ -76,7 +76,7 @@ function draw(container, model) {
   });
 }
 
-export function renderLiveTelemetry(container, topology = {}, minutes = 60) {
+export function renderLiveTelemetry(container, topology = {}, minutes = 60, options = {}) {
   if (!container) return;
   const model = buildTelemetryModel(topology);
   container.classList?.add('livewrap');
@@ -104,9 +104,14 @@ export function renderLiveTelemetry(container, topology = {}, minutes = 60) {
       currentAbort = new AbortController();
       try {
         const res = await apiFetch(`/api/infra/topology?minutes=${next}`, { signal: currentAbort.signal });
-        renderLiveTelemetry(container, await res.json(), next);
+        const nextTopology = await res.json();
+        if (options.onTopology) {
+          options.onTopology(nextTopology, next);
+        } else {
+          renderLiveTelemetry(container, nextTopology, next, options);
+        }
       } catch (err) {
-        if (err.name !== 'AbortError') renderLiveTelemetry(container, topology, next);
+        if (err.name !== 'AbortError' && !options.onTopology) renderLiveTelemetry(container, topology, next, options);
       }
     });
   });

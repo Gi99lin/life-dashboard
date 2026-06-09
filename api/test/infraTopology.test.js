@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { assembleTopology } from '../infraTopology.js';
+import { assembleTopology, collectTopology } from '../infraTopology.js';
 
 test('groups containers by network and builds nodes', () => {
   const out = assembleTopology({
@@ -36,4 +36,53 @@ test('groups containers by network and builds nodes', () => {
   assert.equal(app.purpose, 'Чат с LLM');
   assert.ok(out.standalone.some((s) => s.role === 'vm' && s.name === 'work-vm'));
   assert.ok(out.edges.some((e) => e.type === 'vnc'));
+});
+
+test('collectTopology orders Netdata telemetry and uses newest CPU for host', async () => {
+  const calls = [];
+  const getNetdataChart = async (chart, after, points) => {
+    calls.push({ chart, after, points });
+    if (chart === 'system.cpu') {
+      return {
+        labels: ['time', 'idle'],
+        data: [
+          [2000, 82],
+          [1000, 0],
+        ],
+      };
+    }
+    if (chart === 'system.ram') {
+      return {
+        labels: ['time', 'used', 'free'],
+        data: [
+          [2000, 7, 3],
+          [1000, 5, 5],
+        ],
+      };
+    }
+    if (chart === 'system.net') {
+      return {
+        labels: ['time', 'received', 'sent'],
+        data: [
+          [2000, 3, -2],
+          [1000, 10, -4],
+        ],
+      };
+    }
+    return {
+      labels: ['time', 'used', 'avail'],
+      data: [[2000, 4, 6]],
+    };
+  };
+
+  const out = await collectTopology({ getNetdataChart, minutes: 10 });
+
+  assert.deepEqual(calls.find((call) => call.chart === 'system.cpu'), {
+    chart: 'system.cpu',
+    after: -600,
+    points: 10,
+  });
+  assert.deepEqual(out.telemetry.cpu.map((point) => point.t), [1000, 2000]);
+  assert.deepEqual(out.telemetry.cpu.map((point) => point.value), [100, 18]);
+  assert.equal(out.host.cpu, 18);
 });

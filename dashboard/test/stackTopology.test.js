@@ -20,9 +20,25 @@ describe('renderStackTopology', () => {
     renderStackTopology(container, topo);
     expect(container.innerHTML).toContain('librechat-net');
     expect(container.innerHTML).toContain('LibreChat');
+    expect(container.innerHTML).toContain('class="topo-canvas"');
     expect(container.innerHTML).toContain('class="net"');
     expect(container.innerHTML).toContain('<svg');
     expect(container.innerHTML).toContain('work-vm');
+  });
+
+  it('sizes the topology canvas for large stacks so the panel can scroll', () => {
+    const largeTopo = {
+      networks: Array.from({ length: 8 }, (_, index) => ({
+        name: `stack-${index}`,
+        services: [{ name: `app-${index}`, status: 'running', role: 'app', cpu: 1, mem: 10 }],
+      })),
+      standalone: [],
+    };
+    const container = { innerHTML: '', querySelectorAll: () => [] };
+
+    renderStackTopology(container, largeTopo);
+
+    expect(container.innerHTML).toContain('style="width:1240px;height:1120px"');
   });
 
   it('places the Internet and external services in separate lanes', () => {

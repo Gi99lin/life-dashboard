@@ -34,13 +34,14 @@ function jsonResponse(payload, init = {}) {
 }
 
 export async function demoFetch(url, opts = {}) {
-  const path = String(url).split('?')[0];
+  const parsedUrl = new URL(String(url), 'http://demo.local');
+  const path = parsedUrl.pathname;
 
   if (path === '/api/auth-check' || path === '/api/login') return jsonResponse({ ok: true });
   if (path === '/api/sync' || path === '/api/metrics') return jsonResponse(buildMetrics());
   if (path === '/api/forecast') return jsonResponse(buildForecast());
   if (path === '/api/schedule') return jsonResponse(buildSchedule());
-  if (path === '/api/infra/topology') return jsonResponse(buildTopology());
+  if (path === '/api/infra/topology') return jsonResponse(buildTopology(Number(parsedUrl.searchParams.get('minutes')) || 60));
   if (path === '/api/analyze') return jsonResponse(scriptedAnalyze(parseJsonBody(opts.body)));
   if (path === '/api/entry') {
     const body = parseJsonBody(opts.body);

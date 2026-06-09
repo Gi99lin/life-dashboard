@@ -212,15 +212,26 @@ async function init() {
 
   // Infrastructure charts need visible containers (Chart.js measures them), so
   // render on first Infrastructure-tab open.
+  let infraPeriod = 60;
+
+  function renderInfra(topology) {
+    renderHostVitals(document.getElementById('infraVitals'), topology);
+    renderLiveTelemetry(document.getElementById('infraLive'), topology, infraPeriod, {
+      onTopology: (nextTopology, nextPeriod) => {
+        infraPeriod = nextPeriod;
+        renderInfra(nextTopology);
+      },
+    });
+    renderStackTopology(document.getElementById('stackTopo'), topology);
+  }
+
   async function ensureInfra() {
     if (infraLoaded) return;
     infraLoaded = true;
-    const topology = await apiFetch('/api/infra/topology')
+    const topology = await apiFetch(`/api/infra/topology?minutes=${infraPeriod}`)
       .then((res) => res.json())
       .catch(() => ({ host: {}, telemetry: { cpu: [], ram: [], net: [] }, networks: [], standalone: [], edges: [] }));
-    renderHostVitals(document.getElementById('infraVitals'), topology);
-    renderLiveTelemetry(document.getElementById('infraLive'), topology, 60);
-    renderStackTopology(document.getElementById('stackTopo'), topology);
+    renderInfra(topology);
   }
 
   function showDemoOpenNotice(label = '') {

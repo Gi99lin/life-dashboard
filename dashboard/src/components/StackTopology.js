@@ -73,7 +73,15 @@ function standaloneNode(node, index) {
     </div>`;
 }
 
-function edgeLayer(topology) {
+function canvasSize(topology) {
+  const rows = Math.ceil((topology.networks || []).length / 2);
+  return {
+    width: 1240,
+    height: Math.max(470, 192 + rows * 232),
+  };
+}
+
+function edgeLayer(topology, size) {
   const networkEdges = (topology.networks || []).map((network, index) => {
     const col = index % 2;
     const row = Math.floor(index / 2);
@@ -86,7 +94,7 @@ function edgeLayer(topology) {
     .join('');
 
   return `
-    <svg class="edges" viewBox="0 0 1240 470" preserveAspectRatio="none">
+    <svg class="edges" viewBox="0 0 ${size.width} ${size.height}" preserveAspectRatio="none">
       <path class="edge flow" d="M74,220 L150,220"/>
       ${networkEdges}
       <path class="edge mon" d="M1118,300 C980,250 820,170 598,140"/>
@@ -98,6 +106,7 @@ function edgeLayer(topology) {
 export function renderStackTopology(container, topology = {}) {
   if (!container) return;
   const standalone = topology.standalone || [];
+  const size = canvasSize(topology);
   const internet = { name: '🌐 Интернет', role: 'internet', status: 'running' };
   const coreNodes = [
     internet,
@@ -117,10 +126,12 @@ export function renderStackTopology(container, topology = {}) {
         <span><span class="dot down"></span>упал</span>
       </div>
     </div>
-    <div class="topo">
-      ${edgeLayer(topology)}
-      ${coreNodes.map(standaloneNode).join('')}
-      ${(topology.networks || []).map(networkBox).join('')}
+    <div class="topo" tabindex="0" aria-label="Прокручиваемая карта инфраструктуры">
+      <div class="topo-canvas" style="width:${size.width}px;height:${size.height}px">
+        ${edgeLayer(topology, size)}
+        ${coreNodes.map(standaloneNode).join('')}
+        ${(topology.networks || []).map(networkBox).join('')}
+      </div>
     </div>
     <div class="foot">парсится из инфры: Docker API · nginx · Guacamole · Netdata · labels</div>`;
 

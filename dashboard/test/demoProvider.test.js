@@ -22,4 +22,13 @@ describe('demo mode provider', () => {
     expect(analysis.board).toMatchObject({ view: 'correlation', x: 'Сон', y: 'Наст' });
     expect(entry).toMatchObject({ mood: 4, food_before_20: true });
   });
+
+  it('respects infrastructure topology timeframe queries', async () => {
+    const tenMinutes = await (await demoFetch('/api/infra/topology?minutes=10')).json();
+    const sixHours = await (await demoFetch('/api/infra/topology?minutes=360')).json();
+
+    expect(tenMinutes.telemetry.cpu).toHaveLength(10);
+    expect(sixHours.telemetry.cpu.length).toBeGreaterThan(tenMinutes.telemetry.cpu.length);
+    expect(sixHours.telemetry.cpu.length).toBeLessThanOrEqual(180);
+  });
 });

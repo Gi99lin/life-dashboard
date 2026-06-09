@@ -342,9 +342,9 @@ export function buildServerMetrics() {
   };
 }
 
-export function buildTopology() {
+export function buildTopology(minutes = 60) {
   const nowSec = Math.floor(Date.now() / 1000);
-  const N = 60;
+  const N = Math.max(1, Math.min(Number(minutes) || 60, 180));
   const r = (a, b) => a + Math.random() * (b - a);
   const telemetry = { cpu: [], ram: [], net: [] };
   for (let i = 0; i < N; i++) {

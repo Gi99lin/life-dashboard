@@ -33,4 +33,40 @@ describe('renderLiveTelemetry', () => {
     expect(container.innerHTML).toContain('Телеметрия хоста');
     expect(container.innerHTML).not.toContain('infra-periods');
   });
+
+  it('notifies callers when a new timeframe topology is loaded', async () => {
+    const listeners = {};
+    const buttons = [
+      {
+        dataset: { min: '60' },
+        classList: { toggle() {} },
+        addEventListener: (event, fn) => { listeners[event] = fn; },
+      },
+    ];
+    const root = { querySelectorAll: () => buttons };
+    const container = {
+      classList: { add() {} },
+      closest: () => root,
+      innerHTML: '',
+      querySelector: () => null,
+      querySelectorAll: () => [],
+    };
+    const loaded = { host: { cpu: 12 }, telemetry: { cpu: [{ t: 1, value: 12 }], ram: [], net: [] } };
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = async () => ({
+      json: async () => loaded,
+    });
+
+    try {
+      let update = null;
+      renderLiveTelemetry(container, { telemetry: {} }, 10, {
+        onTopology: (topology, minutes) => { update = { topology, minutes }; },
+      });
+      await listeners.click();
+
+      expect(update).toEqual({ topology: loaded, minutes: 60 });
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
