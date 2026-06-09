@@ -735,7 +735,7 @@ body::after {
   padding: 4px;
   border: 1px solid var(--card-border);
   border-radius: var(--radius-sm);
-  background: color-mix(in oklch, var(--bg0) 94%, black);
+  background: var(--bg0);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
@@ -4213,6 +4213,7 @@ body.app-mode .app-iframe-tab {
   grid-auto-columns: minmax(196px, 1fr);
   gap: 10px;
   overflow-x: auto;
+  padding-top: 4px;
   padding-bottom: 5px;
 }
 

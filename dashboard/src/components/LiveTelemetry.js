@@ -103,7 +103,7 @@ export function renderLiveTelemetry(container, topology = {}, minutes = 60, opti
       if (currentAbort) currentAbort.abort();
       currentAbort = new AbortController();
       try {
-        const res = await apiFetch(`/api/infra/topology?minutes=${next}`, { signal: currentAbort.signal });
+        const res = await apiFetch(`/api/infra/topology?minutes=${next}&ts=${Date.now()}`, { signal: currentAbort.signal });
         const nextTopology = await res.json();
         if (options.onTopology) {
           options.onTopology(nextTopology, next);

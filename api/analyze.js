@@ -80,11 +80,30 @@ export function parseBoardDirective(text = '') {
   };
 }
 
-export function fallbackAnswer(days = []) {
+function compactValue(value, suffix = '') {
+  return value == null || value === '' ? '—' : `${value}${suffix}`;
+}
+
+export function fallbackAnswer(days = [], question = '') {
   const last = days[days.length - 1] || {};
   const garmin = last.garmin || {};
+  const sleep = compactValue(garmin.sleep_hours, 'ч');
+  const stress = compactValue(garmin.stress_avg);
+  const mood = compactValue(last.manual?.mood, '/5');
+  const summary = `По локальным данным за период: сон ${sleep}, стресс ${stress}, настроение ${mood}.`;
+  const q = String(question || '').toLowerCase();
+  let answer = `${summary} Это быстрая сводка без LLM: для свободного диалога подключи модель в env API-контейнера.`;
+
+  if (/улучш|недел|совет|рекоменд/.test(q)) {
+    answer = `${summary} Что улучшить: держать сон ближе к стабильным 7.5-8ч, не ставить тяжелые задачи на дни с высоким стрессом и каждый день фиксировать настроение, чтобы связь не терялась.`;
+  } else if (/сон|продуктив|код|работ/.test(q)) {
+    answer = `${summary} Для сна и продуктивности смотри на пары дней: если после короткого сна растет стресс или падает фокус, лучше сдвинуть глубокую работу на более спокойный слот.`;
+  } else if (/аномал|скач|пик/.test(q)) {
+    answer = `${summary} Аномалии стоит проверять по двум причинам: резкий стресс/сон в Garmin и перегруз по работе. Без LLM я могу только подсветить числа, а не строить глубокую гипотезу.`;
+  }
+
   return {
-    answer: `Локальное резюме по числам: сон ${garmin.sleep_hours ?? '—'}ч, стресс ${garmin.stress_avg ?? '—'}, настроение ${last.manual?.mood ?? '—'}/5. Для глубокого диалога подключи OpenAI-compatible LLM через LLM_BASE_URL, LLM_API_KEY и LLM_MODEL.`,
+    answer,
     sources: sourcesFor(days),
     board: null,
   };

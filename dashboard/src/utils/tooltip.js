@@ -35,7 +35,12 @@ export function attachTooltip(el, text) {
 }
 
 export function formatMetricTooltip({ label, value, avg, range, source }) {
-  return `${label || 'Метрика'}: ${value || '—'} · avg ${avg || '—'} · range ${range || '—'} · source ${source || '—'}`;
+  const cleanSource = source === 'Collector Pearson' ? 'корреляция Pearson' : source;
+  const parts = [`${label || 'Метрика'}: ${value || '—'}`];
+  if (avg && avg !== '—') parts.push(`среднее ${avg}`);
+  if (range && range !== '—') parts.push(`диапазон ${range}`);
+  if (cleanSource && cleanSource !== '—') parts.push(`источник ${cleanSource}`);
+  return parts.join(' · ');
 }
 
 export function sourceUrlFor(source) {

@@ -40,7 +40,7 @@ export function renderAnalystChat(container, data, { onBoard, period = 30 } = {}
       <span class="chip">Что улучшить на неделе?</span>
     </div>
     <div class="composer">
-      <input id="anInput" placeholder="Спроси про свои данные за период..."/>
+      <input id="anInput" placeholder="Задай вопрос по данным за период..."/>
       <button class="send" id="anSend" type="button">▶</button>
     </div>`;
 

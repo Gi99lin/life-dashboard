@@ -28,7 +28,19 @@ test('fallbackAnswer never throws and cites sources', () => {
   const out = fallbackAnswer([{ garmin: { sleep_hours: 7 }, manual: { mood: 4 } }]);
   assert.ok(out.answer.length > 0);
   assert.doesNotMatch(out.answer, /LLM недоступен/);
+  assert.doesNotMatch(out.answer, /LLM_BASE_URL/);
   assert.ok(Array.isArray(out.sources));
+});
+
+test('fallbackAnswer adapts to common local questions without env boilerplate', () => {
+  const out = fallbackAnswer(
+    [{ garmin: { sleep_hours: 7.02, stress_avg: 44 }, manual: {} }],
+    'Что улучшить на неделе?',
+  );
+
+  assert.match(out.answer, /улучш/i);
+  assert.match(out.answer, /сон|стресс/i);
+  assert.doesNotMatch(out.answer, /LLM_BASE_URL|LLM_API_KEY|LLM_MODEL/);
 });
 
 test('selectPeriodDays sorts days and clamps requested period', () => {

@@ -350,7 +350,7 @@ app.post('/api/analyze', async (req, res) => {
   const model = process.env.LLM_MODEL;
 
   if (!base || !key || !model) {
-    return res.json(fallbackAnswer(days));
+    return res.json(fallbackAnswer(days, question));
   }
 
   try {
@@ -371,7 +371,7 @@ app.post('/api/analyze', async (req, res) => {
     return res.json({ answer, board, sources: sourcesFor(days) });
   } catch (e) {
     console.warn('analyze fallback:', e.message);
-    return res.json(fallbackAnswer(days));
+    return res.json(fallbackAnswer(days, question));
   }
 });
 

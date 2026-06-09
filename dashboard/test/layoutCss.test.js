@@ -15,4 +15,9 @@ describe('layout css regressions', () => {
   it('does not stretch the tab bar across app-mode iframes', () => {
     expect(css).toMatch(/body\.app-mode \.tabs\s*{[\s\S]*flex:\s*0 0 auto[\s\S]*width:\s*auto[\s\S]*max-width:\s*fit-content/);
   });
+
+  it('keeps app dropdown readable and analytics cards unclipped on hover', () => {
+    expect(css).toMatch(/\.apps-menu\s*{[\s\S]*background:\s*var\(--bg0\)/);
+    expect(css).toMatch(/\.lane\s*{[\s\S]*padding-top:\s*4px/);
+  });
 });

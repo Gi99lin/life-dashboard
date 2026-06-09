@@ -139,6 +139,25 @@ function netdataSeries(chart, mapRow) {
     .sort((a, b) => (Number(a.t) || 0) - (Number(b.t) || 0));
 }
 
+function cpuValue(row, labels) {
+  const idleIndex = labels.indexOf('idle');
+  if (idleIndex >= 0) {
+    return Math.max(0, Math.min(100, 100 - (Number(row[idleIndex]) || 0)));
+  }
+
+  const active = labels.reduce((sum, label, index) => {
+    if (index === 0 || label === 'time' || label === 'idle') return sum;
+    return sum + Math.max(0, Number(row[index]) || 0);
+  }, 0);
+  return Math.max(0, Math.min(100, Math.round(active * 10) / 10));
+}
+
+function displayHostName(raw) {
+  const value = String(raw || '').trim();
+  if (!value || /^[a-f0-9]{12,64}$/i.test(value)) return 'homelab';
+  return value;
+}
+
 async function collectTelemetry(getNetdataChart, minutes) {
   if (!getNetdataChart) return { host: {}, telemetry: { cpu: [], ram: [], net: [] } };
   const after = -minutes * 60;
@@ -152,9 +171,7 @@ async function collectTelemetry(getNetdataChart, minutes) {
     ]);
 
     const cpu = netdataSeries(cpuChart, (row, labels) => {
-      const idleIndex = labels.indexOf('idle');
-      const idle = idleIndex >= 0 ? row[idleIndex] || 0 : 0;
-      return { t: row[0], value: Math.max(0, Math.min(100, 100 - idle)) };
+      return { t: row[0], value: cpuValue(row, labels) };
     });
     const ram = netdataSeries(ramChart, (row, labels) => {
       const usedIndex = labels.indexOf('used');
@@ -259,7 +276,7 @@ export async function collectTopology({ docker, getNetdataChart, minutes = 60 } 
       vms,
       telemetry: telemetryData.telemetry,
       host: {
-        name: process.env.HOSTNAME || 'homelab',
+        name: displayHostName(process.env.HOST_DISPLAY_NAME || process.env.HOSTNAME),
         ...telemetryData.host,
       },
     });

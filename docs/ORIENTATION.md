@@ -156,6 +156,7 @@ everything is open (dev mode). The frontend shows a login modal when `/api/auth-
 | `WEATHER_LAT`, `WEATHER_LON` | collector | weather location |
 | `METRICS_PATH` | collector, api | path to `metrics.json` (collector default `/data/metrics.json`) |
 | `DASHBOARD_PASS` | api | dashboard password (empty = open) |
+| `HOST_DISPLAY_NAME` | api | optional friendly host name in Infrastructure (avoids Docker container IDs) |
 | `PORT` | api | API port (default 3001) |
 | `NETDATA_URL` | api | Netdata base URL for server metrics and topology telemetry |
 | `NGINX_CONF_PATH` | api | optional nginx config parsed into public host → upstream routes |

@@ -53,9 +53,13 @@ describe('renderLiveTelemetry', () => {
     };
     const loaded = { host: { cpu: 12 }, telemetry: { cpu: [{ t: 1, value: 12 }], ram: [], net: [] } };
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = async () => ({
+    let requestedUrl = '';
+    globalThis.fetch = async (url) => {
+      requestedUrl = String(url);
+      return {
       json: async () => loaded,
-    });
+      };
+    };
 
     try {
       let update = null;
@@ -65,6 +69,7 @@ describe('renderLiveTelemetry', () => {
       await listeners.click();
 
       expect(update).toEqual({ topology: loaded, minutes: 60 });
+      expect(requestedUrl).toMatch(/\/api\/infra\/topology\?minutes=60&ts=\d+/);
     } finally {
       globalThis.fetch = originalFetch;
     }
