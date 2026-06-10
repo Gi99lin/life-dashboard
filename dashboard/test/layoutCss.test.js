@@ -17,7 +17,9 @@ describe('layout css regressions', () => {
   });
 
   it('keeps app dropdown readable and analytics cards unclipped on hover', () => {
+    expect(css).toMatch(/\.tabs\s*{[\s\S]*position:\s*relative[\s\S]*z-index:\s*90/);
     expect(css).toMatch(/\.apps-menu\s*{[\s\S]*background:\s*var\(--bg0\)/);
+    expect(css).toMatch(/\.apps-menu\s*{[\s\S]*z-index:\s*120/);
     expect(css).toMatch(/\.lane\s*{[\s\S]*padding-top:\s*4px/);
   });
 });
