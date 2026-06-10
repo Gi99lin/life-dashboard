@@ -34,6 +34,7 @@ jobs:
       - name: Build images
         run: |
           docker build -t "${IMAGE_PREFIX}/life-dashboard-frontend:latest" ./dashboard
+          docker build -t "${IMAGE_PREFIX}/life-dashboard-frontend-demo:latest" -f ./dashboard/Dockerfile.demo ./dashboard
           docker build -t "${IMAGE_PREFIX}/life-dashboard-api:latest" ./api
           docker build -t "${IMAGE_PREFIX}/life-dashboard-collector:latest" ./collector
 
@@ -41,6 +42,7 @@ jobs:
         run: |
           docker run --rm --add-host life-dashboard-api:127.0.0.1 \
             --entrypoint nginx "${IMAGE_PREFIX}/life-dashboard-frontend:latest" -t
+          docker run --rm --entrypoint nginx "${IMAGE_PREFIX}/life-dashboard-frontend-demo:latest" -t
           docker run --rm --entrypoint node "${IMAGE_PREFIX}/life-dashboard-api:latest" \
             --input-type=module -e "await import('./server.js'); setTimeout(() => process.exit(0), 100)"
           docker run --rm --entrypoint sh "${IMAGE_PREFIX}/life-dashboard-collector:latest" \
@@ -64,5 +66,6 @@ jobs:
           }
 
           push_image "${IMAGE_PREFIX}/life-dashboard-frontend:latest"
+          push_image "${IMAGE_PREFIX}/life-dashboard-frontend-demo:latest"
           push_image "${IMAGE_PREFIX}/life-dashboard-api:latest"
           push_image "${IMAGE_PREFIX}/life-dashboard-collector:latest"
