@@ -48,6 +48,21 @@ jobs:
 
       - name: Push images
         run: |
-          docker push "${IMAGE_PREFIX}/life-dashboard-frontend:latest"
-          docker push "${IMAGE_PREFIX}/life-dashboard-api:latest"
-          docker push "${IMAGE_PREFIX}/life-dashboard-collector:latest"
+          push_image() {
+            local image="$1"
+            for attempt in 1 2 3; do
+              echo "Pushing ${image} (attempt ${attempt}/3)"
+              if docker push "$image"; then
+                return 0
+              fi
+              echo "Push failed for ${image}; retrying after registry backoff..."
+              sleep "$((attempt * 20))"
+            done
+
+            echo "Push failed for ${image} after 3 attempts"
+            return 1
+          }
+
+          push_image "${IMAGE_PREFIX}/life-dashboard-frontend:latest"
+          push_image "${IMAGE_PREFIX}/life-dashboard-api:latest"
+          push_image "${IMAGE_PREFIX}/life-dashboard-collector:latest"
