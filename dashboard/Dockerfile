@@ -6,6 +6,9 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+# Embed the status-map against the same-origin /stack path (NPM routes
+# /stack/api/* -> status-dashboard-api), so the login cookie flows to it.
+ENV VITE_STATUS_MAP_API=/stack
 RUN npm run build
 
 # ---- Stage 2: Serve ----

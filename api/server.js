@@ -33,7 +33,10 @@ try {
 }
 
 const DASHBOARD_PASS = process.env.DASHBOARD_PASS;
-const SESSION_SECRET = crypto.randomBytes(32).toString('hex');
+// Fixed across restarts AND shared with status-dashboard-api so one login cookie
+// validates on both (the embedded <status-map> calls status-api same-origin).
+// Falls back to a random per-process value when unset (dev / no SSO needed).
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 
 function makeSessionToken() {
   return crypto.createHmac('sha256', SESSION_SECRET).update(DASHBOARD_PASS || '').digest('hex');

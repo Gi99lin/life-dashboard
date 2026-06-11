@@ -21,10 +21,10 @@ import { renderOverviewTrends } from './components/OverviewTrends.js';
 import { renderFindings } from './components/Findings.js';
 import { analystPeriodText, renderAnalystChat } from './components/AnalystChat.js';
 import { renderEvidenceBoard, setBoardState } from './components/EvidenceBoard.js';
-import { renderHostVitals } from './components/HostVitals.js';
-import { renderLiveTelemetry } from './components/LiveTelemetry.js';
-import { renderStackTopology } from './components/StackTopology.js';
 import { io } from 'socket.io-client';
+
+const STATUS_MAP_API = import.meta.env.VITE_STATUS_MAP_API || 'http://localhost:3002';
+const STATUS_MAP_PERIODS = { 10: '10м', 60: '1ч', 360: '6ч', 1440: '24ч' };
 
 function setGreeting() {
   const el = document.getElementById('greeting');
@@ -210,28 +210,29 @@ async function init() {
     renderAnalyticsWorkspace();
   }
 
-  // Infrastructure charts need visible containers (Chart.js measures them), so
-  // render on first Infrastructure-tab open.
-  let infraPeriod = 60;
-
-  function renderInfra(topology) {
-    renderHostVitals(document.getElementById('infraVitals'), topology);
-    renderLiveTelemetry(document.getElementById('infraLive'), topology, infraPeriod, {
-      onTopology: (nextTopology, nextPeriod) => {
-        infraPeriod = nextPeriod;
-        renderInfra(nextTopology);
-      },
+  // <status-map> (status_dashboard) needs a visible container for React Flow's
+  // fitView, so it's mounted on first Infrastructure-tab open.
+  function bindInfraPeriods(statusMap) {
+    document.querySelectorAll('.infra-head-periods .pbtn').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.infra-head-periods .pbtn').forEach((candidate) => {
+          candidate.classList.toggle('active', candidate === button);
+        });
+        const minutes = Number(button.dataset.min) || 60;
+        statusMap.setAttribute('period', STATUS_MAP_PERIODS[minutes] || '1ч');
+      });
     });
-    renderStackTopology(document.getElementById('stackTopo'), topology);
   }
 
-  async function ensureInfra() {
+  function ensureInfra() {
     if (infraLoaded) return;
     infraLoaded = true;
-    const topology = await apiFetch(`/api/infra/topology?minutes=${infraPeriod}`)
-      .then((res) => res.json())
-      .catch(() => ({ host: {}, telemetry: { cpu: [], ram: [], net: [] }, networks: [], standalone: [], edges: [] }));
-    renderInfra(topology);
+    const mount = document.getElementById('statusMapMount');
+    const statusMap = document.createElement('status-map');
+    statusMap.setAttribute('api', STATUS_MAP_API);
+    statusMap.setAttribute('period', '1ч');
+    mount.appendChild(statusMap);
+    bindInfraPeriods(statusMap);
   }
 
   function showDemoOpenNotice(label = '') {
