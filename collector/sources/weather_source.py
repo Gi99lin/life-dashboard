@@ -3,6 +3,7 @@ Weather source — Open-Meteo API (бесплатный, без ключа).
 Получает историческую и текущую погоду по координатам.
 """
 
+import os
 import json
 import urllib.request
 import urllib.error
@@ -13,6 +14,23 @@ from typing import Dict, Optional
 # Moscow coordinates by default
 DEFAULT_LAT = 55.7558
 DEFAULT_LON = 37.6173
+
+# The host ISP blocks Open-Meteo's IP, so weather requests must go through
+# the same authenticated HTTP proxy the rest of the stack uses for blocked
+# destinations. Set WEATHER_PROXY=http://user:pass@host:port to enable;
+# unset → direct connection (e.g. local dev).
+_WEATHER_PROXY = os.environ.get('WEATHER_PROXY', '').strip()
+
+
+def _open(url: str, timeout: int):
+    """Open *url*, routing through WEATHER_PROXY when configured."""
+    req = urllib.request.Request(url, headers={'User-Agent': 'LifeDashboard/1.0'})
+    if _WEATHER_PROXY:
+        opener = urllib.request.build_opener(
+            urllib.request.ProxyHandler({'http': _WEATHER_PROXY, 'https': _WEATHER_PROXY})
+        )
+        return opener.open(req, timeout=timeout)
+    return urllib.request.urlopen(req, timeout=timeout)
 
 # WMO weather codes → description + icon
 WMO_CODES = {
@@ -63,8 +81,7 @@ def fetch_weather(date_str: str, lat: float = DEFAULT_LAT, lon: float = DEFAULT_
     )
 
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'LifeDashboard/1.0'})
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with _open(url, timeout=10) as resp:
             data = json.loads(resp.read().decode('utf-8'))
     except (urllib.error.URLError, json.JSONDecodeError, TimeoutError):
         return None
@@ -100,8 +117,7 @@ def _fetch_weather_chunk(start_date: str, end_date: str,
     )
 
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'LifeDashboard/1.0'})
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with _open(url, timeout=30) as resp:
             data = json.loads(resp.read().decode('utf-8'))
     except (urllib.error.URLError, json.JSONDecodeError, TimeoutError) as e:
         print(f"  Weather API error ({start_date}→{end_date}): {e}")

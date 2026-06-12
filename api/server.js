@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import Docker from 'dockerode';
+import { ProxyAgent } from 'undici';
 
 import crypto from 'crypto';
 import { buildMessages, fallbackAnswer, parseBoardDirective, selectPeriodDays, sourcesFor } from './analyze.js';
@@ -31,6 +32,13 @@ try {
 } catch(e) {
   console.warn("Docker socket not available", e.message);
 }
+
+// The host ISP blocks Open-Meteo's IP, so /api/forecast must fetch through
+// the same authenticated HTTP proxy the rest of the stack uses for blocked
+// destinations. Set WEATHER_PROXY=http://user:pass@host:port to enable;
+// unset → direct connection (e.g. local dev).
+const WEATHER_PROXY = process.env.WEATHER_PROXY || '';
+const weatherDispatcher = WEATHER_PROXY ? new ProxyAgent(WEATHER_PROXY) : undefined;
 
 const DASHBOARD_PASS = process.env.DASHBOARD_PASS;
 // Fixed across restarts AND shared with status-dashboard-api so one login cookie
@@ -841,7 +849,7 @@ app.get('/api/forecast', async (req, res) => {
     const lon = 37.6173;
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum,sunrise,sunset&hourly=temperature_2m,weathercode&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,surface_pressure&timezone=auto&forecast_days=7`;
 
-    const response = await fetch(url);
+    const response = await fetch(url, weatherDispatcher ? { dispatcher: weatherDispatcher } : undefined);
     const data = await response.json();
 
     const WMO = {
